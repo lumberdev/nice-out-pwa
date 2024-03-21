@@ -2,7 +2,8 @@ import { Inter } from 'next/font/google'
 import './globals.css'
 import type { Metadata, Viewport } from 'next'
 import type { ReactNode } from 'react'
-import Providers from '@/lib/providers'
+import Providers from '@/lib/Providers'
+import clsx from 'clsx'
 
 const APP_NAME = 'Nice out App'
 const APP_DEFAULT_TITLE = 'Nice Out'
@@ -58,7 +59,9 @@ export default function RootLayout({
   return (
     <html lang='en'>
       <head />
-      <body className={inter.className}>
+      <body
+        className={clsx(inter.className, 'min-h-screen bg-gradient-initial')}
+      >
         <Providers>{children}</Providers>
       </body>
     </html>
