@@ -1,3 +1,4 @@
+import { CurrentWeatherData, WeatherData } from '@/types'
 import { QueryFunctionContext, QueryKey, useQuery } from '@tanstack/react-query'
 import { useEffect } from 'react'
 
@@ -11,11 +12,20 @@ export const useWeatherData = ({
 }: {
   location: GeolocationPosition | null
 }) => {
-  const getWeather = async ({ lat, lon }: GetWeatherDataArgs) => {
+  const getWeather = async ({
+    lat,
+    lon,
+  }: GetWeatherDataArgs): Promise<WeatherData> => {
     try {
       const res = await fetch(`/api/weather?lat=${lat}&lon=${lon}`)
       if (!res.ok) throw new Error('An error occurred')
-      return res.json()
+      const json = await res.json()
+      console.log(json)
+      return {
+        timezone: json.timezone,
+        hourly: json.hourly.data,
+        daily: json.daily.data,
+      }
     } catch (err) {
       if (err instanceof Error) throw new Error(err.message)
       else throw new Error('An unknown error occurred')

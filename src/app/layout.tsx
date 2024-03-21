@@ -59,9 +59,7 @@ export default function RootLayout({
   return (
     <html lang='en'>
       <head />
-      <body
-        className={clsx(inter.className, 'min-h-screen bg-gradient-initial')}
-      >
+      <body className={clsx(inter.className, 'min-h-screen')}>
         <Providers>{children}</Providers>
       </body>
     </html>
