@@ -15,7 +15,7 @@ export const useWeatherData = ({
     try {
       const res = await fetch(`/api/weather?lat=${lat}&lon=${lon}`)
       if (!res.ok) throw new Error('An error occurred')
-      return res
+      return res.json()
     } catch (err) {
       if (err instanceof Error) throw new Error(err.message)
       else throw new Error('An unknown error occurred')
