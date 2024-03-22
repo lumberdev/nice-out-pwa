@@ -75,7 +75,7 @@ export const generateGraphData = (weatherData: WeatherData) => {
   // width of graphTemp === number of days
   const totalDays = (endTime - startTime) / 3600000 / 24
   const GRAPH_WIDTH = SCREEN_WIDTH * totalDays
-  const GRAPH_HEIGHT = SCREEN_HEIGHT / 8
+  const GRAPH_HEIGHT = SCREEN_HEIGHT / 4
   const GRAPH_POP_HEIGHT = SCREEN_HEIGHT / 6
 
   // Generating Scale Function for Temp & POP

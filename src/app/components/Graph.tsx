@@ -12,12 +12,7 @@ const Graph = ({ weatherData }: { weatherData: WeatherData }) => {
   const drawChart = useCallback(() => {
     const { graphTemp, GRAPH_WIDTH, GRAPH_HEIGHT } =
       generateGraphData(weatherData)
-    console.log({
-      windowWidth: window.innerWidth,
-      windowHeight: window.innerHeight,
-      clientWidth: document.body.clientWidth,
-      clientHeight: document.body.clientHeight,
-    })
+
     d3.select(bgRef.current)
       .attr('width', document.body.clientWidth)
       .attr('height', document.body.clientHeight)
@@ -44,9 +39,9 @@ const Graph = ({ weatherData }: { weatherData: WeatherData }) => {
       .append('linearGradient')
       .attr('id', 'chart-gradient')
       .attr('gradientUnits', 'userSpaceOnUse')
-      .attr('x1', '0%')
+      .attr('x1', '50%')
       .attr('y1', '0%')
-      .attr('x2', '0%')
+      .attr('x2', '50%')
       .attr('y2', '100%')
       .selectAll('stop')
       .data(graphTempColorStops)
@@ -67,19 +62,7 @@ const Graph = ({ weatherData }: { weatherData: WeatherData }) => {
 
   return (
     <div className='h-screen w-full flex flex-col justify-end overflow-auto'>
-      <svg ref={d3Chart} className='' />
-      {/* <defs>
-          <linearGradient id='chart-gradient' gradientTransform='rotate(-45)'>
-            <stop offset='99.1%' stopColor='#fff' stopOpacity='0.01' />
-            <stop offset='75%' stopColor='#fff' stopOpacity='0.3' />
-            <stop offset='50%' stopColor='#fff' stopOpacity='0.5' />
-            <stop offset='20%' stopColor='#fff' stopOpacity='0.7' />
-            <stop offset='0' stopColor='#fff' stopOpacity='0.8' />
-          </linearGradient>
-        </defs> */}
-      {/* <mask id='mask'>
-          <rect x='0' y='0' width='100%' height='100%' fill='white' />
-        </mask> */}
+      <svg ref={d3Chart} />
 
       <svg ref={bgRef} className='absolute inset-0 -z-10'>
         <LinearGradient
