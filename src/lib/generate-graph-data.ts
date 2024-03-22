@@ -12,8 +12,8 @@ import { WeatherData } from '@/types'
 // Screen Dimentions for Graph sizing & position
 
 export const generateGraphData = (weatherData: WeatherData) => {
-  const SCREEN_HEIGHT = window.innerHeight
-  const SCREEN_WIDTH = window.innerWidth
+  const SCREEN_HEIGHT = document.body.clientHeight
+  const SCREEN_WIDTH = document.body.clientWidth
   // Formatting raw data for D3
   const timeZone = weatherData.timezone
   const dailyWeather = weatherData.daily
@@ -35,30 +35,30 @@ export const generateGraphData = (weatherData: WeatherData) => {
         Math.floor(moment.tz(reading.date, timeZone).valueOf()),
       ] as [number, number],
   )
-  const formattedPopValues = sevenDayHourly.map(
-    (reading: {
-      probability: { precipitation: number }
-      date: string | number | Date
-    }) =>
-      [
-        reading.probability.precipitation,
-        Math.floor(moment.tz(reading.date, timeZone).valueOf()),
-      ] as [number, number],
-  )
+  // const formattedPopValues = sevenDayHourly.map(
+  //   (reading: {
+  //     probability: { precipitation: number }
+  //     date: string | number | Date
+  //   }) =>
+  //     [
+  //       reading.probability.precipitation,
+  //       Math.floor(moment.tz(reading.date, timeZone).valueOf()),
+  //     ] as [number, number],
+  // )
 
-  const formattedPTValues = sevenDayHourly.map(
-    (reading: {
-      precipitation: { total: number }
-      date: string | number | Date
-    }) =>
-      [
-        Math.cbrt(reading.precipitation.total),
-        Math.floor(moment.tz(reading.date, timeZone).valueOf()),
-        reading.precipitation.total,
-      ] as [number, number, number],
-  )
-  const temps = formattedValues.map((value: any[]) => value[0])
-  const pops = formattedPopValues.map((value: any[]) => value[0])
+  // const formattedPTValues = sevenDayHourly.map(
+  //   (reading: {
+  //     precipitation: { total: number }
+  //     date: string | number | Date
+  //   }) =>
+  //     [
+  //       Math.cbrt(reading.precipitation.total),
+  //       Math.floor(moment.tz(reading.date, timeZone).valueOf()),
+  //       reading.precipitation.total,
+  //     ] as [number, number, number],
+  // )
+  const temps = formattedValues.map((value) => value[0])
+  // const pops = formattedPopValues.map((value: any[]) => value[0])
   const dts = formattedValues.map((value: any[]) => value[1])
 
   // X (Time) & Y (Temp / POP) limits for Temp & POP graphs -- boh graphs share X values as they have same start and end time
@@ -66,10 +66,10 @@ export const generateGraphData = (weatherData: WeatherData) => {
   const endTime = Math.max(...dts)
   const minTemp = Math.min(...temps)
   const maxTemp = Math.max(...temps)
-  const minPops = 0
-  const maxPops = 100
-  const minPT = 0
-  const maxPT = 1.26 // highest possible value on the graph ~~ cube root of 2 inches/hr which is rare.
+  // const minPops = 0
+  // const maxPops = 100
+  // const minPT = 0
+  // const maxPT = 1.26 // highest possible value on the graph ~~ cube root of 2 inches/hr which is rare.
 
   // getting total __number of days__ from data
   // width of graphTemp === number of days
@@ -85,12 +85,12 @@ export const generateGraphData = (weatherData: WeatherData) => {
   const scaleY = scaleLinear()
     .domain([minTemp, maxTemp])
     .range([GRAPH_HEIGHT, 0])
-  const scalePopY = scaleLinear()
-    .domain([minPops, maxPops])
-    .range([GRAPH_POP_HEIGHT, 0])
-  const scalePTY = scaleLinear()
-    .domain([minPT, maxPT])
-    .range([GRAPH_POP_HEIGHT, 0])
+  // const scalePopY = scaleLinear()
+  //   .domain([minPops, maxPops])
+  //   .range([GRAPH_POP_HEIGHT, 0])
+  // const scalePTY = scaleLinear()
+  //   .domain([minPT, maxPT])
+  //   .range([GRAPH_POP_HEIGHT, 0])
 
   // generating Temperature and POP graphs
   const graphTemp = {
@@ -106,17 +106,17 @@ export const generateGraphData = (weatherData: WeatherData) => {
       .y1(([y]) => scaleY(y))
       .curve(shape.curveCardinal.tension(0))(formattedValues),
   }
-  const graphPop = {
-    data: weatherData,
-    minPops,
-    maxPops,
-    path: shape
-      .area()
-      .x(([, x]) => scaleX(x))
-      .y0(scalePopY(0))
-      .y1(([y]) => scalePopY(y))
-      .curve(shape.curveCardinal.tension(0))(formattedPopValues),
-  }
+  // const graphPop = {
+  //   data: weatherData,
+  //   minPops,
+  //   maxPops,
+  //   path: shape
+  //     .area()
+  //     .x(([, x]) => scaleX(x))
+  //     .y0(scalePopY(0))
+  //     .y1(([y]) => scalePopY(y))
+  //     .curve(shape.curveCardinal.tension(0))(formattedPopValues),
+  // }
 
   // const graphPT = {
   //   data: weatherData,
@@ -197,8 +197,8 @@ export const generateGraphData = (weatherData: WeatherData) => {
 
   return {
     data: weatherData,
-    minPops,
-    maxPops,
+    // minPops,
+    // maxPops,
     minTemp,
     maxTemp,
     initialTime: scaleX(moment().tz(timeZone).valueOf()),
@@ -207,7 +207,7 @@ export const generateGraphData = (weatherData: WeatherData) => {
     endXValue: scaleX(endTime),
     timeZone,
     graphTemp,
-    graphPop,
+    // graphPop,
     // graphPT,
     // graphTempPath,
     // graphPopPath,
