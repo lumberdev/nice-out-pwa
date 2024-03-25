@@ -1,17 +1,17 @@
 'use client'
 import React, { useCallback, useEffect, useRef } from 'react'
 import * as d3 from 'd3'
-import { WeatherData } from '@/types'
-import { generateGraphData } from '@/lib/generate-graph-data'
 import LinearGradient from './LinearGradient'
 import { graphTempColorStops } from '@/utils'
+import { useGlobalContext } from '@/lib/GlobalContext'
 
-const Graph = ({ weatherData }: { weatherData: WeatherData }) => {
+const Graph = () => {
+  const { graphData } = useGlobalContext()
   const d3Chart = useRef(null)
   const bgRef = useRef(null)
   const drawChart = useCallback(() => {
-    const { graphTemp, GRAPH_WIDTH, GRAPH_HEIGHT } =
-      generateGraphData(weatherData)
+    if (!graphData) return
+    const { graphTemp, GRAPH_WIDTH, GRAPH_HEIGHT } = graphData
 
     d3.select(bgRef.current)
       .attr('width', document.body.clientWidth)
@@ -50,7 +50,7 @@ const Graph = ({ weatherData }: { weatherData: WeatherData }) => {
       .attr('offset', (d, i) => `${i * 20}%`)
       .attr('stop-color', (d) => d.stopColor)
       .attr('stop-opacity', (d) => d.stopOpacity)
-  }, [weatherData])
+  }, [graphData])
 
   useEffect(() => {
     const chartRef = d3Chart.current
