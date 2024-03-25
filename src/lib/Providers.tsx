@@ -2,6 +2,7 @@
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactNode } from 'react'
+import { GlobalContextProvider } from './GlobalContext'
 
 const queryClient = new QueryClient()
 
@@ -11,6 +12,8 @@ export default function Providers({
   children: ReactNode
 }>) {
   return (
-    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    <QueryClientProvider client={queryClient}>
+      <GlobalContextProvider>{children}</GlobalContextProvider>
+    </QueryClientProvider>
   )
 }

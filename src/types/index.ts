@@ -1,3 +1,5 @@
+import { generateGraphData } from '@/lib/generate-graph-data'
+
 export type CurrentWeatherData = {
   icon: string
   icon_num: number
@@ -185,3 +187,5 @@ export type DayWeather = {
   surface_temperature_min?: number
   surface_temperature_max?: number
 }
+
+export type GraphData = ReturnType<typeof generateGraphData>
