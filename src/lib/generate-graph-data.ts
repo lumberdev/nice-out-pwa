@@ -1,6 +1,6 @@
 'use client'
 
-import { scaleLinear } from 'd3-scale'
+import { scaleLinear, scaleTime } from 'd3-scale'
 import * as shape from 'd3-shape'
 import 'moment'
 import 'moment/min/locales'
@@ -14,6 +14,12 @@ import { WeatherData } from '@/types'
 export const generateGraphData = (weatherData: WeatherData) => {
   const SCREEN_HEIGHT = document.body.clientHeight
   const SCREEN_WIDTH = document.body.clientWidth
+  const margins = {
+    top: 50,
+    right: SCREEN_WIDTH / 2,
+    bottom: 50,
+    left: SCREEN_WIDTH / 2,
+  }
   // Formatting raw data for D3
   const timeZone = weatherData.timezone
   const dailyWeather = weatherData.daily
@@ -79,12 +85,12 @@ export const generateGraphData = (weatherData: WeatherData) => {
   const GRAPH_POP_HEIGHT = SCREEN_HEIGHT / 6
 
   // Generating Scale Function for Temp & POP
-  const scaleX = scaleLinear()
+  const scaleX = scaleTime()
     .domain([startTime, endTime])
-    .range([0, GRAPH_WIDTH])
+    .range([margins.left, GRAPH_WIDTH - margins.right])
   const scaleY = scaleLinear()
     .domain([minTemp, maxTemp])
-    .range([GRAPH_HEIGHT, 0])
+    .range([GRAPH_HEIGHT - margins.bottom, margins.top])
   // const scalePopY = scaleLinear()
   //   .domain([minPops, maxPops])
   //   .range([GRAPH_POP_HEIGHT, 0])
@@ -222,5 +228,6 @@ export const generateGraphData = (weatherData: WeatherData) => {
     formattedSevenDayHourly,
     scaleX,
     scaleY,
+    margins,
   }
 }

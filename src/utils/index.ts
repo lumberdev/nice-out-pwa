@@ -25,3 +25,7 @@ export const graphTempColorStops = [
     stopOpacity: '0.8',
   },
 ]
+
+export function normalizePosition(length: number, position: number): number {
+  return Math.min(Math.max(position / length, 0), 1)
+}
