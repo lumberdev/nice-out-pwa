@@ -5,7 +5,7 @@ import * as shape from 'd3-shape'
 import 'moment'
 import 'moment/min/locales'
 import moment from 'moment-timezone'
-
+import * as d3 from 'd3'
 import { getHourValue } from './get-hour-value'
 import { WeatherData } from '@/types'
 
@@ -41,16 +41,16 @@ export const generateGraphData = (weatherData: WeatherData) => {
         Math.floor(moment.tz(reading.date, timeZone).valueOf()),
       ] as [number, number],
   )
-  // const formattedPopValues = sevenDayHourly.map(
-  //   (reading: {
-  //     probability: { precipitation: number }
-  //     date: string | number | Date
-  //   }) =>
-  //     [
-  //       reading.probability.precipitation,
-  //       Math.floor(moment.tz(reading.date, timeZone).valueOf()),
-  //     ] as [number, number],
-  // )
+  const formattedPopValues = sevenDayHourly.map(
+    (reading: {
+      probability: { precipitation: number }
+      date: string | number | Date
+    }) =>
+      [
+        reading.probability.precipitation,
+        Math.floor(moment.tz(reading.date, timeZone).valueOf()),
+      ] as [number, number],
+  )
 
   // const formattedPTValues = sevenDayHourly.map(
   //   (reading: {
@@ -72,8 +72,8 @@ export const generateGraphData = (weatherData: WeatherData) => {
   const endTime = Math.max(...dts)
   const minTemp = Math.min(...temps)
   const maxTemp = Math.max(...temps)
-  // const minPops = 0
-  // const maxPops = 100
+  const minPops = 0
+  const maxPops = 100
   // const minPT = 0
   // const maxPT = 1.26 // highest possible value on the graph ~~ cube root of 2 inches/hr which is rare.
 
@@ -82,18 +82,18 @@ export const generateGraphData = (weatherData: WeatherData) => {
   const totalDays = (endTime - startTime) / 3600000 / 24
   const GRAPH_WIDTH = SCREEN_WIDTH * totalDays
   const GRAPH_HEIGHT = SCREEN_HEIGHT / 4
-  const GRAPH_POP_HEIGHT = SCREEN_HEIGHT / 6
+  const GRAPH_POP_HEIGHT = SCREEN_HEIGHT / 10
 
   // Generating Scale Function for Temp & POP
   const scaleX = scaleTime()
-    .domain([startTime, endTime])
+    .domain([new Date(startTime), new Date(endTime)])
     .range([margins.left, GRAPH_WIDTH - margins.right])
   const scaleY = scaleLinear()
     .domain([minTemp, maxTemp])
     .range([GRAPH_HEIGHT - margins.bottom, margins.top])
-  // const scalePopY = scaleLinear()
-  //   .domain([minPops, maxPops])
-  //   .range([GRAPH_POP_HEIGHT, 0])
+  const scalePopY = scaleLinear()
+    .domain([minPops, maxPops])
+    .range([GRAPH_POP_HEIGHT, 0])
   // const scalePTY = scaleLinear()
   //   .domain([minPT, maxPT])
   //   .range([GRAPH_POP_HEIGHT, 0])
@@ -111,18 +111,23 @@ export const generateGraphData = (weatherData: WeatherData) => {
       .y0(scaleY(minTemp - (maxTemp - minTemp)))
       .y1(([y]) => scaleY(y))
       .curve(shape.curveCardinal.tension(0))(formattedValues),
+    tempLinePath: d3
+      .line()
+      .x(([, x]) => scaleX(x))
+      .y(([y]) => scaleY(y))
+      .curve(shape.curveCardinal.tension(0))(formattedValues),
   }
-  // const graphPop = {
-  //   data: weatherData,
-  //   minPops,
-  //   maxPops,
-  //   path: shape
-  //     .area()
-  //     .x(([, x]) => scaleX(x))
-  //     .y0(scalePopY(0))
-  //     .y1(([y]) => scalePopY(y))
-  //     .curve(shape.curveCardinal.tension(0))(formattedPopValues),
-  // }
+  const graphPop = {
+    data: weatherData,
+    minPops,
+    maxPops,
+    path: shape
+      .area()
+      .x(([, x]) => scaleX(x))
+      .y0(scalePopY(0))
+      .y1(([y]) => scalePopY(y))
+      .curve(shape.curveCardinal.tension(0))(formattedPopValues),
+  }
 
   // const graphPT = {
   //   data: weatherData,
@@ -136,53 +141,51 @@ export const generateGraphData = (weatherData: WeatherData) => {
   //     .curve(shape.curveCardinal.tension(0))(formattedPTValues),
   // }
   // Parsing  Path values from Graphs
-  // const graphTempPath = parse(graphTemp.path) // Main graph
+  // const graphTempPath =  d3.// Main graph
   // const graphPopPath = parse(graphPop.path) // header Chance of rain
   // const graphPTPath = parse(graphPT.path) // Precipitation value graph
 
   // Generating X and Y value for Sunset/Sunrise and each day
-  // const dayBreaks = apiData.daily.data
-  //   .filter((_, index) => index < 7)
-  //   .map((day, i) => {
-  //     // In case API returns null. Use a fixed sunset and sunrise time
-  //     const sunrise = day.astro.sun.rise
-  //       ? moment.tz(day.astro.sun.rise, timeZone)
-  //       : getHourValue('7:00 AM', i, timeZone)
-  //     const sunset = day.astro.sun.rise
-  //       ? moment.tz(day.astro.sun.set, timeZone)
-  //       : getHourValue('6:00 PM', i, timeZone)
+  const dayBreaks = dailyWeather
+    .filter((_, index) => index < 7)
+    .map((day, i) => {
+      // In case API returns null. Use a fixed sunset and sunrise time
+      const sunrise = day.astro.sun.rise
+        ? moment.tz(day.astro.sun.rise, timeZone)
+        : getHourValue('7:00 AM', i, timeZone)
+      const sunset = day.astro.sun.rise
+        ? moment.tz(day.astro.sun.set, timeZone)
+        : getHourValue('6:00 PM', i, timeZone)
 
-  //     const sunriseTime = sunrise.format('hh:mm A')
-  //     const sunsetTime = sunset.format('hh:mm A')
-  //     const sunriseX = scaleX(sunrise.valueOf())
-  //     const sunsetX = scaleX(sunset.valueOf())
-  //     const currentDay = moment.tz(day.day, timeZone).startOf('day').valueOf()
-  //     const noonValue = Math.max(
-  //       scaleX(moment.tz(day.day, timeZone).startOf('day').hour(12).valueOf()),
-  //       0,
-  //     )
-  //     const xValue = scaleX(currentDay)
-  //     // const yValue = getYForX(graphTempPath, xValue)
-  //     const dayMinTemp = day.all_day.temperature_min
-  //     const dayMaxTemp = day.all_day.temperature_max
-  //     // const twilight = {
-  //     //   sunrise: [
-  //     //     sunriseX,
-  //     //     getYForX(graphTempPath, sunriseX),
-  //     //     sunriseTime,
-  //     //   ] as any,
-  //     //   sunset: [sunsetX, getYForX(graphTempPath, sunsetX), sunsetTime] as any,
-  //     // }
-  //     return {
-  //       xValue,
-  //       // yValue,
-  //       // twilight,
-  //       currentDay,
-  //       dayMaxTemp,
-  //       dayMinTemp,
-  //       noonValue,
-  //     }
-  //   })
+      const sunriseTime = sunrise.format('hh:mm A')
+      const sunsetTime = sunset.format('hh:mm A')
+      const sunriseX = scaleX(sunrise.valueOf())
+      const sunriseY = scaleY(sunrise.valueOf())
+      const sunsetX = scaleX(sunset.valueOf())
+      const sunsetY = scaleY(sunset.valueOf())
+      const currentDay = moment.tz(day.day, timeZone).startOf('day').valueOf()
+      const noonValue = Math.max(
+        scaleX(moment.tz(day.day, timeZone).startOf('day').hour(12).valueOf()),
+        0,
+      )
+      const xValue = scaleX(currentDay)
+      const yValue = scaleY(currentDay)
+      const dayMinTemp = day.all_day.temperature_min
+      const dayMaxTemp = day.all_day.temperature_max
+      const twilight = {
+        sunrise: [sunriseX, sunriseY, sunriseTime],
+        sunset: [sunsetX, sunsetY, sunsetTime],
+      }
+      return {
+        xValue,
+        yValue,
+        twilight,
+        currentDay,
+        dayMaxTemp,
+        dayMinTemp,
+        noonValue,
+      }
+    })
 
   // Breaking up hourly data into daily arrays of hourly data (total 7 arrays) to improve speed of 'find()' in 'updateData()' inside Cursor component
   const formattedSevenDayHourly = sevenDayHourly.reduce(
@@ -203,8 +206,8 @@ export const generateGraphData = (weatherData: WeatherData) => {
 
   return {
     data: weatherData,
-    // minPops,
-    // maxPops,
+    minPops,
+    maxPops,
     minTemp,
     maxTemp,
     initialTime: scaleX(moment().tz(timeZone).valueOf()),
@@ -213,13 +216,13 @@ export const generateGraphData = (weatherData: WeatherData) => {
     endXValue: scaleX(endTime),
     timeZone,
     graphTemp,
-    // graphPop,
+    graphPop,
     // graphPT,
     // graphTempPath,
     // graphPopPath,
     // graphPTPath,
     dailyWeather,
-    // dayBreaks,
+    dayBreaks,
     GRAPH_WIDTH,
     GRAPH_HEIGHT,
     GRAPH_POP_HEIGHT,

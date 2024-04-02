@@ -59,7 +59,7 @@ export default function RootLayout({
   return (
     <html lang='en'>
       <head />
-      <body className={inter.className}>
+      <body className={clsx(inter.className, 'overflow-y-hidden')}>
         <Providers>{children}</Providers>
       </body>
     </html>

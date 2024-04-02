@@ -4,7 +4,7 @@ import Graph from './components/Graph'
 
 export default function Home() {
   return (
-    <main>
+    <main className='h-svh'>
       <Graph />
     </main>
   )

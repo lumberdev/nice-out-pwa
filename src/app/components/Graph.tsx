@@ -1,148 +1,207 @@
 'use client'
-import React, { useCallback, useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import * as d3 from 'd3'
 import LinearGradient from './LinearGradient'
 import { useGlobalContext } from '@/lib/GlobalContext'
-import { graphTempColorStops, normalizePosition } from '@/utils'
+import { drawLinearGradient, graphTempColorStops } from '@/utils'
+import gsap from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import MotionPathPlugin from 'gsap/MotionPathPlugin'
+
+import { useGSAP } from '@gsap/react'
+
+gsap.registerPlugin(ScrollTrigger, MotionPathPlugin, useGSAP)
 
 const Graph = () => {
   const { graphData } = useGlobalContext()
-  const d3Chart = useRef<SVGSVGElement>(null)
-  const pathRef = useRef<SVGPathElement>(null)
+  const mainChart = useRef<SVGSVGElement>(null)
+  const secondaryChart = useRef<SVGSVGElement>(null)
+  const lineRef = useRef<SVGPathElement>(null)
+  const scroller = useRef<HTMLDivElement | null>(null)
+  const wrapperRef = useRef<HTMLDivElement | null>(null)
+  const tempPath = useRef<SVGPathElement>(null)
+  const popPath = useRef<SVGPathElement>(null)
   const bgRef = useRef(null)
-  const cursorRef = useRef<HTMLDivElement>(null)
   const circleRef = useRef<SVGCircleElement>(null)
-  const containerRef = useRef<HTMLDivElement | null>(null)
-  const [graphSize, setGraphSize] = useState({ width: 0, height: 0 })
-  const [isChartDrawn, setIsChartDrawn] = useState(false)
+  const [graphSize, setGraphSize] = useState({
+    width: 0,
+    height: 0,
+    popHeight: 0,
+  })
+  const hasD = !!lineRef.current?.getAttribute('d')
 
-  const drawChart = useCallback(() => {
+  useEffect(() => {
+    if (!lineRef.current || !hasD || !circleRef.current) return
+    const initialPosition = lineRef.current?.getPointAtLength(0)
+    circleRef.current?.setAttribute('cx', (initialPosition?.x ?? 0).toString())
+    circleRef.current?.setAttribute('cy', (initialPosition?.y ?? 0).toString())
+  }, [hasD])
+
+  useGSAP(
+    () => {
+      if (
+        !lineRef.current ||
+        !circleRef.current ||
+        !mainChart.current ||
+        !secondaryChart.current ||
+        !hasD
+      )
+        return
+      const chartHeight = mainChart.current.getBoundingClientRect().height * 1.5
+
+      gsap.set(scroller.current, {
+        width: graphSize.width,
+        height: chartHeight,
+      })
+      gsap.set(wrapperRef.current, {
+        position: 'fixed',
+        width: graphSize.width,
+        height: chartHeight,
+      })
+
+      gsap
+        .timeline({
+          ease: 'none',
+          scrollTrigger: {
+            trigger: lineRef.current,
+            start: 'left center',
+            end: `right center`,
+            scrub: true,
+            horizontal: true,
+            markers: true,
+          },
+        })
+        .to(
+          circleRef.current,
+          {
+            motionPath: {
+              path: lineRef.current,
+              align: lineRef.current,
+              autoRotate: true,
+              alignOrigin: [0.5, 0.5],
+            },
+          },
+          0,
+        )
+
+      let delay = 0.6
+      let position = { x: 0 }
+      const xSet = gsap.quickSetter(wrapperRef.current, 'x', 'px')
+      gsap.ticker.add(() => {
+        position.x +=
+          (-gsap.getProperty(circleRef.current, 'x') - position.x) * delay
+        xSet(position.x)
+      })
+    },
+    {
+      dependencies: [hasD],
+    },
+  )
+
+  useEffect(() => {
+    const tempPathCurrent = tempPath.current
+    const popPathCurrent = popPath.current
+    const lineRefCurrent = lineRef.current
+    const mainChartCurrent = mainChart.current
+    const secondaryChartCurrent = secondaryChart.current
     if (!graphData) return
-    const { graphTemp, GRAPH_WIDTH, GRAPH_HEIGHT, margins, scaleY } = graphData
-    setGraphSize({ width: GRAPH_WIDTH, height: GRAPH_HEIGHT })
-
-    d3.select(pathRef.current)
+    const { graphTemp, graphPop, GRAPH_WIDTH, GRAPH_HEIGHT, GRAPH_POP_HEIGHT } =
+      graphData
+    setGraphSize({
+      width: GRAPH_WIDTH,
+      height: GRAPH_HEIGHT,
+      popHeight: GRAPH_POP_HEIGHT,
+    })
+    /**
+     * Our temperature graph
+     */
+    d3.select(tempPath.current)
       .attr('d', graphTemp.path)
       .attr('fill', 'url(#chart-gradient)')
       .attr('id', 'graph-path')
+    /**
+     * Hidden line for the circle to follow
+     * If we used the temperature graph path, the circle would loop around the graph.
+     */
+    d3.select(lineRef.current)
+      .attr('d', graphTemp.tempLinePath)
+      .style('visibility', 'hidden')
+    /**
+     * Our POP graph
+     */
+    d3.select(popPath.current)
+      .attr('d', graphPop.path)
+      .attr('fill', 'url(#chart-pop-gradient)')
+      .attr('id', 'graph-pop-path')
 
-    d3.select(d3Chart.current)
-      .append('defs')
-      .append('linearGradient')
-      .attr('id', 'chart-gradient')
-      .attr('gradientUnits', 'userSpaceOnUse')
-      .attr('x1', '50%')
-      .attr('y1', '0%')
-      .attr('x2', '50%')
-      .attr('y2', '100%')
-      .selectAll('stop')
-      .data(graphTempColorStops)
-      .enter()
-      .append('stop')
-      .attr('offset', (d, i) => `${i * 20}%`)
-      .attr('stop-color', (d) => d.stopColor)
-      .attr('stop-opacity', (d) => d.stopOpacity)
+    const mainSvg = d3.select(mainChart.current)
+    const secondarySvg = d3.select(secondaryChart.current)
+
+    drawLinearGradient(mainSvg, 'chart-gradient', graphTempColorStops)
+    drawLinearGradient(secondarySvg, 'chart-pop-gradient', graphTempColorStops)
+
+    return () => {
+      d3.select(tempPathCurrent).attr('d', '')
+      d3.select(popPathCurrent).attr('d', '')
+      d3.select(lineRefCurrent).attr('d', '')
+      d3.select(mainChartCurrent).selectAll('defs').remove()
+      d3.select(secondaryChartCurrent).selectAll('defs').remove()
+    }
   }, [graphData])
-  const hasD = !!pathRef.current?.getAttribute('d')
-
-  const handleScroll = useCallback(() => {
-    if (!d3Chart.current || !pathRef.current || !circleRef.current || !hasD) {
-      return
-    }
-    const { width: totalWidth } = d3Chart.current.getBoundingClientRect()
-    const { width: pathWidth } = pathRef.current.getBoundingClientRect()
-    const { scrollLeft: docScrollLeft } = document.documentElement
-
-    const progress = normalizePosition(
-      totalWidth - window.innerWidth,
-      docScrollLeft,
-    )
-    const cursorPosition = pathRef.current?.getPointAtLength(
-      progress * totalWidth,
-    )
-    console.log('cursorPosition', cursorPosition)
-    console.log('pathWidth', pathWidth + window.innerWidth / 2)
-    circleRef.current.setAttribute('cy', cursorPosition?.y.toString())
-    circleRef.current.setAttribute('cx', (cursorPosition?.x).toString())
-  }, [hasD])
-
-  useEffect(() => {
-    if (!pathRef.current || !hasD || !circleRef.current) return
-    const initialPosition = pathRef.current?.getPointAtLength(0)
-    circleRef.current?.setAttribute('cx', (initialPosition?.x ?? 0).toString())
-    circleRef.current?.setAttribute('cy', (initialPosition?.y ?? 0).toString())
-
-    document.addEventListener('scroll', handleScroll)
-    return () => {
-      document.removeEventListener('scroll', handleScroll)
-    }
-  }, [hasD, handleScroll])
-
-  const drawBackground = useCallback(() => {
-    d3.select(bgRef.current)
-      .attr('width', document.body.clientWidth)
-      .attr('height', document.body.clientHeight)
-      .attr('viewBox', [
-        0,
-        0,
-        document.body.clientWidth,
-        document.body.clientHeight,
-      ])
-  }, [])
-
-  useEffect(() => {
-    const bgRefCurrent = bgRef.current
-    const pathRefCurrent = pathRef.current
-    drawChart()
-    drawBackground()
-    return () => {
-      d3.select(pathRefCurrent).attr('d', '')
-      d3.select(bgRefCurrent)
-    }
-  }, [drawChart, drawBackground])
 
   return (
-    <div ref={containerRef} className='h-screen flex flex-col justify-end'>
-      <div className='relative'>
-        <svg
-          className='overflow-auto relative'
-          ref={d3Chart}
-          width={graphSize.width}
-          height={graphSize.height}
-          viewBox={`0 0 ${graphSize.width} ${graphSize.height}`}
-        >
-          <path ref={pathRef} />
-          <circle className='fixed' ref={circleRef} r='8' fill='grey' />
-        </svg>
+    <>
+      <div className='h-full flex flex-col justify-end bg-grey-700 relative'>
+        <div ref={scroller} />
+        <div ref={wrapperRef}>
+          <svg
+            ref={mainChart}
+            width={graphSize.width}
+            height={graphSize.height}
+            viewBox={`0 0 ${graphSize.width} ${graphSize.height}`}
+          >
+            <path ref={lineRef} />
+            <path ref={tempPath} />
 
-        <div
-          ref={cursorRef}
-          className='fixed w-5 h-5 rounded-full bg-white/60 flex items-center justify-center'
-        >
-          <div className='w-3 h-3 rounded-full bg-white'></div>
+            <circle ref={circleRef} r='8' fill='grey' />
+          </svg>
+          <svg
+            ref={secondaryChart}
+            width={graphSize.width}
+            height={graphSize.popHeight}
+            viewBox={`0 0 ${graphSize.width} ${graphSize.popHeight}`}
+          >
+            <path ref={popPath} />
+          </svg>
         </div>
+
+        <svg
+          width={document.body.clientWidth}
+          height={document.body.clientHeight}
+          ref={bgRef}
+          className='fixed inset-0 -z-10 '
+        >
+          <LinearGradient
+            colorStops={[
+              '#bdc3cc',
+              '#96a2b1',
+              '#8b9aaa',
+              '#a3a7b1',
+              '#c0afa9',
+              '#bd9284',
+            ]}
+            id='chart-bg-gradient'
+          />
+          <rect
+            x='0'
+            y='0'
+            width='100%'
+            height='100%'
+            fill={`url(#chart-bg-gradient)`}
+          />
+        </svg>
       </div>
-      <svg ref={bgRef} className='fixed inset-0 -z-10 '>
-        <LinearGradient
-          colorStops={[
-            '#bdc3cc',
-            '#96a2b1',
-            '#8b9aaa',
-            '#a3a7b1',
-            '#c0afa9',
-            '#bd9284',
-          ]}
-          id='chart-bg-gradient'
-        />
-        <rect
-          x='0'
-          y='0'
-          width='100%'
-          height='100%'
-          fill={`url(#chart-bg-gradient)`}
-        />
-      </svg>
-    </div>
+    </>
   )
 }
 
