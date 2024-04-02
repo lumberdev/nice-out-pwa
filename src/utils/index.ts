@@ -47,7 +47,30 @@ export const horizontalGradientStops = [
     stopOpacity: '0',
   },
 ]
-export function normalizePosition(length: number, position: number): number {
-  return position / length
-  // return Math.min(Math.max(position / length, 0), 1)
+
+export const drawLinearGradient = (
+  svg: d3.Selection<SVGSVGElement | null, unknown, null, undefined>,
+  id: string,
+  stops: {
+    offset: string
+    stopColor: string
+    stopOpacity: string
+  }[],
+) => {
+  svg
+    .append('defs')
+    .append('linearGradient')
+    .attr('id', id)
+    .attr('gradientUnits', 'userSpaceOnUse')
+    .attr('x1', '0%')
+    .attr('y1', '0%')
+    .attr('x2', '0%')
+    .attr('y2', '100%')
+    .selectAll('stop')
+    .data(stops)
+    .enter()
+    .append('stop')
+    .attr('offset', (d, i) => d.offset)
+    .attr('stop-color', (d) => d.stopColor)
+    .attr('stop-opacity', (d) => d.stopOpacity)
 }
