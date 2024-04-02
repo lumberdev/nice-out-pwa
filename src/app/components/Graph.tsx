@@ -13,29 +13,25 @@ import { graphTempColorStops, normalizePosition } from '@/utils'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import MotionPathPlugin from 'gsap/MotionPathPlugin'
-import { url } from 'inspector'
-gsap.registerPlugin(ScrollTrigger, MotionPathPlugin)
+
+import clsx from 'clsx'
+import { useGSAP } from '@gsap/react'
+gsap.registerPlugin(ScrollTrigger, MotionPathPlugin, useGSAP)
 const Graph = () => {
   const { graphData } = useGlobalContext()
   const d3Chart = useRef<SVGSVGElement>(null)
   const pathRef = useRef<SVGPathElement>(null)
   const scroller = useRef<HTMLDivElement | null>(null)
   const wrapperRef = useRef<HTMLDivElement | null>(null)
+  const areaRef = useRef<SVGPathElement>(null)
   const bgRef = useRef(null)
   const circleRef = useRef<SVGCircleElement>(null)
   const containerRef = useRef<HTMLDivElement | null>(null)
   const [graphSize, setGraphSize] = useState({ width: 0, height: 0 })
   const drawChart = useCallback(() => {
     if (!graphData) return
-    const {
-      graphTemp,
-      graphPop,
-      GRAPH_WIDTH,
-      GRAPH_HEIGHT,
-      GRAPH_POP_HEIGHT,
-      margins,
-      scaleY,
-    } = graphData
+    const { graphTemp, graphPop, GRAPH_WIDTH, GRAPH_HEIGHT, GRAPH_POP_HEIGHT } =
+      graphData
     setGraphSize({ width: GRAPH_WIDTH, height: GRAPH_HEIGHT })
     // const svg2 = d3
     //   .select(containerRef.current)
@@ -65,6 +61,9 @@ const Graph = () => {
     //   .attr('stop-color', (d) => d.stopColor)
     //   .attr('stop-opacity', (d) => d.stopOpacity)
     d3.select(pathRef.current)
+      .attr('d', graphTemp.tempLinePath)
+      .style('visibility', 'hidden')
+    d3.select(areaRef.current)
       .attr('d', graphTemp.path)
       .attr('fill', 'url(#chart-gradient)')
       .attr('id', 'graph-path')
@@ -91,85 +90,67 @@ const Graph = () => {
   const hasD = !!pathRef.current?.getAttribute('d')
 
   useEffect(() => {
-    if (
-      !pathRef.current ||
-      !hasD ||
-      !circleRef.current ||
-      !graphData ||
-      !d3Chart.current ||
-      !wrapperRef.current
-    )
-      return
+    if (!pathRef.current || !hasD || !circleRef.current) return
     const initialPosition = pathRef.current?.getPointAtLength(0)
     circleRef.current?.setAttribute('cx', (initialPosition?.x ?? 0).toString())
     circleRef.current?.setAttribute('cy', (initialPosition?.y ?? 0).toString())
-    const { GRAPH_WIDTH } = graphData
-    const { width: pathWidth } = pathRef.current.getBoundingClientRect()
-    const ww = window.innerWidth,
-      scrollDist = pathWidth,
-      chartWidth = d3Chart.current.getBoundingClientRect().width,
-      chartHeight = d3Chart.current.getBoundingClientRect().height
-    gsap.set(scroller.current, {
-      width: scrollDist,
-      height: chartHeight,
-    })
-    gsap.set(wrapperRef.current, {
-      position: 'fixed',
-      width: scrollDist,
-      height: chartHeight,
-      autoAlpha: 1,
-    })
+  }, [hasD])
 
-    const timeline = gsap.timeline({
-      ease: 'none',
-      scrollTrigger: {
-        trigger: pathRef.current,
-        start: 'left center',
-        end: `${scrollDist / 4}`,
-        endTrigger: pathRef.current,
-        scrub: true,
-        horizontal: true,
-        markers: true,
-        onUpdate: (self) => {
-          console.log('progress', self.progress)
+  useGSAP(
+    () => {
+      if (!pathRef.current || !circleRef.current || !d3Chart.current || !hasD)
+        return
+      const { width: pathWidth } = pathRef.current.getBoundingClientRect()
+      const chartHeight = d3Chart.current.getBoundingClientRect().height
 
-          console.log(position.x)
-          console.log({
-            x: Math.abs(position.x),
-            graphSize,
-            GRAPH_WIDTH,
-            pathWidth,
-          })
-        },
-      },
-    })
+      gsap.set(scroller.current, {
+        width: pathWidth,
+        height: chartHeight,
+      })
+      gsap.set(wrapperRef.current, {
+        position: 'fixed',
+        width: pathWidth,
+        height: chartHeight,
+      })
 
-    timeline.to(
-      circleRef.current,
-      {
-        motionPath: {
-          path: pathRef.current,
-          align: pathRef.current,
-          autoRotate: true,
-          alignOrigin: [0.5, 0.5],
-        },
-      },
-      0,
-    )
+      gsap
+        .timeline({
+          ease: 'none',
+          scrollTrigger: {
+            trigger: pathRef.current,
+            start: 'left center',
+            end: pathWidth,
+            scrub: true,
+            horizontal: true,
+            markers: true,
+          },
+        })
+        .to(
+          circleRef.current,
+          {
+            motionPath: {
+              path: pathRef.current,
+              align: pathRef.current,
+              autoRotate: true,
+              alignOrigin: [0.5, 0.5],
+            },
+          },
+          0,
+        )
 
-    let delay = 0.6
-    let position = { x: 0 }
-    const xSet = gsap.quickSetter(wrapperRef.current, 'x', 'px')
-    gsap.ticker.add(() => {
-      if (Math.abs(position.x) < GRAPH_WIDTH - ww) {
-        console.log('setting position.x ', position.x)
+      let delay = 0.6
+      let position = { x: 0 }
+      const xSet = gsap.quickSetter(wrapperRef.current, 'x', 'px')
+      gsap.ticker.add(() => {
         position.x +=
           (-gsap.getProperty(circleRef.current, 'x') - position.x) * delay
         xSet(position.x)
-      }
-    })
-  }, [hasD, graphData, graphSize])
-
+      })
+    },
+    {
+      dependencies: [hasD],
+    },
+  )
   const drawBackground = useCallback(() => {
     d3.select(bgRef.current)
       .attr('width', document.body.clientWidth)
@@ -201,7 +182,7 @@ const Graph = () => {
         ref={containerRef}
         className='h-full flex flex-col justify-end bg-grey-700 relative overflow-hidden'
       >
-        <div ref={scroller} />
+        <div ref={scroller} className={clsx('fixed')} />
         <div ref={wrapperRef}>
           <svg
             ref={d3Chart}
@@ -211,6 +192,7 @@ const Graph = () => {
             className='absolute overflow-visible'
           >
             <path ref={pathRef} />
+            <path ref={areaRef} />
             <circle ref={circleRef} r='8' fill='grey' />
           </svg>
         </div>

@@ -111,6 +111,11 @@ export const generateGraphData = (weatherData: WeatherData) => {
       .y0(scaleY(minTemp - (maxTemp - minTemp)))
       .y1(([y]) => scaleY(y))
       .curve(shape.curveCardinal.tension(0))(formattedValues),
+    tempLinePath: d3
+      .line()
+      .x(([, x]) => scaleX(x))
+      .y(([y]) => scaleY(y))
+      .curve(shape.curveCardinal.tension(0))(formattedValues),
   }
   const graphPop = {
     data: weatherData,
