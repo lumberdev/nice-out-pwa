@@ -5,9 +5,8 @@ import * as shape from 'd3-shape'
 import 'moment'
 import 'moment/min/locales'
 import moment from 'moment-timezone'
-import * as d3 from 'd3'
 import { getHourValue } from './get-hour-value'
-import { WeatherData } from '@/types'
+import { HourlyWeather, WeatherData } from '@/types'
 
 // Screen Dimentions for Graph sizing & position
 
@@ -15,7 +14,7 @@ export const generateGraphData = (weatherData: WeatherData) => {
   const SCREEN_HEIGHT = document.body.clientHeight
   const SCREEN_WIDTH = document.body.clientWidth
   const margins = {
-    top: 50,
+    top: 150,
     right: SCREEN_WIDTH / 2,
     bottom: 50,
     left: SCREEN_WIDTH / 2,
@@ -111,7 +110,7 @@ export const generateGraphData = (weatherData: WeatherData) => {
       .y0(scaleY(minTemp - (maxTemp - minTemp)))
       .y1(([y]) => scaleY(y))
       .curve(shape.curveCardinal.tension(0))(formattedValues),
-    tempLinePath: d3
+    tempLinePath: shape
       .line()
       .x(([, x]) => scaleX(x))
       .y(([y]) => scaleY(y))
@@ -189,16 +188,20 @@ export const generateGraphData = (weatherData: WeatherData) => {
 
   // Breaking up hourly data into daily arrays of hourly data (total 7 arrays) to improve speed of 'find()' in 'updateData()' inside Cursor component
   const formattedSevenDayHourly = sevenDayHourly.reduce(
-    (result: any, item: any, index: number) => {
+    (
+      result: Map<string, HourlyWeather>[],
+      item: HourlyWeather,
+      index: number,
+    ) => {
       const firstDayHours =
         24 - moment.tz(sevenDayHourly[0].date, timeZone).hours()
       const perArray = index >= firstDayHours ? 24 : firstDayHours
       const startindex = index >= firstDayHours ? index + 24 - firstDayHours : 0
       const insertIndex = Math.floor(startindex / perArray)
       if (!result[insertIndex]) {
-        result[insertIndex] = [] // new array chunk
+        result[insertIndex] = new Map()
       }
-      result[insertIndex].push(item)
+      result[insertIndex].set(item.date, item)
       return result
     },
     [],
