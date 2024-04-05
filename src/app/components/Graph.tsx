@@ -3,15 +3,13 @@ import React, { useCallback, useEffect, useRef, useState } from 'react'
 import Background from './Background'
 import { useGlobalContext } from '@/lib/GlobalContext'
 import { graphTempColorStops } from '@/utils'
-import gsap from 'gsap'
-import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import MotionPathPlugin from 'gsap/MotionPathPlugin'
 
-import { useGSAP } from '@gsap/react'
 import LinearGradient from './LinearGradient'
 import moment from 'moment'
+import { roundToNearestHours } from 'date-fns/roundToNearestHours'
+import { formatISO } from 'date-fns/formatISO'
 
-gsap.registerPlugin(ScrollTrigger, MotionPathPlugin, useGSAP)
+import WeatherIcon from './Icon'
 
 const Graph = () => {
   const { graphData, weatherData } = useGlobalContext()
@@ -19,9 +17,19 @@ const Graph = () => {
   const lineRef = useRef<SVGPathElement>(null)
   const circleRef = useRef<SVGCircleElement>(null)
   const groupRef = useRef<SVGGElement>(null)
-  const textRef = useRef<SVGTextElement>(null)
-  const [timestamp, setTimestamp] = useState('')
+  const [timestamp, setTimestamp] = useState<{
+    time: string
+    meridiem: string
+    summary: string
+    icon: number
+  }>({
+    time: '10:40',
+    meridiem: 'AM',
+    summary: 'Sunny',
+    icon: 0,
+  })
   const [temperature, setTemperature] = useState(0)
+
   const [graphSize, setGraphSize] = useState({
     width: 0,
     height: 0,
@@ -29,27 +37,18 @@ const Graph = () => {
   })
   const hasD = !!lineRef.current?.getAttribute('d')
 
-  useEffect(() => {
-    if (!lineRef.current || !hasD || !circleRef.current || !textRef.current)
-      return
-    const initialPosition = lineRef.current?.getPointAtLength(0)
-    circleRef.current.setAttribute('cx', (initialPosition?.x ?? 0).toString())
-    circleRef.current.setAttribute('cy', (initialPosition?.y ?? 0).toString())
-    textRef.current.setAttribute('x', (initialPosition?.x ?? 0).toString())
-    textRef.current.setAttribute('y', (initialPosition?.y ?? 0).toString())
-    textRef.current.style.transformBox = 'fill-box'
-  }, [hasD])
-
-  const handleScroll = useCallback(() => {
+  const handleAnimation = useCallback(() => {
     if (
       !lineRef.current ||
       !hasD ||
       !circleRef.current ||
       !graphData ||
       !weatherData ||
-      !textRef.current
-    )
+      !groupRef.current
+    ) {
+      console.log('early return')
       return
+    }
     const scrollX = window.scrollX
     const { width: lineWidth } = lineRef.current.getBoundingClientRect()
     const progress = Math.min(Math.max(scrollX / lineWidth, 0), 1)
@@ -58,21 +57,35 @@ const Graph = () => {
 
     circleRef.current.setAttribute('cx', x.toString())
     circleRef.current.setAttribute('cy', y.toString())
-    textRef.current.setAttribute('x', (x ?? 0).toString())
-    textRef.current.setAttribute('y', (y ?? 0).toString())
-    textRef.current.style.transform = `translate(-50%, -100%)`
-    const { scaleX, scaleY } = graphData
+    groupRef.current.setAttribute('transform', `translate(${x + 6}, ${y - 40})`)
+    const { scaleX, scaleY, formattedSevenDayHourly } = graphData
     const timestamp = scaleX.invert(x)
+    const roundedTimestamp = formatISO(roundToNearestHours(timestamp)).slice(
+      0,
+      -6,
+    )
+    const activeDay = formattedSevenDayHourly.find((day) =>
+      day.get(roundedTimestamp),
+    )
+    const currentData = activeDay?.get(roundedTimestamp)
+
     const temperature = scaleY.invert(y)
     const { timezone } = weatherData
-    setTimestamp(moment(timestamp).tz(timezone).format('hh:mm A'))
+
+    setTimestamp({
+      time: moment(timestamp).tz(timezone).format('hh:mm'),
+      meridiem: moment(timestamp).tz(timezone).format('A'),
+      summary: currentData?.summary ?? '',
+      icon: currentData?.icon ?? 0,
+    })
     setTemperature(temperature)
-  }, [graphData, hasD])
+  }, [graphData, hasD, weatherData])
 
   useEffect(() => {
-    document.addEventListener('scroll', handleScroll)
-    return () => document.removeEventListener('scroll', handleScroll)
-  })
+    handleAnimation()
+    document.addEventListener('scroll', handleAnimation)
+    return () => document.removeEventListener('scroll', handleAnimation)
+  }, [handleAnimation])
 
   useEffect(() => {
     if (!graphData) return
@@ -106,11 +119,32 @@ const Graph = () => {
             fill={'url(#chart-gradient)'}
             id='graph-path'
           />
-          <g ref={groupRef} fill='grey'>
-            <circle r='8' ref={circleRef} />
-            <text ref={textRef}>{timestamp}</text>
-          </g>
           <LinearGradient id='chart-gradient' stops={graphTempColorStops} />
+          <circle
+            r='6'
+            ref={circleRef}
+            fill='white'
+            stroke='rgba(255, 255, 255, 0.3)'
+            strokeWidth={8}
+          />
+          <g ref={groupRef} fill='white'>
+            <WeatherIcon
+              icon={timestamp.icon}
+              x={0}
+              y={-40}
+              width={'100%'}
+              height={'100%'}
+            />
+            <text x={0} y={0} textLength={40}>
+              {timestamp.time}
+            </text>
+            <text x={42} y={-6} className='text-3xs'>
+              {timestamp.meridiem}
+            </text>
+            <text x={0} y={20} className='text-2xs'>
+              {timestamp.summary}
+            </text>
+          </g>
         </svg>
         {/* POP Chart */}
         <svg
