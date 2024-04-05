@@ -5,7 +5,6 @@ import * as shape from 'd3-shape'
 import 'moment'
 import 'moment/min/locales'
 import moment from 'moment-timezone'
-import * as d3 from 'd3'
 import { getHourValue } from './get-hour-value'
 import { HourlyWeather, WeatherData } from '@/types'
 
@@ -111,7 +110,7 @@ export const generateGraphData = (weatherData: WeatherData) => {
       .y0(scaleY(minTemp - (maxTemp - minTemp)))
       .y1(([y]) => scaleY(y))
       .curve(shape.curveCardinal.tension(0))(formattedValues),
-    tempLinePath: d3
+    tempLinePath: shape
       .line()
       .x(([, x]) => scaleX(x))
       .y(([y]) => scaleY(y))

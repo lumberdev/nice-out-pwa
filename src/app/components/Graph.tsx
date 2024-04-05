@@ -46,7 +46,6 @@ const Graph = () => {
       !weatherData ||
       !groupRef.current
     ) {
-      console.log('early return')
       return
     }
     const scrollX = window.scrollX
