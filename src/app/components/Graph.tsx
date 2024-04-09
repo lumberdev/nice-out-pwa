@@ -88,6 +88,7 @@ const Graph = () => {
 
   useEffect(() => {
     if (!graphData) return
+    console.log('graphData', graphData)
     const { GRAPH_WIDTH, GRAPH_HEIGHT, GRAPH_POP_HEIGHT } = graphData
     setGraphSize({
       width: GRAPH_WIDTH,

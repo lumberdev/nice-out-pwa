@@ -2,6 +2,7 @@
 
 import { scaleLinear, scaleTime } from 'd3-scale'
 import * as shape from 'd3-shape'
+import * as array from 'd3-array'
 import 'moment'
 import 'moment/min/locales'
 import moment from 'moment-timezone'
@@ -62,15 +63,15 @@ export const generateGraphData = (weatherData: WeatherData) => {
   //       reading.precipitation.total,
   //     ] as [number, number, number],
   // )
-  const temps = formattedValues.map((value) => value[0])
+  const temperatures = formattedValues.map((value) => value[0])
   // const pops = formattedPopValues.map((value: any[]) => value[0])
-  const dts = formattedValues.map((value: any[]) => value[1])
+  const timestamps = formattedValues.map((value) => value[1])
 
   // X (Time) & Y (Temp / POP) limits for Temp & POP graphs -- boh graphs share X values as they have same start and end time
-  const startTime = Math.min(...dts)
-  const endTime = Math.max(...dts)
-  const minTemp = Math.min(...temps)
-  const maxTemp = Math.max(...temps)
+  const startTime = Math.min(...timestamps)
+  const endTime = Math.max(...timestamps)
+  const minTemp = Math.min(...temperatures)
+  const maxTemp = Math.max(...temperatures)
   const minPops = 0
   const maxPops = 100
   // const minPT = 0
@@ -159,16 +160,22 @@ export const generateGraphData = (weatherData: WeatherData) => {
       const sunriseTime = sunrise.format('hh:mm A')
       const sunsetTime = sunset.format('hh:mm A')
       const sunriseX = scaleX(sunrise.valueOf())
-      const sunriseY = scaleY(sunrise.valueOf())
+      const sunriseY = scaleY(
+        formattedValues[array.bisect(timestamps, sunrise.valueOf())][0],
+      )
       const sunsetX = scaleX(sunset.valueOf())
-      const sunsetY = scaleY(sunset.valueOf())
+      const sunsetY = scaleY(
+        formattedValues[array.bisect(timestamps, sunset.valueOf())][0],
+      )
       const currentDay = moment.tz(day.day, timeZone).startOf('day').valueOf()
       const noonValue = Math.max(
         scaleX(moment.tz(day.day, timeZone).startOf('day').hour(12).valueOf()),
         0,
       )
       const xValue = scaleX(currentDay)
-      const yValue = scaleY(currentDay)
+      const yValue = scaleY(
+        formattedValues[array.bisect(timestamps, currentDay)][0],
+      )
       const dayMinTemp = day.all_day.temperature_min
       const dayMaxTemp = day.all_day.temperature_max
       const twilight = {
