@@ -161,12 +161,13 @@ export const generateGraphData = (weatherData: WeatherData) => {
       const sunsetTime = sunset.format('hh:mm A')
       const sunriseX = scaleX(sunrise.valueOf())
       const sunriseY = scaleY(
-        formattedValues[array.bisect(timestamps, sunrise.valueOf())][0],
+        formattedValues[array.bisectCenter(timestamps, sunrise.valueOf())][0],
       )
       const sunsetX = scaleX(sunset.valueOf())
       const sunsetY = scaleY(
-        formattedValues[array.bisect(timestamps, sunset.valueOf())][0],
+        formattedValues[array.bisectCenter(timestamps, sunset.valueOf())][0],
       )
+
       const currentDay = moment.tz(day.day, timeZone).startOf('day').valueOf()
       const noonValue = Math.max(
         scaleX(moment.tz(day.day, timeZone).startOf('day').hour(12).valueOf()),
@@ -174,7 +175,7 @@ export const generateGraphData = (weatherData: WeatherData) => {
       )
       const xValue = scaleX(currentDay)
       const yValue = scaleY(
-        formattedValues[array.bisect(timestamps, currentDay)][0],
+        formattedValues[array.bisectCenter(timestamps, currentDay)][0],
       )
       const dayMinTemp = day.all_day.temperature_min
       const dayMaxTemp = day.all_day.temperature_max

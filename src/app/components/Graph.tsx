@@ -115,14 +115,13 @@ const Graph = () => {
           height={graphSize.height + graphSize.popHeight}
         >
           {graphData.dayBreaks.map((dayBreak, index) => {
-            console.log('dayBreak', dayBreak)
             return (
               <Fragment key={dayBreak.xValue}>
                 {dayBreak.xValue > 0 && (
                   <line
                     key={index}
-                    x1={dayBreak.xValue}
-                    x2={dayBreak.xValue}
+                    x1={dayBreak.xValue - 1}
+                    x2={dayBreak.xValue - 1}
                     y1={graphSize.height + graphSize.popHeight}
                     y2={dayBreak.yValue}
                     stroke='rgba(255, 255, 255, 0.8)'
@@ -135,7 +134,7 @@ const Graph = () => {
                       y1={graphSize.height + graphSize.popHeight}
                       y2={dayBreak.twilight.sunrise.y}
                       stroke='rgba(255, 255, 255, 0.8)'
-                      strokeDasharray={'4 4'}
+                      strokeDasharray={5}
                       strokeWidth={2}
                     />
                     <text
@@ -160,7 +159,7 @@ const Graph = () => {
                       y1={graphSize.height + graphSize.popHeight}
                       y2={dayBreak.twilight.sunset.y}
                       stroke='rgba(255, 255, 255, 0.8)'
-                      strokeDasharray={'4 4'}
+                      strokeDasharray={5}
                       strokeWidth={2}
                     />
                     <text
