@@ -1,5 +1,11 @@
 'use client'
-import React, { useCallback, useEffect, useRef, useState } from 'react'
+import React, {
+  Fragment,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react'
 import Background from './Background'
 import { useGlobalContext } from '@/lib/GlobalContext'
 import { graphTempColorStops } from '@/utils'
@@ -10,6 +16,7 @@ import { roundToNearestHours } from 'date-fns/roundToNearestHours'
 import { formatISO } from 'date-fns/formatISO'
 
 import WeatherIcon from './Icon'
+import { da } from 'date-fns/locale'
 
 const Graph = () => {
   const { graphData, weatherData } = useGlobalContext()
@@ -102,6 +109,81 @@ const Graph = () => {
   return (
     <>
       <div className='h-full flex flex-col justify-end bg-grey-700 relative'>
+        <svg
+          className='absolute bottom-0 left-0 z-0'
+          width={graphSize.width}
+          height={graphSize.height + graphSize.popHeight}
+        >
+          {graphData.dayBreaks.map((dayBreak, index) => {
+            console.log('dayBreak', dayBreak)
+            return (
+              <Fragment key={dayBreak.xValue}>
+                {dayBreak.xValue > 0 && (
+                  <line
+                    key={index}
+                    x1={dayBreak.xValue}
+                    x2={dayBreak.xValue}
+                    y1={graphSize.height + graphSize.popHeight}
+                    y2={dayBreak.yValue}
+                    stroke='rgba(255, 255, 255, 0.8)'
+                    strokeWidth={2}
+                  />
+                )}
+                {dayBreak.twilight.sunrise.x > window.innerWidth / 2 && (
+                  <g transform={`translate(${dayBreak.twilight.sunrise.x}, 0)`}>
+                    <line
+                      y1={graphSize.height + graphSize.popHeight}
+                      y2={dayBreak.twilight.sunrise.y}
+                      stroke='rgba(255, 255, 255, 0.8)'
+                      strokeDasharray={'4 4'}
+                      strokeWidth={2}
+                    />
+                    <text
+                      x={25}
+                      y={dayBreak.twilight.sunrise.y - 10}
+                      className='text-sm font-bold tracking-wider fill-white/75'
+                    >
+                      {dayBreak.twilight.sunrise.time}
+                    </text>
+                    <WeatherIcon
+                      icon={'sunrise'}
+                      x={-12.5}
+                      y={dayBreak.twilight.sunrise.y - 25}
+                      width={'100%'}
+                      height={'100%'}
+                    />
+                  </g>
+                )}
+                {dayBreak.twilight.sunset.x > window.innerWidth / 2 && (
+                  <g transform={`translate(${dayBreak.twilight.sunset.x}, 0)`}>
+                    <line
+                      y1={graphSize.height + graphSize.popHeight}
+                      y2={dayBreak.twilight.sunset.y}
+                      stroke='rgba(255, 255, 255, 0.8)'
+                      strokeDasharray={'4 4'}
+                      strokeWidth={2}
+                    />
+                    <text
+                      x={25}
+                      y={dayBreak.twilight.sunset.y - 10}
+                      className='text-sm font-bold tracking-wider fill-white/75'
+                    >
+                      {dayBreak.twilight.sunset.time}
+                    </text>
+                    <WeatherIcon
+                      icon={'sunset'}
+                      x={-12.5}
+                      y={dayBreak.twilight.sunset.y - 25}
+                      width={'100%'}
+                      height={'100%'}
+                    />
+                  </g>
+                )}
+              </Fragment>
+            )
+          })}
+        </svg>
+
         {/* Temp Chart */}
         <svg
           ref={mainChart}
@@ -114,11 +196,13 @@ const Graph = () => {
             d={graphData.graphTemp.tempLinePath ?? ''}
             className='invisible'
           />
+
           <path
             d={graphData.graphTemp.path ?? ''}
             fill={'url(#chart-gradient)'}
             id='graph-path'
           />
+
           <LinearGradient id='chart-gradient' stops={graphTempColorStops} />
           <circle
             r='6'

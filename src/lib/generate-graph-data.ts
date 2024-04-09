@@ -81,8 +81,8 @@ export const generateGraphData = (weatherData: WeatherData) => {
   // width of graphTemp === number of days
   const totalDays = (endTime - startTime) / 3600000 / 24
   const GRAPH_WIDTH = SCREEN_WIDTH * totalDays
-  const GRAPH_HEIGHT = SCREEN_HEIGHT / 4
-  const GRAPH_POP_HEIGHT = SCREEN_HEIGHT / 10
+  const GRAPH_HEIGHT = SCREEN_HEIGHT / 3
+  const GRAPH_POP_HEIGHT = SCREEN_HEIGHT / 8
 
   // Generating Scale Function for Temp & POP
   const scaleX = scaleTime()
@@ -93,7 +93,7 @@ export const generateGraphData = (weatherData: WeatherData) => {
     .range([GRAPH_HEIGHT - margins.bottom, margins.top])
   const scalePopY = scaleLinear()
     .domain([minPops, maxPops])
-    .range([GRAPH_POP_HEIGHT, 0])
+    .range([GRAPH_POP_HEIGHT, 50])
   // const scalePTY = scaleLinear()
   //   .domain([minPT, maxPT])
   //   .range([GRAPH_POP_HEIGHT, 0])
@@ -179,8 +179,8 @@ export const generateGraphData = (weatherData: WeatherData) => {
       const dayMinTemp = day.all_day.temperature_min
       const dayMaxTemp = day.all_day.temperature_max
       const twilight = {
-        sunrise: [sunriseX, sunriseY, sunriseTime],
-        sunset: [sunsetX, sunsetY, sunsetTime],
+        sunrise: { x: sunriseX, y: sunriseY, time: sunriseTime },
+        sunset: { x: sunsetX, y: sunsetY, time: sunsetTime },
       }
       return {
         xValue,
