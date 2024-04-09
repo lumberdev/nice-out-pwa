@@ -13,6 +13,8 @@ import LinearGradient from './LinearGradient'
 import moment from 'moment'
 import { roundToNearestHours } from 'date-fns/roundToNearestHours'
 import { formatISO } from 'date-fns/formatISO'
+import { isWithinInterval } from 'date-fns/isWithinInterval'
+import { isSameDay } from 'date-fns/isSameDay'
 import WeatherIcon from './Icon'
 
 const Graph = () => {
@@ -30,8 +32,9 @@ const Graph = () => {
     time: '10:40',
     meridiem: 'AM',
     summary: 'Sunny',
-    icon: 0,
+    icon: 2,
   })
+  const [isItDay, setIsItDay] = useState(true)
   const [temperature, setTemperature] = useState(0)
 
   const [graphSize, setGraphSize] = useState({
@@ -40,7 +43,6 @@ const Graph = () => {
     popHeight: 0,
   })
   const hasD = !!lineRef.current?.getAttribute('d')
-
   const handleAnimation = useCallback(() => {
     if (
       !lineRef.current ||
@@ -61,7 +63,7 @@ const Graph = () => {
     circleRef.current.setAttribute('cx', x.toString())
     circleRef.current.setAttribute('cy', y.toString())
     groupRef.current.setAttribute('transform', `translate(${x + 6}, ${y - 40})`)
-    const { scaleX, scaleY, formattedSevenDayHourly } = graphData
+    const { scaleX, scaleY, formattedSevenDayHourly, dayBreaks } = graphData
     const timestamp = scaleX.invert(x)
     const roundedTimestamp = formatISO(roundToNearestHours(timestamp)).slice(
       0,
@@ -75,6 +77,16 @@ const Graph = () => {
     const temperature = scaleY.invert(y)
     const { timezone } = weatherData
 
+    const currentDayBreaks = dayBreaks.find(({ currentDay }) =>
+      isSameDay(currentDay, roundedTimestamp),
+    )
+    if (currentDayBreaks) {
+      const isItDay = isWithinInterval(timestamp, {
+        start: currentDayBreaks.twilight.sunrise.fullSunriseTime,
+        end: currentDayBreaks.twilight.sunset.fullSunsetTime,
+      })
+      setIsItDay(isItDay)
+    }
     setTimestamp({
       time: moment(timestamp).tz(timezone).format('hh:mm'),
       meridiem: moment(timestamp).tz(timezone).format('A'),
@@ -242,15 +254,9 @@ const Graph = () => {
         </svg>
 
         <Background
-          colorStops={[
-            '#bdc3cc',
-            '#96a2b1',
-            '#8b9aaa',
-            '#a3a7b1',
-            '#c0afa9',
-            '#bd9284',
-          ]}
+          icon={timestamp.icon}
           id='chart-bg-gradient'
+          isItDay={isItDay}
         />
       </div>
     </>

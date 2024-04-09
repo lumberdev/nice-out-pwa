@@ -180,8 +180,18 @@ export const generateGraphData = (weatherData: WeatherData) => {
       const dayMinTemp = day.all_day.temperature_min
       const dayMaxTemp = day.all_day.temperature_max
       const twilight = {
-        sunrise: { x: sunriseX, y: sunriseY, time: sunriseTime },
-        sunset: { x: sunsetX, y: sunsetY, time: sunsetTime },
+        sunrise: {
+          x: sunriseX,
+          y: sunriseY,
+          time: sunriseTime,
+          fullSunriseTime: sunrise.valueOf(),
+        },
+        sunset: {
+          x: sunsetX,
+          y: sunsetY,
+          time: sunsetTime,
+          fullSunsetTime: sunset.valueOf(),
+        },
       }
       return {
         xValue,

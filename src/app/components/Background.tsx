@@ -1,12 +1,16 @@
+import { useGradientColorStops } from '@/hooks/useGradientColorStops'
 import React from 'react'
 
 const Background = ({
-  colorStops,
+  icon,
   id,
+  isItDay,
 }: {
-  colorStops: string[]
+  icon: number
   id: string
+  isItDay: boolean
 }) => {
+  const colorStops = useGradientColorStops(isItDay, icon)
   return (
     <svg
       width={window.innerWidth}
