@@ -2,6 +2,7 @@
 
 import { scaleLinear, scaleTime } from 'd3-scale'
 import * as shape from 'd3-shape'
+import * as array from 'd3-array'
 import 'moment'
 import 'moment/min/locales'
 import moment from 'moment-timezone'
@@ -62,15 +63,15 @@ export const generateGraphData = (weatherData: WeatherData) => {
   //       reading.precipitation.total,
   //     ] as [number, number, number],
   // )
-  const temps = formattedValues.map((value) => value[0])
+  const temperatures = formattedValues.map((value) => value[0])
   // const pops = formattedPopValues.map((value: any[]) => value[0])
-  const dts = formattedValues.map((value: any[]) => value[1])
+  const timestamps = formattedValues.map((value) => value[1])
 
   // X (Time) & Y (Temp / POP) limits for Temp & POP graphs -- boh graphs share X values as they have same start and end time
-  const startTime = Math.min(...dts)
-  const endTime = Math.max(...dts)
-  const minTemp = Math.min(...temps)
-  const maxTemp = Math.max(...temps)
+  const startTime = Math.min(...timestamps)
+  const endTime = Math.max(...timestamps)
+  const minTemp = Math.min(...temperatures)
+  const maxTemp = Math.max(...temperatures)
   const minPops = 0
   const maxPops = 100
   // const minPT = 0
@@ -80,8 +81,8 @@ export const generateGraphData = (weatherData: WeatherData) => {
   // width of graphTemp === number of days
   const totalDays = (endTime - startTime) / 3600000 / 24
   const GRAPH_WIDTH = SCREEN_WIDTH * totalDays
-  const GRAPH_HEIGHT = SCREEN_HEIGHT / 4
-  const GRAPH_POP_HEIGHT = SCREEN_HEIGHT / 10
+  const GRAPH_HEIGHT = SCREEN_HEIGHT / 3
+  const GRAPH_POP_HEIGHT = SCREEN_HEIGHT / 8
 
   // Generating Scale Function for Temp & POP
   const scaleX = scaleTime()
@@ -92,7 +93,7 @@ export const generateGraphData = (weatherData: WeatherData) => {
     .range([GRAPH_HEIGHT - margins.bottom, margins.top])
   const scalePopY = scaleLinear()
     .domain([minPops, maxPops])
-    .range([GRAPH_POP_HEIGHT, 0])
+    .range([GRAPH_POP_HEIGHT, 50])
   // const scalePTY = scaleLinear()
   //   .domain([minPT, maxPT])
   //   .range([GRAPH_POP_HEIGHT, 0])
@@ -159,21 +160,28 @@ export const generateGraphData = (weatherData: WeatherData) => {
       const sunriseTime = sunrise.format('hh:mm A')
       const sunsetTime = sunset.format('hh:mm A')
       const sunriseX = scaleX(sunrise.valueOf())
-      const sunriseY = scaleY(sunrise.valueOf())
+      const sunriseY = scaleY(
+        formattedValues[array.bisectCenter(timestamps, sunrise.valueOf())][0],
+      )
       const sunsetX = scaleX(sunset.valueOf())
-      const sunsetY = scaleY(sunset.valueOf())
+      const sunsetY = scaleY(
+        formattedValues[array.bisectCenter(timestamps, sunset.valueOf())][0],
+      )
+
       const currentDay = moment.tz(day.day, timeZone).startOf('day').valueOf()
       const noonValue = Math.max(
         scaleX(moment.tz(day.day, timeZone).startOf('day').hour(12).valueOf()),
         0,
       )
       const xValue = scaleX(currentDay)
-      const yValue = scaleY(currentDay)
+      const yValue = scaleY(
+        formattedValues[array.bisectCenter(timestamps, currentDay)][0],
+      )
       const dayMinTemp = day.all_day.temperature_min
       const dayMaxTemp = day.all_day.temperature_max
       const twilight = {
-        sunrise: [sunriseX, sunriseY, sunriseTime],
-        sunset: [sunsetX, sunsetY, sunsetTime],
+        sunrise: { x: sunriseX, y: sunriseY, time: sunriseTime },
+        sunset: { x: sunsetX, y: sunsetY, time: sunsetTime },
       }
       return {
         xValue,
