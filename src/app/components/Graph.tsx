@@ -9,14 +9,11 @@ import React, {
 import Background from './Background'
 import { useGlobalContext } from '@/lib/GlobalContext'
 import { graphTempColorStops } from '@/utils'
-
 import LinearGradient from './LinearGradient'
 import moment from 'moment'
 import { roundToNearestHours } from 'date-fns/roundToNearestHours'
 import { formatISO } from 'date-fns/formatISO'
-
 import WeatherIcon from './Icon'
-import { da } from 'date-fns/locale'
 
 const Graph = () => {
   const { graphData, weatherData } = useGlobalContext()
@@ -114,6 +111,7 @@ const Graph = () => {
           width={graphSize.width}
           height={graphSize.height + graphSize.popHeight}
         >
+          {/* Day breaks + sunrise and sunset lines */}
           {graphData.dayBreaks.map((dayBreak, index) => {
             return (
               <Fragment key={dayBreak.xValue}>
