@@ -23,6 +23,7 @@ const Graph = () => {
   const lineRef = useRef<SVGPathElement>(null)
   const circleRef = useRef<SVGCircleElement>(null)
   const groupRef = useRef<SVGGElement>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
   const [timestamp, setTimestamp] = useState<{
     time: string
     meridiem: string
@@ -54,7 +55,7 @@ const Graph = () => {
     ) {
       return
     }
-    const scrollX = window.scrollX
+    const scrollX = containerRef.current?.scrollLeft ?? 0
     const { width: lineWidth } = lineRef.current.getBoundingClientRect()
     const progress = Math.min(Math.max(scrollX / lineWidth, 0), 1)
     const totalLength = lineRef.current.getTotalLength()
@@ -98,13 +99,10 @@ const Graph = () => {
 
   useEffect(() => {
     handleAnimation()
-    document.addEventListener('scroll', handleAnimation)
-    return () => document.removeEventListener('scroll', handleAnimation)
   }, [handleAnimation])
 
   useEffect(() => {
     if (!graphData) return
-    console.log('graphData', graphData)
     const { GRAPH_WIDTH, GRAPH_HEIGHT, GRAPH_POP_HEIGHT } = graphData
     setGraphSize({
       width: GRAPH_WIDTH,
@@ -117,7 +115,11 @@ const Graph = () => {
 
   return (
     <>
-      <div className='h-full flex flex-col justify-end bg-grey-700 relative'>
+      <div
+        onScroll={handleAnimation}
+        ref={containerRef}
+        className='h-full flex flex-col justify-end bg-grey-700 relative overflow-x-scroll'
+      >
         <svg
           className='absolute bottom-0 left-0 z-0'
           width={graphSize.width}
@@ -127,7 +129,7 @@ const Graph = () => {
           {graphData.dayBreaks.map((dayBreak, index) => {
             return (
               <Fragment key={dayBreak.xValue}>
-                {dayBreak.xValue > 0 && (
+                {dayBreak.xValue > window.innerWidth / 2 && (
                   <line
                     key={index}
                     x1={dayBreak.xValue - 1}
@@ -252,7 +254,6 @@ const Graph = () => {
           />
           <LinearGradient id='chart-pop-gradient' stops={graphTempColorStops} />
         </svg>
-
         <Background
           icon={timestamp.icon}
           id='chart-bg-gradient'

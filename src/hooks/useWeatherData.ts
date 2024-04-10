@@ -20,7 +20,6 @@ export const useWeatherData = ({
       const res = await fetch(`/api/weather?lat=${lat}&lon=${lon}`)
       if (!res.ok) throw new Error('An error occurred')
       const json = await res.json()
-      console.log(json)
       return {
         timezone: json.timezone,
         hourly: json.hourly.data,
