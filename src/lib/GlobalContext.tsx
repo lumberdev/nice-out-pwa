@@ -37,6 +37,8 @@ interface GlobalContextValue {
   }
   isItDay: boolean
   temperature: number
+  currentDayMaxTemp: number
+  currentDayMinTemp: number
   graphSize: {
     width: number
     height: number
@@ -91,6 +93,8 @@ export const GlobalContextProvider = ({
   })
   const [isItDay, setIsItDay] = useState(true)
   const [temperature, setTemperature] = useState(0)
+  const [currentDayMaxTemp, setCurrentDayMaxTemp] = useState(0)
+  const [currentDayMinTemp, setCurrentDayMinTemp] = useState(0)
 
   const [graphSize, setGraphSize] = useState({
     width: 0,
@@ -141,6 +145,8 @@ export const GlobalContextProvider = ({
         end: currentDayBreaks.twilight.sunset.fullSunsetTime,
       })
       setIsItDay(isItDay)
+      setCurrentDayMaxTemp(currentDayBreaks.dayMaxTemp ?? 0)
+      setCurrentDayMinTemp(currentDayBreaks.dayMinTemp ?? 0)
     }
     setTimestamp({
       time: moment(timestamp).tz(timezone).format('hh:mm'),
@@ -177,6 +183,8 @@ export const GlobalContextProvider = ({
     timestamp,
     isItDay,
     temperature,
+    currentDayMaxTemp,
+    currentDayMinTemp,
     graphSize,
     handleAnimation,
     graphData,

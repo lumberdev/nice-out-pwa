@@ -5,13 +5,15 @@ import clsx from 'clsx'
 import { roboto } from '@/app/fonts'
 
 const Temperature = () => {
-  const { temperature, graphData } = useGlobalContext()
+  const { temperature, graphData, currentDayMaxTemp, currentDayMinTemp } =
+    useGlobalContext()
   if (!graphData) return null
-  const { minTemp, maxTemp } = graphData
   return (
     <div className="flex flex-col items-center text-white">
       <div className={clsx(roboto.className, 'flex gap-1 font-thin')}>
-        <div className="text-[8rem] leading-none">{temperature.toFixed(0)}</div>
+        <div className="text-[8rem] leading-none">
+          {Math.round(temperature)}
+        </div>
         <div className="relative top-2 text-[4rem] leading-none">°</div>
       </div>
       <div className="flex justify-between gap-3">
@@ -25,7 +27,9 @@ const Temperature = () => {
               height={'1rem'}
               viewBox="0 0 24 24"
             />
-            <div className="text-[1.25rem] font-medium">{minTemp.toFixed(0)}</div>
+            <div className="text-[1.25rem] font-medium">
+              {Math.round(currentDayMaxTemp)}
+            </div>
           </div>
           <div className="flex items-center">
             <WeatherIcon
@@ -36,7 +40,9 @@ const Temperature = () => {
               height={'1rem'}
               viewBox="0 0 24 24"
             />
-            <div className="text-[1.25rem] font-medium">{maxTemp.toFixed(0)}</div>
+            <div className="text-[1.25rem] font-medium">
+              {Math.round(currentDayMinTemp)}
+            </div>
           </div>
         </div>
         <div className="flex cursor-pointer items-center justify-center rounded-full bg-white/30 px-3 leading-none">
