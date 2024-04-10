@@ -1,18 +1,32 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { useGlobalContext } from '@/lib/GlobalContext'
 import WeatherIcon from '../Icon'
 import clsx from 'clsx'
 import { roboto } from '@/app/fonts'
 
 const Temperature = () => {
-  const { temperature, graphData, currentDayMaxTemp, currentDayMinTemp } =
-    useGlobalContext()
+  const [isFeelsLikeTemperature, setIsFeelsLikeTemperature] = useState(false)
+  const { temperatureData, graphData } = useGlobalContext()
+  const {
+    temperature,
+    feelsLikeTemperature,
+    currentDayMaxTemp,
+    currentDayMinTemp,
+    currentDayFeelsLikeMaxTemp,
+    currentDayFeelsLikeMinTemp,
+  } = temperatureData
   if (!graphData) return null
+  const handleTemperatureTypeChange = () => {
+    console.log(isFeelsLikeTemperature)
+    setIsFeelsLikeTemperature((prev) => !prev)
+  }
   return (
-    <div className="flex flex-col items-center text-white">
+    <div className="flex min-w-[15rem] flex-col items-center text-white ">
       <div className={clsx(roboto.className, 'flex gap-1 font-thin')}>
         <div className="text-[8rem] leading-none">
-          {Math.round(temperature)}
+          {Math.round(
+            isFeelsLikeTemperature ? feelsLikeTemperature : temperature,
+          )}
         </div>
         <div className="relative top-2 text-[4rem] leading-none">°</div>
       </div>
@@ -28,7 +42,11 @@ const Temperature = () => {
               viewBox="0 0 24 24"
             />
             <div className="text-[1.25rem] font-medium">
-              {Math.round(currentDayMaxTemp)}
+              {Math.round(
+                isFeelsLikeTemperature
+                  ? currentDayFeelsLikeMaxTemp
+                  : currentDayMaxTemp,
+              )}
             </div>
           </div>
           <div className="flex items-center">
@@ -41,13 +59,20 @@ const Temperature = () => {
               viewBox="0 0 24 24"
             />
             <div className="text-[1.25rem] font-medium">
-              {Math.round(currentDayMinTemp)}
+              {Math.round(
+                isFeelsLikeTemperature
+                  ? currentDayFeelsLikeMinTemp
+                  : currentDayMinTemp,
+              )}
             </div>
           </div>
         </div>
-        <div className="flex cursor-pointer items-center justify-center rounded-full bg-white/30 px-3 leading-none">
-          Temperature
-        </div>
+        <button
+          onClick={handleTemperatureTypeChange}
+          className="flex cursor-pointer items-center justify-center rounded-full bg-white/30 px-3 leading-none transition-colors hover:bg-white/20"
+        >
+          {isFeelsLikeTemperature ? 'Feels Like' : 'Temperature'}
+        </button>
       </div>
     </div>
   )

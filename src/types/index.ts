@@ -188,4 +188,13 @@ export type DayWeather = {
   surface_temperature_max?: number
 }
 
+export type TemperatureData = {
+  temperature: number
+  feelsLikeTemperature: number
+  currentDayMaxTemp: number
+  currentDayMinTemp: number
+  currentDayFeelsLikeMaxTemp: number
+  currentDayFeelsLikeMinTemp: number
+}
+
 export type GraphData = ReturnType<typeof generateGraphData>
