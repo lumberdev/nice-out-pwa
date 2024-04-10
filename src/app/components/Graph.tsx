@@ -1,111 +1,39 @@
 'use client'
-import React, {
-  Fragment,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from 'react'
+import React, { Fragment, useEffect } from 'react'
 import Background from './Background'
 import { useGlobalContext } from '@/lib/GlobalContext'
 import { graphTempColorStops } from '@/utils'
 import LinearGradient from './LinearGradient'
-import moment from 'moment'
-import { roundToNearestHours } from 'date-fns/roundToNearestHours'
-import { formatISO } from 'date-fns/formatISO'
+
 import WeatherIcon from './Icon'
 
 const Graph = () => {
-  const { graphData, weatherData } = useGlobalContext()
-  const mainChart = useRef<SVGSVGElement>(null)
-  const lineRef = useRef<SVGPathElement>(null)
-  const circleRef = useRef<SVGCircleElement>(null)
-  const groupRef = useRef<SVGGElement>(null)
-  const [timestamp, setTimestamp] = useState<{
-    time: string
-    meridiem: string
-    summary: string
-    icon: number
-  }>({
-    time: '10:40',
-    meridiem: 'AM',
-    summary: 'Sunny',
-    icon: 0,
-  })
-  const [temperature, setTemperature] = useState(0)
-
-  const [graphSize, setGraphSize] = useState({
-    width: 0,
-    height: 0,
-    popHeight: 0,
-  })
-  const hasD = !!lineRef.current?.getAttribute('d')
-
-  const handleAnimation = useCallback(() => {
-    if (
-      !lineRef.current ||
-      !hasD ||
-      !circleRef.current ||
-      !graphData ||
-      !weatherData ||
-      !groupRef.current
-    ) {
-      return
-    }
-    const scrollX = window.scrollX
-    const { width: lineWidth } = lineRef.current.getBoundingClientRect()
-    const progress = Math.min(Math.max(scrollX / lineWidth, 0), 1)
-    const totalLength = lineRef.current.getTotalLength()
-    const { x, y } = lineRef.current.getPointAtLength(progress * totalLength)
-
-    circleRef.current.setAttribute('cx', x.toString())
-    circleRef.current.setAttribute('cy', y.toString())
-    groupRef.current.setAttribute('transform', `translate(${x + 6}, ${y - 40})`)
-    const { scaleX, scaleY, formattedSevenDayHourly } = graphData
-    const timestamp = scaleX.invert(x)
-    const roundedTimestamp = formatISO(roundToNearestHours(timestamp)).slice(
-      0,
-      -6,
-    )
-    const activeDay = formattedSevenDayHourly.find((day) =>
-      day.get(roundedTimestamp),
-    )
-    const currentData = activeDay?.get(roundedTimestamp)
-
-    const temperature = scaleY.invert(y)
-    const { timezone } = weatherData
-
-    setTimestamp({
-      time: moment(timestamp).tz(timezone).format('hh:mm'),
-      meridiem: moment(timestamp).tz(timezone).format('A'),
-      summary: currentData?.summary ?? '',
-      icon: currentData?.icon ?? 0,
-    })
-    setTemperature(temperature)
-  }, [graphData, hasD, weatherData])
+  const {
+    graphData,
+    circleRef,
+    containerRef,
+    graphSize,
+    groupRef,
+    handleAnimation,
+    isItDay,
+    lineRef,
+    mainChart,
+    timestamp,
+  } = useGlobalContext()
 
   useEffect(() => {
     handleAnimation()
-    document.addEventListener('scroll', handleAnimation)
-    return () => document.removeEventListener('scroll', handleAnimation)
   }, [handleAnimation])
-
-  useEffect(() => {
-    if (!graphData) return
-    console.log('graphData', graphData)
-    const { GRAPH_WIDTH, GRAPH_HEIGHT, GRAPH_POP_HEIGHT } = graphData
-    setGraphSize({
-      width: GRAPH_WIDTH,
-      height: GRAPH_HEIGHT,
-      popHeight: GRAPH_POP_HEIGHT,
-    })
-  }, [graphData])
 
   if (!graphData) return null
 
   return (
     <>
-      <div className='h-full flex flex-col justify-end bg-grey-700 relative'>
+      <div
+        onScroll={handleAnimation}
+        ref={containerRef}
+        className='h-full flex flex-col justify-end bg-grey-700 relative overflow-x-scroll'
+      >
         <svg
           className='absolute bottom-0 left-0 z-0'
           width={graphSize.width}
@@ -115,7 +43,7 @@ const Graph = () => {
           {graphData.dayBreaks.map((dayBreak, index) => {
             return (
               <Fragment key={dayBreak.xValue}>
-                {dayBreak.xValue > 0 && (
+                {dayBreak.xValue > window.innerWidth / 2 && (
                   <line
                     key={index}
                     x1={dayBreak.xValue - 1}
@@ -240,17 +168,10 @@ const Graph = () => {
           />
           <LinearGradient id='chart-pop-gradient' stops={graphTempColorStops} />
         </svg>
-
         <Background
-          colorStops={[
-            '#bdc3cc',
-            '#96a2b1',
-            '#8b9aaa',
-            '#a3a7b1',
-            '#c0afa9',
-            '#bd9284',
-          ]}
+          icon={timestamp.icon}
           id='chart-bg-gradient'
+          isItDay={isItDay}
         />
       </div>
     </>

@@ -1,14 +1,49 @@
 import { useLocation } from '@/hooks/useLocation'
 import { useWeatherData } from '@/hooks/useWeatherData'
 import { GraphData, WeatherData } from '@/types'
-import React, { createContext, useContext, useEffect, useState } from 'react'
+import React, {
+  RefObject,
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react'
 import { generateGraphData } from './generate-graph-data'
+import {
+  formatISO,
+  roundToNearestHours,
+  isSameDay,
+  isWithinInterval,
+} from 'date-fns'
+import moment from 'moment'
 
 interface GlobalContextValue {
   weatherData: WeatherData | undefined
   error: Error | null | unknown
   isLoading: boolean
   graphData: GraphData | undefined
+  mainChart: RefObject<SVGSVGElement>
+  lineRef: RefObject<SVGPathElement>
+  circleRef: RefObject<SVGCircleElement>
+  groupRef: RefObject<SVGGElement>
+  containerRef: RefObject<HTMLDivElement>
+  timestamp: {
+    time: string
+    meridiem: string
+    summary: string
+    icon: number
+  }
+  isItDay: boolean
+  temperature: number
+  graphSize: {
+    width: number
+    height: number
+    popHeight: number
+  }
+
+  handleAnimation: () => void
 }
 
 const GlobalContext = createContext<GlobalContextValue | undefined>(undefined)
@@ -38,6 +73,84 @@ export const GlobalContextProvider = ({
     isFetched,
   } = useWeatherData({ location })
 
+  const mainChart = useRef<SVGSVGElement>(null)
+  const lineRef = useRef<SVGPathElement>(null)
+  const circleRef = useRef<SVGCircleElement>(null)
+  const groupRef = useRef<SVGGElement>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
+  const [timestamp, setTimestamp] = useState<{
+    time: string
+    meridiem: string
+    summary: string
+    icon: number
+  }>({
+    time: '10:40',
+    meridiem: 'AM',
+    summary: 'Sunny',
+    icon: 2,
+  })
+  const [isItDay, setIsItDay] = useState(true)
+  const [temperature, setTemperature] = useState(0)
+
+  const [graphSize, setGraphSize] = useState({
+    width: 0,
+    height: 0,
+    popHeight: 0,
+  })
+  const hasD = !!lineRef.current?.getAttribute('d')
+  const handleAnimation = useCallback(() => {
+    if (
+      !lineRef.current ||
+      !hasD ||
+      !circleRef.current ||
+      !graphData ||
+      !weatherData ||
+      !groupRef.current
+    ) {
+      return
+    }
+    const scrollX = containerRef.current?.scrollLeft ?? 0
+    const { width: lineWidth } = lineRef.current.getBoundingClientRect()
+    const progress = Math.min(Math.max(scrollX / lineWidth, 0), 1)
+    const totalLength = lineRef.current.getTotalLength()
+    const { x, y } = lineRef.current.getPointAtLength(progress * totalLength)
+
+    circleRef.current.setAttribute('cx', x.toString())
+    circleRef.current.setAttribute('cy', y.toString())
+    groupRef.current.setAttribute('transform', `translate(${x + 6}, ${y - 40})`)
+    const { scaleX, scaleY, formattedSevenDayHourly, dayBreaks } = graphData
+    const timestamp = scaleX.invert(x)
+    const roundedTimestamp = formatISO(roundToNearestHours(timestamp)).slice(
+      0,
+      -6,
+    )
+    const activeDay = formattedSevenDayHourly.find((day) =>
+      day.get(roundedTimestamp),
+    )
+    const currentData = activeDay?.get(roundedTimestamp)
+
+    const temperature = scaleY.invert(y)
+    const { timezone } = weatherData
+
+    const currentDayBreaks = dayBreaks.find(({ currentDay }) =>
+      isSameDay(currentDay, roundedTimestamp),
+    )
+    if (currentDayBreaks) {
+      const isItDay = isWithinInterval(timestamp, {
+        start: currentDayBreaks.twilight.sunrise.fullSunriseTime,
+        end: currentDayBreaks.twilight.sunset.fullSunsetTime,
+      })
+      setIsItDay(isItDay)
+    }
+    setTimestamp({
+      time: moment(timestamp).tz(timezone).format('hh:mm'),
+      meridiem: moment(timestamp).tz(timezone).format('A'),
+      summary: currentData?.summary ?? '',
+      icon: currentData?.icon ?? 0,
+    })
+    setTemperature(temperature)
+  }, [graphData, hasD, weatherData])
+
   useEffect(() => {
     if (weatherData && isFetched) {
       const graphData = generateGraphData(weatherData)
@@ -45,11 +158,34 @@ export const GlobalContextProvider = ({
     }
   }, [weatherData, isFetched])
 
+  useEffect(() => {
+    if (!graphData) return
+    const { GRAPH_WIDTH, GRAPH_HEIGHT, GRAPH_POP_HEIGHT } = graphData
+    setGraphSize({
+      width: GRAPH_WIDTH,
+      height: GRAPH_HEIGHT,
+      popHeight: GRAPH_POP_HEIGHT,
+    })
+  }, [graphData])
+
+  const value = {
+    mainChart,
+    lineRef,
+    circleRef,
+    groupRef,
+    containerRef,
+    timestamp,
+    isItDay,
+    temperature,
+    graphSize,
+    handleAnimation,
+    graphData,
+    weatherData,
+    error,
+    isLoading,
+  }
+
   return (
-    <GlobalContext.Provider
-      value={{ weatherData, error, isLoading, graphData }}
-    >
-      {children}
-    </GlobalContext.Provider>
+    <GlobalContext.Provider value={value}>{children}</GlobalContext.Provider>
   )
 }
