@@ -27,12 +27,14 @@ const WeatherIcon = ({
   y,
   width,
   height,
+  viewBox
 }: {
   icon: number | string
   x: number
   y: number
   width: number | string
   height: number | string
+  viewBox?: string
 }) => {
   switch (icon) {
     case 2:
@@ -118,9 +120,9 @@ const WeatherIcon = ({
     case 'close':
       return <BiX width={width} height={height} x={x} y={y} />
     case 'max':
-      return <BsArrowUp width={width} height={height} x={x} y={y} />
+      return <BsArrowUp width={width} height={height} x={x} y={y} viewBox={viewBox}/>
     case 'min':
-      return <BsArrowDown width={width} height={height} x={x} y={y} />
+      return <BsArrowDown width={width} height={height} x={x} y={y} viewBox={viewBox}/>
     case 'sunset':
       return <BsSunset width={width} height={height} x={x} y={y} />
     case 'sunrise':
