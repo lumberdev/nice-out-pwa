@@ -16,17 +16,24 @@ const Temperature = () => {
     currentDayFeelsLikeMinTemp,
   } = temperatureData
   if (!graphData) return null
+
+  const formattedTemperature = (temperature: number | undefined) => {
+    if (temperature !== undefined) {
+      return Math.round(temperature)
+    }
+    return '-'
+  }
+
   const handleTemperatureTypeChange = () => {
-    console.log(isFeelsLikeTemperature)
     setIsFeelsLikeTemperature((prev) => !prev)
   }
   return (
     <div className="flex min-w-[15rem] flex-col items-center text-white ">
       <div className={clsx(roboto.className, 'flex gap-1 font-thin')}>
         <div className="text-[8rem] leading-none">
-          {Math.round(
-            isFeelsLikeTemperature ? feelsLikeTemperature : temperature,
-          )}
+          {isFeelsLikeTemperature
+            ? formattedTemperature(feelsLikeTemperature)
+            : formattedTemperature(temperature)}
         </div>
         <div className="relative top-2 text-[4rem] leading-none">°</div>
       </div>
@@ -42,11 +49,9 @@ const Temperature = () => {
               viewBox="0 0 24 24"
             />
             <div className="text-[1.25rem] font-medium">
-              {Math.round(
-                isFeelsLikeTemperature
-                  ? currentDayFeelsLikeMaxTemp
-                  : currentDayMaxTemp,
-              )}
+              {isFeelsLikeTemperature
+                ? formattedTemperature(currentDayFeelsLikeMaxTemp)
+                : formattedTemperature(currentDayMaxTemp)}
             </div>
           </div>
           <div className="flex items-center">
@@ -59,11 +64,9 @@ const Temperature = () => {
               viewBox="0 0 24 24"
             />
             <div className="text-[1.25rem] font-medium">
-              {Math.round(
-                isFeelsLikeTemperature
-                  ? currentDayFeelsLikeMinTemp
-                  : currentDayMinTemp,
-              )}
+              {isFeelsLikeTemperature
+                ? formattedTemperature(currentDayFeelsLikeMinTemp)
+                : formattedTemperature(currentDayMinTemp)}
             </div>
           </div>
         </div>

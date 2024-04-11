@@ -138,32 +138,27 @@ export const GlobalContextProvider = ({
     const currentData = activeDay?.get(roundedTimestamp)
 
     const temperature = scaleY.invert(y)
-    const feelsLikeTemperature =
-      activeDay?.get(roundedTimestamp)?.feels_like ?? 0
+    const feelsLikeTemperature = activeDay?.get(roundedTimestamp)?.feels_like
     const { timezone } = weatherData
 
     const currentDayBreaks = dayBreaks.find(({ currentDay }) =>
       isSameDay(currentDay, roundedTimestamp),
     )
-    let currentDayMaxTemp: number,
-      currentDayMinTemp: number,
-      currentDayFeelsLikeMaxTemp: number,
-      currentDayFeelsLikeMinTemp: number
-    currentDayMaxTemp =
-      currentDayMinTemp =
-      currentDayFeelsLikeMaxTemp =
-      currentDayFeelsLikeMinTemp =
-        0
+    let currentDayMaxTemp: number | undefined,
+      currentDayMinTemp: number | undefined,
+      currentDayFeelsLikeMaxTemp: number | undefined,
+      currentDayFeelsLikeMinTemp: number | undefined
+
     if (currentDayBreaks) {
       const isItDay = isWithinInterval(timestamp, {
         start: currentDayBreaks.twilight.sunrise.fullSunriseTime,
         end: currentDayBreaks.twilight.sunset.fullSunsetTime,
       })
       setIsItDay(isItDay)
-      currentDayMaxTemp = currentDayBreaks.dayMaxTemp ?? 0
-      currentDayMinTemp = currentDayBreaks.dayMinTemp ?? 0
-      currentDayFeelsLikeMaxTemp = currentDayBreaks.dayFeelsLikeMaxTemp ?? 0
-      currentDayFeelsLikeMinTemp = currentDayBreaks.dayFeelsLikeMinTemp ?? 0
+      currentDayMaxTemp = currentDayBreaks.dayMaxTemp
+      currentDayMinTemp = currentDayBreaks.dayMinTemp
+      currentDayFeelsLikeMaxTemp = currentDayBreaks.dayFeelsLikeMaxTemp
+      currentDayFeelsLikeMinTemp = currentDayBreaks.dayFeelsLikeMinTemp
     }
     setTimestamp({
       time: moment(timestamp).tz(timezone).format('hh:mm'),

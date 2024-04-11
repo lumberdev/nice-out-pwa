@@ -190,11 +190,11 @@ export type DayWeather = {
 
 export type TemperatureData = {
   temperature: number
-  feelsLikeTemperature: number
-  currentDayMaxTemp: number
-  currentDayMinTemp: number
-  currentDayFeelsLikeMaxTemp: number
-  currentDayFeelsLikeMinTemp: number
+  feelsLikeTemperature?: number
+  currentDayMaxTemp?: number
+  currentDayMinTemp?: number
+  currentDayFeelsLikeMaxTemp?: number
+  currentDayFeelsLikeMinTemp?: number
 }
 
 export type GraphData = ReturnType<typeof generateGraphData>
