@@ -11,6 +11,7 @@ const Background = ({
   isItDay: boolean
 }) => {
   const colorStops = useGradientColorStops(isItDay, icon)
+  const offsets = [2, 24, 46, 60, 81, 99]
   return (
     <svg
       width={window.innerWidth}
@@ -18,9 +19,9 @@ const Background = ({
       className='fixed inset-0 -z-10 '
     >
       <defs>
-        <linearGradient id={id} gradientTransform='rotate(45)'>
+        <linearGradient id={id} x1='0%' y1='0%' x2='100%' y2='100%'>
           {colorStops.map((color, i) => (
-            <stop key={i} offset={`${i * 20}%`} stopColor={color} />
+            <stop key={i} offset={`${offsets[i]}%`} stopColor={color} />
           ))}
         </linearGradient>
       </defs>
