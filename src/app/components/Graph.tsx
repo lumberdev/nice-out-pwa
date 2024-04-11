@@ -1,6 +1,4 @@
-'use client'
 import React, { Fragment, useEffect } from 'react'
-import Background from './Background'
 import { useGlobalContext } from '@/lib/GlobalContext'
 import { graphTempColorStops } from '@/utils'
 import LinearGradient from './LinearGradient'
