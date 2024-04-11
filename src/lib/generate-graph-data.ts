@@ -179,6 +179,8 @@ export const generateGraphData = (weatherData: WeatherData) => {
       )
       const dayMinTemp = day.all_day.temperature_min
       const dayMaxTemp = day.all_day.temperature_max
+      const dayFeelsLikeMinTemp = day.all_day.feels_like_min
+      const dayFeelsLikeMaxTemp = day.all_day.feels_like_max
       const twilight = {
         sunrise: {
           x: sunriseX,
@@ -200,6 +202,8 @@ export const generateGraphData = (weatherData: WeatherData) => {
         currentDay,
         dayMaxTemp,
         dayMinTemp,
+        dayFeelsLikeMinTemp,
+        dayFeelsLikeMaxTemp,
         noonValue,
       }
     })

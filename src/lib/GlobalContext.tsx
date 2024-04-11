@@ -1,6 +1,6 @@
 import { useLocation } from '@/hooks/useLocation'
 import { useWeatherData } from '@/hooks/useWeatherData'
-import { GraphData, WeatherData } from '@/types'
+import { GraphData, WeatherData, TemperatureData } from '@/types'
 import React, {
   RefObject,
   createContext,
@@ -36,7 +36,7 @@ interface GlobalContextValue {
     icon: number
   }
   isItDay: boolean
-  temperature: number
+  temperatureData: TemperatureData
   graphSize: {
     width: number
     height: number
@@ -90,7 +90,15 @@ export const GlobalContextProvider = ({
     icon: 2,
   })
   const [isItDay, setIsItDay] = useState(true)
-  const [temperature, setTemperature] = useState(0)
+
+  const [temperatureData, setTemperatureData] = useState<TemperatureData>({
+    temperature: 0,
+    feelsLikeTemperature: 0,
+    currentDayMaxTemp: 0,
+    currentDayMinTemp: 0,
+    currentDayFeelsLikeMaxTemp: 0,
+    currentDayFeelsLikeMinTemp: 0,
+  })
 
   const [graphSize, setGraphSize] = useState({
     width: 0,
@@ -130,17 +138,27 @@ export const GlobalContextProvider = ({
     const currentData = activeDay?.get(roundedTimestamp)
 
     const temperature = scaleY.invert(y)
+    const feelsLikeTemperature = activeDay?.get(roundedTimestamp)?.feels_like
     const { timezone } = weatherData
 
     const currentDayBreaks = dayBreaks.find(({ currentDay }) =>
       isSameDay(currentDay, roundedTimestamp),
     )
+    let currentDayMaxTemp: number | undefined,
+      currentDayMinTemp: number | undefined,
+      currentDayFeelsLikeMaxTemp: number | undefined,
+      currentDayFeelsLikeMinTemp: number | undefined
+
     if (currentDayBreaks) {
       const isItDay = isWithinInterval(timestamp, {
         start: currentDayBreaks.twilight.sunrise.fullSunriseTime,
         end: currentDayBreaks.twilight.sunset.fullSunsetTime,
       })
       setIsItDay(isItDay)
+      currentDayMaxTemp = currentDayBreaks.dayMaxTemp
+      currentDayMinTemp = currentDayBreaks.dayMinTemp
+      currentDayFeelsLikeMaxTemp = currentDayBreaks.dayFeelsLikeMaxTemp
+      currentDayFeelsLikeMinTemp = currentDayBreaks.dayFeelsLikeMinTemp
     }
     setTimestamp({
       time: moment(timestamp).tz(timezone).format('hh:mm'),
@@ -148,7 +166,14 @@ export const GlobalContextProvider = ({
       summary: currentData?.summary ?? '',
       icon: currentData?.icon ?? 0,
     })
-    setTemperature(temperature)
+    setTemperatureData({
+      temperature,
+      feelsLikeTemperature,
+      currentDayMaxTemp,
+      currentDayMinTemp,
+      currentDayFeelsLikeMaxTemp,
+      currentDayFeelsLikeMinTemp,
+    })
   }, [graphData, hasD, weatherData])
 
   useEffect(() => {
@@ -176,7 +201,7 @@ export const GlobalContextProvider = ({
     containerRef,
     timestamp,
     isItDay,
-    temperature,
+    temperatureData,
     graphSize,
     handleAnimation,
     graphData,

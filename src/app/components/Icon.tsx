@@ -27,104 +27,106 @@ const WeatherIcon = ({
   y,
   width,
   height,
+  viewBox
 }: {
   icon: number | string
   x: number
   y: number
   width: number | string
   height: number | string
+  viewBox?: string
 }) => {
   switch (icon) {
     case 2:
-      return <BsSun width={width} height={height} x={x} y={y} /> // 2 - Sunny
+      return <BsSun width={width} height={height} x={x} y={y} viewBox={viewBox} /> // 2 - Sunny
     case 3:
-      return <BsSun width={width} height={height} x={x} y={y} /> // 3 - Mostly sunny
+      return <BsSun width={width} height={height} x={x} y={y} viewBox={viewBox} /> // 3 - Mostly sunny
     case 4:
-      return <BsCloudSun width={width} height={height} x={x} y={y} /> // 4 - Partly sunny
+      return <BsCloudSun width={width} height={height} x={x} y={y} viewBox={viewBox} /> // 4 - Partly sunny
     case 5:
-      return <BsCloudy width={width} height={height} x={x} y={y} /> // 5 - Mostly cloudy
+      return <BsCloudy width={width} height={height} x={x} y={y} viewBox={viewBox} /> // 5 - Mostly cloudy
     case 6:
-      return <BsCloudy width={width} height={height} x={x} y={y} /> // 6 - Cloudy
+      return <BsCloudy width={width} height={height} x={x} y={y} viewBox={viewBox} /> // 6 - Cloudy
     case 7:
-      return <BsCloudy width={width} height={height} x={x} y={y} /> // 7 - Overcast
+      return <BsCloudy width={width} height={height} x={x} y={y} viewBox={viewBox} /> // 7 - Overcast
     case 8:
-      return <BsCloudy width={width} height={height} x={x} y={y} /> // 8 - Overcast with low clouds
+      return <BsCloudy width={width} height={height} x={x} y={y} viewBox={viewBox} /> // 8 - Overcast with low clouds
     case 9:
-      return <BsFog width={width} height={height} x={x} y={y} /> // 9 - Fog - BsCloudFog
+      return <BsFog width={width} height={height} x={x} y={y} viewBox={viewBox} /> // 9 - Fog - BsCloudFog
     case 10:
-      return <BsLightRain width={width} height={height} x={x} y={y} /> // 10 - Light rain
+      return <BsLightRain width={width} height={height} x={x} y={y} viewBox={viewBox} /> // 10 - Light rain
     case 11:
-      return <BsCloudRainHeavy width={width} height={height} x={x} y={y} /> // 11 - Rain - BsCloudRainHeavy
+      return <BsCloudRainHeavy width={width} height={height} x={x} y={y} viewBox={viewBox} /> // 11 - Rain - BsCloudRainHeavy
     case 12:
-      return <BsLightRain width={width} height={height} x={x} y={y} /> // 12 - Possible rain
+      return <BsLightRain width={width} height={height} x={x} y={y} viewBox={viewBox} /> // 12 - Possible rain
     case 13:
-      return <BsLightRain width={width} height={height} x={x} y={y} /> // 13 - Rain shower
+      return <BsLightRain width={width} height={height} x={x} y={y} viewBox={viewBox} /> // 13 - Rain shower
     case 14:
-      return <BsCloudLightningRain width={width} height={height} x={x} y={y} /> // 14 - Thunderstorm - BsCloudLightningRain
+      return <BsCloudLightningRain width={width} height={height} x={x} y={y} viewBox={viewBox} /> // 14 - Thunderstorm - BsCloudLightningRain
     case 15:
-      return <BsCloudLightningRain width={width} height={height} x={x} y={y} /> // 15 - Local thunderstorms - BsCloudLightningRain
+      return <BsCloudLightningRain width={width} height={height} x={x} y={y} viewBox={viewBox} /> // 15 - Local thunderstorms - BsCloudLightningRain
     case 16:
-      return <BsCloudSnow width={width} height={height} x={x} y={y} /> // 16 - Light snow - BsCloudSnow
+      return <BsCloudSnow width={width} height={height} x={x} y={y} viewBox={viewBox} /> // 16 - Light snow - BsCloudSnow
     case 17:
-      return <BsCloudSnow width={width} height={height} x={x} y={y} /> // 17 - Snow - BsCloudSnow
+      return <BsCloudSnow width={width} height={height} x={x} y={y} viewBox={viewBox} /> // 17 - Snow - BsCloudSnow
     case 18:
-      return <BsCloudSnow width={width} height={height} x={x} y={y} /> // 18 - Possible snow - BsCloudSnow ?
+      return <BsCloudSnow width={width} height={height} x={x} y={y} viewBox={viewBox} /> // 18 - Possible snow - BsCloudSnow ?
     case 19:
-      return <BsCloudSnow width={width} height={height} x={x} y={y} /> // 19 - Snow shower - BsCloudSnow ?
+      return <BsCloudSnow width={width} height={height} x={x} y={y} viewBox={viewBox} /> // 19 - Snow shower - BsCloudSnow ?
     case 20:
-      return <BsSleet width={width} height={height} x={x} y={y} /> // 20 - Rain and snow
+      return <BsSleet width={width} height={height} x={x} y={y} viewBox={viewBox} /> // 20 - Rain and snow
     case 21:
-      return <BsSleet width={width} height={height} x={x} y={y} /> // 21 - Possible rain and snow
+      return <BsSleet width={width} height={height} x={x} y={y} viewBox={viewBox} /> // 21 - Possible rain and snow
     case 22:
-      return <BsSleet width={width} height={height} x={x} y={y} /> // 22 - Rain and snow
+      return <BsSleet width={width} height={height} x={x} y={y} viewBox={viewBox} /> // 22 - Rain and snow
     case 23:
-      return <BsSleet width={width} height={height} x={x} y={y} /> // 23 - Freezing rain
+      return <BsSleet width={width} height={height} x={x} y={y} viewBox={viewBox} /> // 23 - Freezing rain
     case 24:
-      return <BsSleet width={width} height={height} x={x} y={y} /> // 24 - Possible freezing rain
+      return <BsSleet width={width} height={height} x={x} y={y} viewBox={viewBox} /> // 24 - Possible freezing rain
     case 25:
-      return <BsCloudHail width={width} height={height} x={x} y={y} /> // Hail - BsCloudHail
+      return <BsCloudHail width={width} height={height} x={x} y={y} viewBox={viewBox} /> // Hail - BsCloudHail
     case 26:
-      return <BsMoon width={width} height={height} x={x} y={y} /> // 26 - Clear (night) - BsMoon
+      return <BsMoon width={width} height={height} x={x} y={y} viewBox={viewBox} /> // 26 - Clear (night) - BsMoon
     case 27:
-      return <BsCloudMoon width={width} height={height} x={x} y={y} /> // 27 - Mostly clear (night)
+      return <BsCloudMoon width={width} height={height} x={x} y={y} viewBox={viewBox} /> // 27 - Mostly clear (night)
     case 28:
-      return <BsCloudMoon width={width} height={height} x={x} y={y} /> // 28 - Partly clear (night)
+      return <BsCloudMoon width={width} height={height} x={x} y={y} viewBox={viewBox} /> // 28 - Partly clear (night)
     case 29:
-      return <BsMoon width={width} height={height} x={x} y={y} /> // 29 - Mostly cloudy (night)
+      return <BsMoon width={width} height={height} x={x} y={y} viewBox={viewBox} /> // 29 - Mostly cloudy (night)
     case 30:
-      return <BsCloudy width={width} height={height} x={x} y={y} /> // 30 - Cloudy (night) - BsCloudy
+      return <BsCloudy width={width} height={height} x={x} y={y} viewBox={viewBox} /> // 30 - Cloudy (night) - BsCloudy
     case 31:
-      return <BsCloudy width={width} height={height} x={x} y={y} /> // 31 - Overcast with low clouds (night) -
+      return <BsCloudy width={width} height={height} x={x} y={y} viewBox={viewBox} /> // 31 - Overcast with low clouds (night) -
     case 32:
-      return <BsLightRain width={width} height={height} x={x} y={y} /> // 32 - Rain shower (night)
+      return <BsLightRain width={width} height={height} x={x} y={y} viewBox={viewBox} /> // 32 - Rain shower (night)
     case 33:
-      return <BsCloudLightningRain width={width} height={height} x={x} y={y} /> // 33 - Local thunderstorms (night)
+      return <BsCloudLightningRain width={width} height={height} x={x} y={y} viewBox={viewBox} /> // 33 - Local thunderstorms (night)
     case 34:
-      return <BsSleet width={width} height={height} x={x} y={y} /> // 34 - Snow shower (night)
+      return <BsSleet width={width} height={height} x={x} y={y} viewBox={viewBox} /> // 34 - Snow shower (night)
     case 35:
-      return <BsSleet width={width} height={height} x={x} y={y} /> // 35 - Rain and snow (night)
+      return <BsSleet width={width} height={height} x={x} y={y} viewBox={viewBox} /> // 35 - Rain and snow (night)
     case 36:
-      return <BsSleet width={width} height={height} x={x} y={y} /> // 36 - Possible freezing rain (night)
+      return <BsSleet width={width} height={height} x={x} y={y} viewBox={viewBox} /> // 36 - Possible freezing rain (night)
     case 'location':
-      return <Location width={width} height={height} x={x} y={y} />
+      return <Location width={width} height={height} x={x} y={y} viewBox={viewBox} />
     case 'delete':
-      return <Delete width={width} height={height} x={x} y={y} />
+      return <Delete width={width} height={height} x={x} y={y} viewBox={viewBox} />
     case 'settings':
-      return <Settings width={width} height={height} x={x} y={y} />
+      return <Settings width={width} height={height} x={x} y={y} viewBox={viewBox} />
     case 'add':
-      return <IoAddCircleOutline width={width} height={height} x={x} y={y} />
+      return <IoAddCircleOutline width={width} height={height} x={x} y={y} viewBox={viewBox} />
     case 'plus':
-      return <BiPlus width={width} height={height} x={x} y={y} />
+      return <BiPlus width={width} height={height} x={x} y={y} viewBox={viewBox} />
     case 'close':
-      return <BiX width={width} height={height} x={x} y={y} />
+      return <BiX width={width} height={height} x={x} y={y} viewBox={viewBox} />
     case 'max':
-      return <BsArrowUp width={width} height={height} x={x} y={y} />
+      return <BsArrowUp width={width} height={height} x={x} y={y} viewBox={viewBox} />
     case 'min':
-      return <BsArrowDown width={width} height={height} x={x} y={y} />
+      return <BsArrowDown width={width} height={height} x={x} y={y} viewBox={viewBox}/>
     case 'sunset':
-      return <BsSunset width={width} height={height} x={x} y={y} />
+      return <BsSunset width={width} height={height} x={x} y={y} viewBox={viewBox} />
     case 'sunrise':
-      return <BsSunrise width={width} height={height} x={x} y={y} />
+      return <BsSunrise width={width} height={height} x={x} y={y} viewBox={viewBox} />
     default:
       return null
   }
