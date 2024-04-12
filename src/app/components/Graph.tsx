@@ -51,7 +51,7 @@ const Graph = () => {
     <div
       onScroll={handleAnimation}
       ref={containerRef}
-      className="bg-grey-700 relative flex h-full flex-col justify-end overflow-x-scroll"
+      className="relative justify-end overflow-x-scroll"
     >
       <svg
         className="absolute bottom-0 left-0 z-0"

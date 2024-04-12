@@ -1,6 +1,6 @@
 import { useLocation } from '@/hooks/useLocation'
 import { useWeatherData } from '@/hooks/useWeatherData'
-import { GraphData, WeatherData, TemperatureData } from '@/types'
+import { GraphData, WeatherData, TemperatureData, DailyWeather } from '@/types'
 import React, {
   RefObject,
   createContext,
@@ -42,7 +42,7 @@ interface GlobalContextValue {
     height: number
     popHeight: number
   }
-
+  currentDay: DailyWeather | undefined
   handleAnimation: () => void
 }
 
@@ -65,6 +65,8 @@ export const GlobalContextProvider = ({
   children: React.ReactNode
 }) => {
   const [graphData, setGraphData] = useState<GraphData>()
+  const [currentDay, setCurrentDay] = useState<DailyWeather | undefined>()
+
   const location = useLocation()
   const {
     data: weatherData,
@@ -128,15 +130,33 @@ export const GlobalContextProvider = ({
     groupRef.current.setAttribute('transform', `translate(${x + 6}, ${y - 40})`)
     const { scaleX, scaleY, formattedSevenDayHourly, dayBreaks } = graphData
     const timestamp = scaleX.invert(x)
+    /**
+     * This timestamp is rounded to the nearest hour.
+     * Useful for fiding the closest data point in the hourly data.
+     */
     const roundedTimestamp = formatISO(roundToNearestHours(timestamp)).slice(
       0,
       -6,
     )
+    /**
+     * This timestamp is floored to the nearest hour.
+     * Useful for finding the current day's data.
+     * If we use the rounded timestamp, we might get the next day's data.
+     */
+    const flooredTimestamp = formatISO(
+      roundToNearestHours(timestamp, { roundingMethod: 'floor' }),
+    ).slice(0, -6)
     const activeDay = formattedSevenDayHourly.find((day) =>
       day.get(roundedTimestamp),
     )
     const currentData = activeDay?.get(roundedTimestamp)
 
+    const currentDay = weatherData.daily.find(({ day }) =>
+      isSameDay(day, flooredTimestamp),
+    )
+    if (currentDay) {
+      setCurrentDay(currentDay)
+    }
     const temperature = scaleY.invert(y)
     const feelsLikeTemperature = activeDay?.get(roundedTimestamp)?.feels_like
     const { timezone } = weatherData
@@ -208,6 +228,7 @@ export const GlobalContextProvider = ({
     weatherData,
     error,
     isLoading,
+    currentDay,
   }
 
   return (
