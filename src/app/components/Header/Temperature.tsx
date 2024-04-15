@@ -6,7 +6,7 @@ import { roboto } from '@/app/fonts'
 
 const Temperature = () => {
   const [isFeelsLikeTemperature, setIsFeelsLikeTemperature] = useState(false)
-  const { temperatureData, graphData } = useGlobalContext()
+  const { temperatureData } = useGlobalContext()
   const {
     temperature,
     feelsLikeTemperature,
@@ -15,7 +15,6 @@ const Temperature = () => {
     currentDayFeelsLikeMaxTemp,
     currentDayFeelsLikeMinTemp,
   } = temperatureData
-  if (!graphData) return null
 
   const formattedTemperature = (temperature: number | undefined) => {
     if (temperature !== undefined) {
