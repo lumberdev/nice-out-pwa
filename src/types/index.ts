@@ -197,4 +197,16 @@ export type TemperatureData = {
   currentDayFeelsLikeMinTemp?: number
 }
 
+export type WeatherInfo = {
+  wind: number
+  precipitation: number
+  humidity: number
+  feelsLike: number
+  cloudCover: number
+  pressure: number
+  dew: number
+  uvIndex: number
+  precipitationChance: number
+}
+
 export type GraphData = ReturnType<typeof generateGraphData>

@@ -1,6 +1,12 @@
 import { useLocation } from '@/hooks/useLocation'
 import { useWeatherData } from '@/hooks/useWeatherData'
-import { GraphData, WeatherData, TemperatureData, DailyWeather } from '@/types'
+import {
+  GraphData,
+  WeatherData,
+  TemperatureData,
+  DailyWeather,
+  WeatherInfo,
+} from '@/types'
 import React, {
   RefObject,
   createContext,
@@ -37,6 +43,7 @@ interface GlobalContextValue {
   }
   isItDay: boolean
   temperatureData: TemperatureData
+  weatherInfo: WeatherInfo
   graphSize: {
     width: number
     height: number
@@ -101,6 +108,19 @@ export const GlobalContextProvider = ({
     currentDayFeelsLikeMaxTemp: 0,
     currentDayFeelsLikeMinTemp: 0,
   })
+
+  const [weatherInfo, setWeatherInfo] =
+    useState<WeatherInfo>({
+      wind: 0,
+      precipitation: 0,
+      humidity: 0,
+      feelsLike: 0,
+      cloudCover: 0,
+      pressure: 0,
+      dew: 0,
+      uvIndex: 0,
+      precipitationChance: 0,
+    })
 
   const [graphSize, setGraphSize] = useState({
     width: 0,
@@ -194,6 +214,18 @@ export const GlobalContextProvider = ({
       currentDayFeelsLikeMaxTemp,
       currentDayFeelsLikeMinTemp,
     })
+
+    setWeatherInfo({
+      wind: currentData?.wind.speed ?? 0,
+      precipitation: currentData?.precipitation.total ?? 0,
+      humidity: currentData?.humidity ?? 0,
+      feelsLike: currentData?.feels_like ?? 0,
+      cloudCover: currentData?.cloud_cover.total ?? 0,
+      pressure: currentData?.pressure ?? 0,
+      dew: currentData?.dew_point ?? 0,
+      uvIndex: currentData?.uv_index ?? 0,
+      precipitationChance: currentData?.probability.precipitation ?? 0,
+    })
   }, [graphData, hasD, weatherData])
 
   useEffect(() => {
@@ -222,6 +254,7 @@ export const GlobalContextProvider = ({
     timestamp,
     isItDay,
     temperatureData,
+    weatherInfo,
     graphSize,
     handleAnimation,
     graphData,

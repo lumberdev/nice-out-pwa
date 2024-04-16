@@ -3,10 +3,11 @@ import { useGlobalContext } from '@/lib/GlobalContext'
 import WeatherIcon from '../Icon'
 import clsx from 'clsx'
 import { roboto } from '@/app/fonts'
+import ChipButton from '@/app/components/common/ChipButton'
 
 const Temperature = () => {
   const [isFeelsLikeTemperature, setIsFeelsLikeTemperature] = useState(false)
-  const { temperatureData, graphData } = useGlobalContext()
+  const { temperatureData } = useGlobalContext()
   const {
     temperature,
     feelsLikeTemperature,
@@ -15,7 +16,6 @@ const Temperature = () => {
     currentDayFeelsLikeMaxTemp,
     currentDayFeelsLikeMinTemp,
   } = temperatureData
-  if (!graphData) return null
 
   const formattedTemperature = (temperature: number | undefined) => {
     if (temperature !== undefined) {
@@ -28,14 +28,16 @@ const Temperature = () => {
     setIsFeelsLikeTemperature((prev) => !prev)
   }
   return (
-    <div className="flex min-w-[15rem] flex-col items-center text-white ">
-      <div className={clsx(roboto.className, 'flex gap-1 font-thin')}>
-        <div className="text-[8rem] leading-none">
+    <div className="min-w-40 flex flex-col items-center text-white md:min-w-60 ">
+      <div className={clsx(roboto.className, 'flex gap-0 font-thin md:gap-1')}>
+        <div className="text-[7.5rem] leading-none md:text-9xl">
           {isFeelsLikeTemperature
             ? formattedTemperature(feelsLikeTemperature)
             : formattedTemperature(temperature)}
         </div>
-        <div className="relative top-2 text-[4rem] leading-none">°</div>
+        <div className="relative top-2 text-5xl leading-none md:text-6xl">
+          °
+        </div>
       </div>
       <div className="flex justify-between gap-3">
         <div className="flex items-center gap-1">
@@ -48,7 +50,7 @@ const Temperature = () => {
               height={'1rem'}
               viewBox="0 0 24 24"
             />
-            <div className="text-[1.25rem] font-medium">
+            <div className="text-sm font-medium md:text-xl">
               {isFeelsLikeTemperature
                 ? formattedTemperature(currentDayFeelsLikeMaxTemp)
                 : formattedTemperature(currentDayMaxTemp)}
@@ -63,19 +65,16 @@ const Temperature = () => {
               height={'1rem'}
               viewBox="0 0 24 24"
             />
-            <div className="text-[1.25rem] font-medium">
+            <div className="text-sm font-medium md:text-xl">
               {isFeelsLikeTemperature
                 ? formattedTemperature(currentDayFeelsLikeMinTemp)
                 : formattedTemperature(currentDayMinTemp)}
             </div>
           </div>
         </div>
-        <button
-          onClick={handleTemperatureTypeChange}
-          className="flex cursor-pointer items-center justify-center rounded-full bg-white/30 px-3 leading-none transition-colors hover:bg-white/20"
-        >
+        <ChipButton onClick={handleTemperatureTypeChange}>
           {isFeelsLikeTemperature ? 'Feels Like' : 'Temperature'}
-        </button>
+        </ChipButton>
       </div>
     </div>
   )
