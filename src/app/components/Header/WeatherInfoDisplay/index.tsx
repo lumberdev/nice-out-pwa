@@ -1,10 +1,31 @@
-import React from 'react'
+import React, { useState } from 'react'
 import WeatherInfoSummary from './WeatherInfoSummary'
+import { useGlobalContext } from '@/lib/GlobalContext'
+import 'react-circular-progressbar/dist/styles.css'
+import CircularProgressInfoDisplay from './CircularProgressInfoDisplay'
 
 const WeatherInfoDisplay = () => {
+  const {
+    weatherInfo: { humidity, precipitationChance },
+  } = useGlobalContext()
+  const [displayIndex, setDisplayIndex] = useState(0)
+
+  const components = [
+    <CircularProgressInfoDisplay value={precipitationChance} label="Precip" />,
+    <CircularProgressInfoDisplay value={humidity} label="Humidity" />,
+    <WeatherInfoSummary />,
+  ]
+
+  const toggleDisplay = () => {
+    setDisplayIndex((prevIndex) => (prevIndex + 1) % components.length)
+  }
+
   return (
-    <div className="cursor-pointer">
-      <WeatherInfoSummary />
+    <div
+      className="flex min-h-[11rem] min-w-[10rem] cursor-pointer items-center"
+      onClick={toggleDisplay}
+    >
+      {components[displayIndex]}
     </div>
   )
 }

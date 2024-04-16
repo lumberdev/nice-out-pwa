@@ -3,6 +3,7 @@ import { useGlobalContext } from '@/lib/GlobalContext'
 import WeatherIcon from '../Icon'
 import clsx from 'clsx'
 import { roboto } from '@/app/fonts'
+import ChipButton from '@/app/components/common/ChipButton'
 
 const Temperature = () => {
   const [isFeelsLikeTemperature, setIsFeelsLikeTemperature] = useState(false)
@@ -69,12 +70,9 @@ const Temperature = () => {
             </div>
           </div>
         </div>
-        <button
-          onClick={handleTemperatureTypeChange}
-          className="flex cursor-pointer items-center justify-center rounded-full bg-white/30 px-3 leading-none transition-colors hover:bg-white/20"
-        >
+        <ChipButton onClick={handleTemperatureTypeChange}>
           {isFeelsLikeTemperature ? 'Feels Like' : 'Temperature'}
-        </button>
+        </ChipButton>
       </div>
     </div>
   )

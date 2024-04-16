@@ -214,7 +214,7 @@ export const GlobalContextProvider = ({
       currentDayFeelsLikeMaxTemp,
       currentDayFeelsLikeMinTemp,
     })
-    console.log(currentData)
+
     setWeatherInfo({
       wind: currentData?.wind.speed ?? 0,
       precipitation: currentData?.precipitation.total ?? 0,
