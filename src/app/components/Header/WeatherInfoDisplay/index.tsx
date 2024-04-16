@@ -11,9 +11,17 @@ const WeatherInfoDisplay = () => {
   const [displayIndex, setDisplayIndex] = useState(0)
 
   const components = [
-    <CircularProgressInfoDisplay value={precipitationChance} label="Precip" />,
-    <CircularProgressInfoDisplay value={humidity} label="Humidity" />,
-    <WeatherInfoSummary />,
+    <CircularProgressInfoDisplay
+      key="precip"
+      value={precipitationChance}
+      label="Precip"
+    />,
+    <CircularProgressInfoDisplay
+      key="humidity"
+      value={humidity}
+      label="Humidity"
+    />,
+    <WeatherInfoSummary key="summary" />,
   ]
 
   const toggleDisplay = () => {
