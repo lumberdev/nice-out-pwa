@@ -22,7 +22,7 @@ const WeatherInfoDisplay = () => {
 
   return (
     <div
-      className="flex min-h-[11rem] min-w-[10rem] cursor-pointer items-center"
+      className="relative top-1 flex min-h-[11rem] min-w-[10rem] cursor-pointer items-center justify-end md:justify-center"
       onClick={toggleDisplay}
     >
       {components[displayIndex]}

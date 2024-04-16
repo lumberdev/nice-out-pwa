@@ -28,14 +28,16 @@ const Temperature = () => {
     setIsFeelsLikeTemperature((prev) => !prev)
   }
   return (
-    <div className="flex min-w-[15rem] flex-col items-center text-white ">
-      <div className={clsx(roboto.className, 'flex gap-1 font-thin')}>
-        <div className="text-[8rem] leading-none">
+    <div className="mid-w-[10rem] flex flex-col items-center text-white md:min-w-[15rem] ">
+      <div className={clsx(roboto.className, 'flex gap-0 font-thin md:gap-1')}>
+        <div className="text-[7.5rem] leading-none md:text-[8rem]">
           {isFeelsLikeTemperature
             ? formattedTemperature(feelsLikeTemperature)
             : formattedTemperature(temperature)}
         </div>
-        <div className="relative top-2 text-[4rem] leading-none">°</div>
+        <div className="relative top-2 text-[3rem] leading-none md:text-[4rem]">
+          °
+        </div>
       </div>
       <div className="flex justify-between gap-3">
         <div className="flex items-center gap-1">
@@ -48,7 +50,7 @@ const Temperature = () => {
               height={'1rem'}
               viewBox="0 0 24 24"
             />
-            <div className="text-[1.25rem] font-medium">
+            <div className="text-sm font-medium md:text-[1.25rem]">
               {isFeelsLikeTemperature
                 ? formattedTemperature(currentDayFeelsLikeMaxTemp)
                 : formattedTemperature(currentDayMaxTemp)}
@@ -63,7 +65,7 @@ const Temperature = () => {
               height={'1rem'}
               viewBox="0 0 24 24"
             />
-            <div className="text-[1.25rem] font-medium">
+            <div className="text-sm font-medium md:text-[1.25rem]">
               {isFeelsLikeTemperature
                 ? formattedTemperature(currentDayFeelsLikeMinTemp)
                 : formattedTemperature(currentDayMinTemp)}

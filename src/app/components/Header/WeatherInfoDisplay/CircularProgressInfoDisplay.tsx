@@ -12,11 +12,11 @@ const CircularProgressInfoDisplay: React.FC<
 > = ({ value, label }) => {
   return (
     <div className="flex flex-col items-center gap-4">
-      <div className="h-[7.5rem] w-[7.5rem]">
+      <div className="h-[6rem] w-[6rem] md:h-[7.5rem] md:w-[7.5rem]">
         <CircularProgressbar
           value={value}
           text={`${value}%`}
-          strokeWidth={8}
+          strokeWidth={7}
           styles={buildStyles({
             strokeLinecap: 'butt',
             rotation: 0.25,

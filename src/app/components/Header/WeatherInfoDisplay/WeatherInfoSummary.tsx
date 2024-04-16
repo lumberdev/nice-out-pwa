@@ -56,7 +56,7 @@ const WeatherInfoSummary = () => {
     },
   ]
   return (
-    <div className="relative left-3">
+    <div className="relative left-1 md:left-3">
       {weatherInfos.map((info, index) => {
         return (
           <div key={index} className="flex items-center gap-2">
