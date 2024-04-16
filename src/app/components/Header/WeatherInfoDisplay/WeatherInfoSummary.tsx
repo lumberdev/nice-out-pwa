@@ -60,10 +60,10 @@ const WeatherInfoSummary = () => {
       {weatherInfos.map((info, index) => {
         return (
           <div key={index} className="flex items-center gap-2">
-            <div className="text-sm text-white">{info.title}: </div>
-            <div className="text-sm font-medium text-white">
+            <div className="text-xs md:text-sm text-white">{info.title}: </div>
+            <div className="text-xs md:text-sm font-medium text-white">
               {info.value}
-              <span className="text-sm">{info.unit}</span>
+              <span className="text-xs md:text-sm">{info.unit}</span>
             </div>
           </div>
         )

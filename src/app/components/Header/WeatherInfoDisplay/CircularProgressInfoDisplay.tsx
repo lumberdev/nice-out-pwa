@@ -12,7 +12,7 @@ const CircularProgressInfoDisplay: React.FC<
 > = ({ value, label }) => {
   return (
     <div className="flex flex-col items-center gap-4">
-      <div className="h-[6rem] w-[6rem] md:h-[7.5rem] md:w-[7.5rem]">
+      <div className="h-24 w-24 md:h-28 md:w-28">
         <CircularProgressbar
           value={value}
           text={`${value}%`}
