@@ -11,11 +11,15 @@ import { HourlyWeather, WeatherData } from '@/types'
 
 // Screen Dimentions for Graph sizing & position
 
-export const generateGraphData = (weatherData: WeatherData) => {
-  const SCREEN_HEIGHT = document.body.clientHeight
-  const SCREEN_WIDTH = document.body.clientWidth
+export const generateGraphData = (
+  weatherData: WeatherData,
+  screenHeight?: number,
+  screenWidth?: number,
+) => {
+  const SCREEN_HEIGHT = screenHeight ?? document.body.clientHeight
+  const SCREEN_WIDTH = screenWidth ?? document.body.clientWidth
   const margins = {
-    top: 150,
+    top: 50,
     right: SCREEN_WIDTH / 2,
     bottom: 50,
     left: SCREEN_WIDTH / 2,

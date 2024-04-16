@@ -229,11 +229,25 @@ export const GlobalContextProvider = ({
   }, [graphData, hasD, weatherData])
 
   useEffect(() => {
-    if (weatherData && isFetched) {
-      const graphData = generateGraphData(weatherData)
-      setGraphData(graphData)
+    if (!weatherData) return
+    const graphData = generateGraphData(weatherData)
+    setGraphData(graphData)
+    const handleResize = () => {
+      const newGraphData = generateGraphData(
+        weatherData,
+        window.innerHeight,
+        window.innerWidth,
+      )
+      setGraphData(newGraphData)
+      setGraphSize({
+        width: newGraphData.GRAPH_WIDTH,
+        height: newGraphData.GRAPH_HEIGHT,
+        popHeight: newGraphData.GRAPH_POP_HEIGHT,
+      })
     }
-  }, [weatherData, isFetched])
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [weatherData])
 
   useEffect(() => {
     if (!graphData) return
