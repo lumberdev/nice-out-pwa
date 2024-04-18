@@ -156,7 +156,7 @@ export const generateGraphData = (
       const sunrise = toZonedTime(day.astro.sun.rise, timeZone).getTime()
       const sunset = toZonedTime(day.astro.sun.set, timeZone).getTime()
       const sunriseTime = format(sunrise, 'hh:mm a')
-      const sunsetTime = format(sunrise, 'hh:mm a')
+      const sunsetTime = format(sunset, 'hh:mm a')
       const sunriseX = scaleX(sunrise)
       const sunriseY = scaleY(
         formattedValues[array.bisectCenter(timestamps, sunrise)][0],
