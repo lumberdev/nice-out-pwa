@@ -167,7 +167,11 @@ export const generateGraphData = (
       )
 
       const currentDay = startOfDay(toZonedTime(day.day, timeZone)).getTime()
-      const noonValue = Math.max(scaleX(addHours(currentDay, 12).getTime()), 0)
+      const noon = addHours(currentDay, 12).getTime()
+      const noonValue = {
+        x: Math.max(scaleX(noon), 0),
+        y: scaleY(formattedValues[array.bisectCenter(timestamps, noon)][0]),
+      }
       const xValue = scaleX(currentDay)
       const yValue = scaleY(
         formattedValues[array.bisectCenter(timestamps, currentDay)][0],

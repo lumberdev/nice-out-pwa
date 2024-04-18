@@ -23,7 +23,7 @@ import {
   isSameDay,
   isWithinInterval,
 } from 'date-fns'
-import { formatInTimeZone } from 'date-fns-tz'
+import { formatInTimeZone, toZonedTime } from 'date-fns-tz'
 
 interface GlobalContextValue {
   weatherData: WeatherData | undefined
@@ -138,6 +138,8 @@ export const GlobalContextProvider = ({
     ) {
       return
     }
+    const { timezone } = weatherData
+
     const scrollX = containerRef.current?.scrollLeft ?? 0
     const { width: lineWidth } = lineRef.current.getBoundingClientRect()
     const progress = Math.min(Math.max(scrollX / lineWidth, 0), 1)
@@ -147,6 +149,7 @@ export const GlobalContextProvider = ({
     circleRef.current.setAttribute('cx', x.toString())
     circleRef.current.setAttribute('cy', y.toString())
     groupRef.current.setAttribute('transform', `translate(${x + 6}, ${y - 40})`)
+
     const { scaleX, scaleY, formattedSevenDayHourly, dayBreaks } = graphData
     const timestamp = scaleX.invert(x)
     /**
@@ -171,14 +174,16 @@ export const GlobalContextProvider = ({
     const currentData = activeDay?.get(roundedTimestamp)
 
     const currentDay = weatherData.daily.find(({ day }) =>
-      isSameDay(day, flooredTimestamp),
+      isSameDay(
+        toZonedTime(day, timezone),
+        toZonedTime(flooredTimestamp, timezone),
+      ),
     )
     if (currentDay) {
       setCurrentDay(currentDay)
     }
     const temperature = scaleY.invert(y)
     const feelsLikeTemperature = activeDay?.get(roundedTimestamp)?.feels_like
-    const { timezone } = weatherData
 
     const currentDayBreaks = dayBreaks.find(({ currentDay }) =>
       isSameDay(currentDay, roundedTimestamp),
