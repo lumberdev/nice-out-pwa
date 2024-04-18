@@ -23,7 +23,7 @@ import {
   isSameDay,
   isWithinInterval,
 } from 'date-fns'
-import moment from 'moment'
+import { formatInTimeZone } from 'date-fns-tz'
 
 interface GlobalContextValue {
   weatherData: WeatherData | undefined
@@ -109,18 +109,17 @@ export const GlobalContextProvider = ({
     currentDayFeelsLikeMinTemp: 0,
   })
 
-  const [weatherInfo, setWeatherInfo] =
-    useState<WeatherInfo>({
-      wind: 0,
-      precipitation: 0,
-      humidity: 0,
-      feelsLike: 0,
-      cloudCover: 0,
-      pressure: 0,
-      dew: 0,
-      uvIndex: 0,
-      precipitationChance: 0,
-    })
+  const [weatherInfo, setWeatherInfo] = useState<WeatherInfo>({
+    wind: 0,
+    precipitation: 0,
+    humidity: 0,
+    feelsLike: 0,
+    cloudCover: 0,
+    pressure: 0,
+    dew: 0,
+    uvIndex: 0,
+    precipitationChance: 0,
+  })
 
   const [graphSize, setGraphSize] = useState({
     width: 0,
@@ -201,8 +200,8 @@ export const GlobalContextProvider = ({
       currentDayFeelsLikeMinTemp = currentDayBreaks.dayFeelsLikeMinTemp
     }
     setTimestamp({
-      time: moment(timestamp).tz(timezone).format('hh:mm'),
-      meridiem: moment(timestamp).tz(timezone).format('A'),
+      time: formatInTimeZone(timestamp, timezone, 'hh:mm'),
+      meridiem: formatInTimeZone(timestamp, timezone, 'a'),
       summary: currentData?.summary ?? '',
       icon: currentData?.icon ?? 0,
     })
