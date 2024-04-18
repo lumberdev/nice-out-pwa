@@ -3,11 +3,9 @@
 import { scaleLinear, scaleTime } from 'd3-scale'
 import * as shape from 'd3-shape'
 import * as array from 'd3-array'
-import 'moment'
-import 'moment/min/locales'
-import moment from 'moment-timezone'
-import { getHourValue } from './get-hour-value'
 import { HourlyWeather, WeatherData } from '@/types'
+import { format, toZonedTime } from 'date-fns-tz'
+import { startOfDay, addHours, getHours } from 'date-fns'
 
 // Screen Dimentions for Graph sizing & position
 
@@ -30,10 +28,12 @@ export const generateGraphData = (
   const hourlyWeather = weatherData.hourly
 
   // Removing extradata from graph to stop it after 11:59PM of last day
-  const lastDayTime = moment.tz(dailyWeather[7].day, timeZone).valueOf()
-  const lastTimeInData = moment
-    .tz(hourlyWeather.at(-1)?.date, timeZone)
-    .valueOf()
+  const lastDayTime = toZonedTime(dailyWeather[7].day, timeZone).getTime()
+  const lastTimeInData = toZonedTime(
+    hourlyWeather.at(-1)?.date ?? '',
+    timeZone,
+  ).getTime()
+
   const extraHours = (lastTimeInData - lastDayTime) / 3600000 // converting extratime difference into hours
   const sevenDayHourly =
     extraHours > 0 ? hourlyWeather.slice(0, -1 * extraHours) : hourlyWeather
@@ -42,7 +42,7 @@ export const generateGraphData = (
     (reading: { temperature: number; date: string | number | Date }) =>
       [
         reading.temperature,
-        Math.floor(moment.tz(reading.date, timeZone).valueOf()),
+        Math.floor(toZonedTime(reading.date, timeZone).getTime()),
       ] as [number, number],
   )
   const formattedPopValues = sevenDayHourly.map(
@@ -52,7 +52,7 @@ export const generateGraphData = (
     }) =>
       [
         reading.probability.precipitation,
-        Math.floor(moment.tz(reading.date, timeZone).valueOf()),
+        Math.floor(toZonedTime(reading.date, timeZone).getTime()),
       ] as [number, number],
   )
 
@@ -153,30 +153,25 @@ export const generateGraphData = (
   const dayBreaks = dailyWeather
     .filter((_, index) => index < 7)
     .map((day, i) => {
-      // In case API returns null. Use a fixed sunset and sunrise time
-      const sunrise = day.astro.sun.rise
-        ? moment.tz(day.astro.sun.rise, timeZone)
-        : getHourValue('7:00 AM', i, timeZone)
-      const sunset = day.astro.sun.rise
-        ? moment.tz(day.astro.sun.set, timeZone)
-        : getHourValue('6:00 PM', i, timeZone)
-
-      const sunriseTime = sunrise.format('hh:mm A')
-      const sunsetTime = sunset.format('hh:mm A')
-      const sunriseX = scaleX(sunrise.valueOf())
+      const sunrise = toZonedTime(day.astro.sun.rise, timeZone).getTime()
+      const sunset = toZonedTime(day.astro.sun.set, timeZone).getTime()
+      const sunriseTime = format(sunrise, 'hh:mm a')
+      const sunsetTime = format(sunset, 'hh:mm a')
+      const sunriseX = scaleX(sunrise)
       const sunriseY = scaleY(
-        formattedValues[array.bisectCenter(timestamps, sunrise.valueOf())][0],
+        formattedValues[array.bisectCenter(timestamps, sunrise)][0],
       )
-      const sunsetX = scaleX(sunset.valueOf())
+      const sunsetX = scaleX(sunset)
       const sunsetY = scaleY(
-        formattedValues[array.bisectCenter(timestamps, sunset.valueOf())][0],
+        formattedValues[array.bisectCenter(timestamps, sunset)][0],
       )
 
-      const currentDay = moment.tz(day.day, timeZone).startOf('day').valueOf()
-      const noonValue = Math.max(
-        scaleX(moment.tz(day.day, timeZone).startOf('day').hour(12).valueOf()),
-        0,
-      )
+      const currentDay = startOfDay(toZonedTime(day.day, timeZone)).getTime()
+      const noon = addHours(currentDay, 12).getTime()
+      const noonValue = {
+        x: Math.max(scaleX(noon), 0),
+        y: scaleY(formattedValues[array.bisectCenter(timestamps, noon)][0]),
+      }
       const xValue = scaleX(currentDay)
       const yValue = scaleY(
         formattedValues[array.bisectCenter(timestamps, currentDay)][0],
@@ -190,13 +185,13 @@ export const generateGraphData = (
           x: sunriseX,
           y: sunriseY,
           time: sunriseTime,
-          fullSunriseTime: sunrise.valueOf(),
+          fullSunriseTime: sunrise,
         },
         sunset: {
           x: sunsetX,
           y: sunsetY,
           time: sunsetTime,
-          fullSunsetTime: sunset.valueOf(),
+          fullSunsetTime: sunset,
         },
       }
       return {
@@ -220,7 +215,8 @@ export const generateGraphData = (
       index: number,
     ) => {
       const firstDayHours =
-        24 - moment.tz(sevenDayHourly[0].date, timeZone).hours()
+        24 - getHours(toZonedTime(sevenDayHourly[0].date, timeZone))
+
       const perArray = index >= firstDayHours ? 24 : firstDayHours
       const startindex = index >= firstDayHours ? index + 24 - firstDayHours : 0
       const insertIndex = Math.floor(startindex / perArray)
@@ -239,7 +235,7 @@ export const generateGraphData = (
     maxPops,
     minTemp,
     maxTemp,
-    initialTime: scaleX(moment().tz(timeZone).valueOf()),
+    initialTime: scaleX(toZonedTime(new Date(), timeZone).getTime()),
     startTime,
     endTime,
     endXValue: scaleX(endTime),
