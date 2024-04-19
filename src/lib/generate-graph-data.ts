@@ -152,9 +152,15 @@ export const generateGraphData = (
   // Generating X and Y value for Sunset/Sunrise and each day
   const dayBreaks = dailyWeather
     .filter((_, index) => index < 7)
-    .map((day, i) => {
-      const sunrise = toZonedTime(day.astro.sun.rise, timeZone).getTime()
-      const sunset = toZonedTime(day.astro.sun.set, timeZone).getTime()
+    .map((day) => {
+      const sunrise = toZonedTime(
+        day.astro.sun.rise ?? new Date(day.day).setHours(6, 0, 0, 0),
+        timeZone,
+      ).getTime()
+      const sunset = toZonedTime(
+        day.astro.sun.set ?? new Date(day.day).setHours(18, 0, 0, 0),
+        timeZone,
+      ).getTime()
       const sunriseTime = format(sunrise, 'hh:mm a')
       const sunsetTime = format(sunset, 'hh:mm a')
       const sunriseX = scaleX(sunrise)
