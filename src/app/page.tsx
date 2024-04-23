@@ -2,7 +2,7 @@
 
 import { useGlobalContext } from '@/lib/GlobalContext'
 import Background from './components/Background'
-import Graph from './components/Graph'
+import Graph from './components/Graph/Graph'
 import Header from './components/Header'
 import Footer from './components/Footer'
 

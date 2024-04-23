@@ -35,6 +35,7 @@ interface GlobalContextValue {
   circleRef: RefObject<SVGCircleElement>
   groupRef: RefObject<SVGGElement>
   containerRef: RefObject<HTMLDivElement>
+  chartContainerRef: RefObject<HTMLDivElement>
   timestamp: {
     time: string
     meridiem: string
@@ -87,6 +88,7 @@ export const GlobalContextProvider = ({
   const circleRef = useRef<SVGCircleElement>(null)
   const groupRef = useRef<SVGGElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
+  const chartContainerRef = useRef<HTMLDivElement>(null)
   const [timestamp, setTimestamp] = useState<{
     time: string
     meridiem: string
@@ -134,7 +136,8 @@ export const GlobalContextProvider = ({
       !circleRef.current ||
       !graphData ||
       !weatherData ||
-      !groupRef.current
+      !groupRef.current ||
+      !chartContainerRef.current
     ) {
       return
     }
@@ -149,7 +152,8 @@ export const GlobalContextProvider = ({
     circleRef.current.setAttribute('cx', x.toString())
     circleRef.current.setAttribute('cy', y.toString())
     groupRef.current.setAttribute('transform', `translate(${x + 6}, ${y - 40})`)
-
+    console.log('scrolling')
+    // chartContainerRef.current.style.transform = `translate(-${progress * 100}%, 0)`
     const { scaleX, scaleY, formattedSevenDayHourly, dayBreaks } = graphData
     const timestamp = scaleX.invert(x)
     /**
@@ -269,6 +273,7 @@ export const GlobalContextProvider = ({
     circleRef,
     groupRef,
     containerRef,
+    chartContainerRef,
     timestamp,
     isItDay,
     temperatureData,
