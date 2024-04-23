@@ -7,7 +7,7 @@ const DayBreaks = ({ className }: { className?: string }) => {
   const { graphSize, graphData } = useGlobalContext()
   return (
     <svg
-      className={clsx('absolute bottom-0 left-0 z-0', className)}
+      className={clsx('absolute bottom-0 left-0 ', className)}
       width={graphSize.width}
       height={graphSize.height + graphSize.popHeight}
     >

@@ -22,12 +22,9 @@ const Graph = () => {
   }
 
   return (
-    <div
-      onScroll={handleAnimation}
-      ref={containerRef}
-      className="relative justify-end overflow-x-scroll"
-    >
-      <div ref={chartContainerRef}>
+    <div className="relative ">
+      {/* <div className="h-96 w-[3000px]" /> */}
+      <div ref={chartContainerRef} className=" bottom-[84px]">
         <DayBreaks className="" />
         <TemperatureChart className="" />
         <PopChart className="" />

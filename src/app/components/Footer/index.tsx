@@ -6,14 +6,19 @@ import { motion } from 'framer-motion'
 import { format, isSameDay } from 'date-fns'
 
 const Footer = () => {
-  const { weatherData, currentDay } = useGlobalContext()
+  const { weatherData, currentDay, graphData } = useGlobalContext()
   const firstSevenDays = weatherData?.daily.slice(0, 7)
-
+  const handleClick = (index: number) => {
+    if (!graphData) return
+    // const noon = graphData.dayBreaks[index].noonValue
+    // containerRef.current?.scrollTo(noon.x, 0)
+  }
   return (
-    <div className="flex w-full bg-white/10 text-white">
+    <div className="sticky bottom-0 left-0 right-0 flex w-full bg-white/10 text-white">
       {firstSevenDays?.map((day, index) => {
         return (
           <button
+            onClick={() => handleClick(index)}
             key={index}
             className={clsx(
               'relative flex w-full flex-col items-center justify-between gap-1 px-2 py-3',
