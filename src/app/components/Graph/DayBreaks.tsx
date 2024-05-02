@@ -10,6 +10,7 @@ const DayBreaks = ({ className }: { className?: string }) => {
       className={clsx('absolute bottom-0 left-0 ', className)}
       width={graphSize.width}
       height={graphSize.height + graphSize.popHeight}
+      viewBox={`0 0 ${graphSize.width} ${graphSize.height + graphSize.popHeight}`}
     >
       {/* Day breaks + sunrise and sunset lines */}
       {graphData?.dayBreaks.map((dayBreak, index) => {

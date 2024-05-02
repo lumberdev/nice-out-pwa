@@ -17,7 +17,7 @@ export const generateGraphData = (
   const SCREEN_HEIGHT = screenHeight ?? document.body.clientHeight
   const SCREEN_WIDTH = screenWidth ?? document.body.clientWidth
   const margins = {
-    top: 50,
+    top: 150,
     right: SCREEN_WIDTH / 2,
     bottom: 50,
     left: SCREEN_WIDTH / 2,
@@ -260,6 +260,7 @@ export const generateGraphData = (
     SCREEN_HEIGHT,
     SCREEN_WIDTH,
     formattedSevenDayHourly,
+    sevenDayHourly,
     scaleX,
     scaleY,
     margins,
