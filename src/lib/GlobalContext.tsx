@@ -65,7 +65,6 @@ export const useGlobalContext = (): GlobalContextValue => {
   return context
 }
 
-// Create a provider component to wrap your app
 export const GlobalContextProvider = ({
   children,
 }: {
@@ -75,12 +74,7 @@ export const GlobalContextProvider = ({
   const [currentDay, setCurrentDay] = useState<DailyWeather | undefined>()
 
   const location = useLocation()
-  const {
-    data: weatherData,
-    error,
-    isLoading,
-    isFetched,
-  } = useWeatherData({ location })
+  const { data: weatherData, error, isLoading } = useWeatherData({ location })
 
   const mainChart = useRef<SVGSVGElement>(null)
   const lineRef = useRef<SVGPathElement>(null)
@@ -136,6 +130,7 @@ export const GlobalContextProvider = ({
       !weatherData ||
       !groupRef.current
     ) {
+      console.log('early return')
       return
     }
     const { timezone } = weatherData
@@ -145,11 +140,9 @@ export const GlobalContextProvider = ({
     const progress = Math.min(Math.max(scrollX / lineWidth, 0), 1)
     const totalLength = lineRef.current.getTotalLength()
     const { x, y } = lineRef.current.getPointAtLength(progress * totalLength)
-
     circleRef.current.setAttribute('cx', x.toString())
     circleRef.current.setAttribute('cy', y.toString())
     groupRef.current.setAttribute('transform', `translate(${x + 6}, ${y - 40})`)
-
     const { scaleX, scaleY, formattedSevenDayHourly, dayBreaks } = graphData
     const timestamp = scaleX.invert(x)
     /**

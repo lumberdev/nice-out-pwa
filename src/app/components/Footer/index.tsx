@@ -3,24 +3,37 @@ import React from 'react'
 import WeatherIcon from '../Icon'
 import clsx from 'clsx'
 import { motion } from 'framer-motion'
-import { format, isSameDay } from 'date-fns'
+import { isSameDay } from 'date-fns'
+import { formatInTimeZone } from 'date-fns-tz'
 
 const Footer = () => {
-  const { weatherData, currentDay } = useGlobalContext()
+  const { weatherData, currentDay, graphData, containerRef } =
+    useGlobalContext()
+
   const firstSevenDays = weatherData?.daily.slice(0, 7)
 
+  const handleClick = (index: number) => {
+    if (!graphData) return
+    const noon = graphData.dayBreaks[index]
+    containerRef.current?.scrollTo({
+      left: noon.noonValue.x - window.innerWidth / 2,
+      behavior: 'smooth',
+    })
+  }
+
   return (
-    <div className="flex w-full bg-white/10 text-white">
+    <div className="sticky bottom-0 left-0 right-0 flex w-full bg-white/10 text-white">
       {firstSevenDays?.map((day, index) => {
         return (
           <button
+            onClick={() => handleClick(index)}
             key={index}
             className={clsx(
               'relative flex w-full flex-col items-center justify-between gap-1 px-2 py-3',
             )}
           >
             <span className="text-sm font-light uppercase">
-              {format(day.day, 'E')}
+              {formatInTimeZone(day.day, weatherData?.timezone ?? '', 'E')}
             </span>
             <WeatherIcon
               icon={day.icon}
