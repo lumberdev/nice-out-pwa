@@ -1,5 +1,6 @@
 import { useLocation } from '@/hooks/useLocation'
 import { useWeatherData } from '@/hooks/useWeatherData'
+import * as array from 'd3-array'
 import {
   GraphData,
   WeatherData,
@@ -133,29 +134,26 @@ export const GlobalContextProvider = ({
       !circleRef.current ||
       !graphData ||
       !weatherData ||
-      !groupRef.current ||
-      !dotRef.current
+      !groupRef.current
     ) {
       console.log('early return')
       return
     }
     const { timezone } = weatherData
-
+    const { formattedValues, timestamps } = graphData
     const scrollX = containerRef.current?.scrollLeft ?? 0
-    const { width: lineWidth } = lineRef.current.getBoundingClientRect()
-    const progress = Math.min(Math.max(scrollX / lineWidth, 0), 1)
-    const totalLength = lineRef.current.getTotalLength()
-    const { x, y } = lineRef.current.getPointAtLength(progress * totalLength)
-    const chartContainerBounding =
-      chartContainerRef.current?.getBoundingClientRect()
-    const { top } = chartContainerBounding ?? { top: 0 }
 
-    dotRef.current.style.top = `${top + y}px`
+    const { scaleX, scaleY, formattedSevenDayHourly, dayBreaks } = graphData
+    const x = scrollX + window.innerWidth / 2
+    const timestamp = scaleX.invert(x)
+
+    const index = array.bisectCenter(timestamps, timestamp.getTime())
+    const y = scaleY(formattedValues[index][0])
+
     circleRef.current.setAttribute('cx', x.toString())
     circleRef.current.setAttribute('cy', y.toString())
     groupRef.current.setAttribute('transform', `translate(${x + 6}, ${y - 40})`)
-    const { scaleX, scaleY, formattedSevenDayHourly, dayBreaks } = graphData
-    const timestamp = scaleX.invert(x)
+
     /**
      * This timestamp is rounded to the nearest hour.
      * Useful for fiding the closest data point in the hourly data.

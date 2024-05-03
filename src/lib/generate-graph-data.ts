@@ -264,5 +264,7 @@ export const generateGraphData = (
     scaleX,
     scaleY,
     margins,
+    formattedValues,
+    timestamps,
   }
 }
