@@ -38,12 +38,24 @@ export const generateGraphData = (
     timeZone,
   ).getTime()
 
+  const firstTimeInData = toZonedTime(
+    hourlyWeather.at(0)?.forecastStart ?? '',
+    timeZone,
+  ).getTime()
+
+  const currentTime = new Date().getTime()
+
+  // Apple weatherKit gives data from 23:00 of the previous day
+  // get extra elapsed hours (extra data in the start)
+  const extraElapsedHours = Math.abs(firstTimeInData - currentTime) / 3600000
+
+  // extra hours at the end
   const extraHours = (lastTimeInData - lastDayTime) / 3600000 // converting extratime difference into hours
 
   // hourly weather is starting from previous days 23:00
   const sevenDayHourly =
     extraHours > 0
-      ? hourlyWeather.slice(1).slice(0, -1 * extraHours)
+      ? hourlyWeather.slice(extraElapsedHours).slice(0, -1 * extraHours)
       : hourlyWeather
 
   const formattedValues = sevenDayHourly.map(
