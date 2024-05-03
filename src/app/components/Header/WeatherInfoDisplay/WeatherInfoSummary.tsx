@@ -17,12 +17,13 @@ const WeatherInfoSummary = () => {
     {
       title: 'Wind',
       value: wind,
-      unit: 'mph',
+      unit: 'km/h',
+      // unit: 'mph',
     },
     {
       title: 'Precipitation',
       value: precipitation,
-      unit: 'in',
+      unit: 'mm',
     },
     {
       title: 'Humidity',
@@ -42,7 +43,8 @@ const WeatherInfoSummary = () => {
     {
       title: 'Pressure',
       value: pressure,
-      unit: 'hg',
+      unit: 'mb',
+      // unit: 'hg',
     },
     {
       title: 'Dew Point',

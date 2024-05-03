@@ -24,7 +24,6 @@ export const generateGraphData = (
     left: SCREEN_WIDTH / 2,
   }
   // Formatting raw data for D3
-  const utcTimeZone = 'UTC'
   const timeZone = weatherData.timezone
   const dailyWeather = weatherData.daily
   const hourlyWeather = weatherData.hourly
@@ -60,7 +59,7 @@ export const generateGraphData = (
       forecastStart: string | number | Date
     }) =>
       [
-        reading.precipitationChance,
+        reading.precipitationChance * 100,
         Math.floor(toZonedTime(reading.forecastStart, timeZone).getTime()),
       ] as [number, number],
   )
