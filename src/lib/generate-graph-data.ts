@@ -4,9 +4,9 @@ import { scaleLinear, scaleTime } from 'd3-scale'
 import * as shape from 'd3-shape'
 import * as array from 'd3-array'
 import * as interpolate from 'd3-interpolate'
-import { HourlyWeather, WeatherData } from '@/types'
 import { format, toZonedTime } from 'date-fns-tz'
-import { startOfDay, addHours, getHours, roundToNearestHours } from 'date-fns'
+import { HourlyWeather, WeatherData } from '@/types/weatherKit'
+import { startOfDay, addHours, getHours, formatISO, roundToNearestHours } from 'date-fns'
 
 // Screen Dimentions for Graph sizing & position
 
@@ -24,36 +24,44 @@ export const generateGraphData = (
     left: SCREEN_WIDTH / 2,
   }
   // Formatting raw data for D3
+  const utcTimeZone = 'UTC'
   const timeZone = weatherData.timezone
   const dailyWeather = weatherData.daily
   const hourlyWeather = weatherData.hourly
 
   // Removing extradata from graph to stop it after 11:59PM of last day
-  const lastDayTime = toZonedTime(dailyWeather[7].day, timeZone).getTime()
+  const lastDayTime = toZonedTime(
+    dailyWeather[7].forecastStart,
+    timeZone,
+  ).getTime()
   const lastTimeInData = toZonedTime(
-    hourlyWeather.at(-1)?.date ?? '',
+    hourlyWeather.at(-1)?.forecastStart ?? '',
     timeZone,
   ).getTime()
 
   const extraHours = (lastTimeInData - lastDayTime) / 3600000 // converting extratime difference into hours
+
+  // hourly weather is starting from previous days 23:00
   const sevenDayHourly =
-    extraHours > 0 ? hourlyWeather.slice(0, -1 * extraHours) : hourlyWeather
+    extraHours > 0
+      ? hourlyWeather.slice(1).slice(0, -1 * extraHours)
+      : hourlyWeather
 
   const formattedValues = sevenDayHourly.map(
-    (reading: { temperature: number; date: string | number | Date }) =>
+    (reading: { temperature: number; forecastStart: string | number | Date }) =>
       [
         reading.temperature,
-        Math.floor(toZonedTime(reading.date, timeZone).getTime()),
+        Math.floor(toZonedTime(reading.forecastStart, timeZone).getTime()),
       ] as [number, number],
   )
   const formattedPopValues = sevenDayHourly.map(
     (reading: {
-      probability: { precipitation: number }
-      date: string | number | Date
+      precipitationChance: number
+      forecastStart: string | number | Date
     }) =>
       [
-        reading.probability.precipitation,
-        Math.floor(toZonedTime(reading.date, timeZone).getTime()),
+        reading.precipitationChance,
+        Math.floor(toZonedTime(reading.forecastStart, timeZone).getTime()),
       ] as [number, number],
   )
 
@@ -69,6 +77,7 @@ export const generateGraphData = (
   //     ] as [number, number, number],
   // )
   const temperatures = formattedValues.map((value) => value[0])
+
   // const pops = formattedPopValues.map((value: any[]) => value[0])
   const timestamps = formattedValues.map((value) => value[1])
 
@@ -155,11 +164,11 @@ export const generateGraphData = (
     .filter((_, index) => index < 7)
     .map((day) => {
       const sunrise = toZonedTime(
-        day.astro.sun.rise ?? new Date(day.day).setHours(6, 0, 0, 0),
+        day.sunrise ?? new Date(day.forecastStart).setHours(6, 0, 0, 0),
         timeZone,
       ).getTime()
       const sunset = toZonedTime(
-        day.astro.sun.set ?? new Date(day.day).setHours(18, 0, 0, 0),
+        day.sunset ?? new Date(day.forecastStart).setHours(18, 0, 0, 0),
         timeZone,
       ).getTime()
       const sunriseTime = format(sunrise, 'hh:mm a')
@@ -173,7 +182,9 @@ export const generateGraphData = (
         formattedValues[array.bisectCenter(timestamps, sunset)][0],
       )
 
-      const currentDay = startOfDay(toZonedTime(day.day, timeZone)).getTime()
+      const currentDay = startOfDay(
+        toZonedTime(day.forecastStart, timeZone),
+      ).getTime()
       const noon = addHours(currentDay, 12).getTime()
       const noonValue = {
         x: Math.max(scaleX(noon), 0),
@@ -183,10 +194,11 @@ export const generateGraphData = (
       const yValue = scaleY(
         formattedValues[array.bisectCenter(timestamps, currentDay)][0],
       )
-      const dayMinTemp = day.all_day.temperature_min
-      const dayMaxTemp = day.all_day.temperature_max
-      const dayFeelsLikeMinTemp = day.all_day.feels_like_min
-      const dayFeelsLikeMaxTemp = day.all_day.feels_like_max
+      const dayMinTemp = day.temperatureMin
+      const dayMaxTemp = day.temperatureMax
+      // TODO: Figure out a way to extract feels like temp
+      const dayFeelsLikeMinTemp = day.temperatureMin
+      const dayFeelsLikeMaxTemp = day.temperatureMax
       const twilight = {
         sunrise: {
           x: sunriseX,
@@ -222,15 +234,17 @@ export const generateGraphData = (
       index: number,
     ) => {
       const firstDayHours =
-        24 - getHours(toZonedTime(sevenDayHourly[0].date, timeZone))
-
+        24 - getHours(toZonedTime(sevenDayHourly[0].forecastStart, timeZone))
       const perArray = index >= firstDayHours ? 24 : firstDayHours
       const startindex = index >= firstDayHours ? index + 24 - firstDayHours : 0
       const insertIndex = Math.floor(startindex / perArray)
       if (!result[insertIndex]) {
         result[insertIndex] = new Map()
       }
-      result[insertIndex].set(item.date, item)
+      result[insertIndex].set(
+        formatISO(toZonedTime(item.forecastStart, timeZone)).slice(0, -6),
+        item,
+      )
       return result
     },
     [],

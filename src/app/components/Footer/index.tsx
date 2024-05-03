@@ -33,11 +33,12 @@ const Footer = () => {
             )}
           >
             <span className="text-2xs uppercase opacity-60 md:text-sm">
-              {formatInTimeZone(day.day, weatherData?.timezone ?? '', 'E')}
+              {formatInTimeZone(day.forecastStart, weatherData?.timezone ?? '', 'E')}
             </span>
             <span className="pb-0.5">
               <WeatherIcon
-                icon={day.icon}
+                icon={5}
+                // icon={day.icon}
                 x={0}
                 y={0}
                 height={16}
@@ -46,9 +47,9 @@ const Footer = () => {
               />
             </span>
             <span className="relative left-0.5 text-2xs opacity-60 md:text-sm">
-              {Math.round(day.statistics.temperature.avg)}°
+              {Math.round((day.temperatureMax + day.temperatureMin) / 2)}°
             </span>
-            {isSameDay(day.day, currentDay?.day ?? '') && (
+            {isSameDay(day.forecastStart, currentDay?.forecastStart ?? '') && (
               <motion.div
                 layoutId="selected"
                 className={clsx('absolute inset-0 bg-white/30')}

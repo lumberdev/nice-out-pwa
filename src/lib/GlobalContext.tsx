@@ -6,7 +6,7 @@ import {
   TemperatureData,
   DailyWeather,
   WeatherInfo,
-} from '@/types'
+} from '@/types/weatherKit'
 import React, {
   RefObject,
   createContext,
@@ -39,7 +39,7 @@ interface GlobalContextValue {
     time: string
     meridiem: string
     summary: string
-    icon: number
+    icon: number | string
   }
   isItDay: boolean
   temperatureData: TemperatureData
@@ -86,12 +86,12 @@ export const GlobalContextProvider = ({
     time: string
     meridiem: string
     summary: string
-    icon: number
+    icon: number | string
   }>({
     time: '10:40',
     meridiem: 'AM',
     summary: 'Sunny',
-    icon: 2,
+    icon: 'Clear',
   })
   const [isItDay, setIsItDay] = useState(true)
 
@@ -166,9 +166,9 @@ export const GlobalContextProvider = ({
     )
     const currentData = activeDay?.get(roundedTimestamp)
 
-    const currentDay = weatherData.daily.find(({ day }) =>
+    const currentDay = weatherData.daily.find(({ forecastStart }) =>
       isSameDay(
-        toZonedTime(day, timezone),
+        toZonedTime(forecastStart, timezone),
         toZonedTime(flooredTimestamp, timezone),
       ),
     )
@@ -176,7 +176,8 @@ export const GlobalContextProvider = ({
       setCurrentDay(currentDay)
     }
     const temperature = scaleY.invert(y)
-    const feelsLikeTemperature = activeDay?.get(roundedTimestamp)?.feels_like
+    const feelsLikeTemperature =
+      activeDay?.get(roundedTimestamp)?.temperatureApparent
 
     const currentDayBreaks = dayBreaks.find(({ currentDay }) =>
       isSameDay(currentDay, roundedTimestamp),
@@ -200,8 +201,8 @@ export const GlobalContextProvider = ({
     setTimestamp({
       time: formatInTimeZone(timestamp, timezone, 'hh:mm'),
       meridiem: formatInTimeZone(timestamp, timezone, 'a'),
-      summary: currentData?.summary ?? '',
-      icon: currentData?.icon ?? 0,
+      summary: currentData?.conditionCode ?? '',
+      icon: currentData?.conditionCode ?? '',
     })
     setTemperatureData({
       temperature,
@@ -213,15 +214,15 @@ export const GlobalContextProvider = ({
     })
 
     setWeatherInfo({
-      wind: currentData?.wind.speed ?? 0,
-      precipitation: currentData?.precipitation.total ?? 0,
+      wind: currentData?.windSpeed ?? 0,
+      precipitation: currentData?.precipitationAmount ?? 0,
       humidity: currentData?.humidity ?? 0,
-      feelsLike: currentData?.feels_like ?? 0,
-      cloudCover: currentData?.cloud_cover.total ?? 0,
+      feelsLike: currentData?.temperatureApparent ?? 0,
+      cloudCover: currentData?.cloudCover ?? 0,
       pressure: currentData?.pressure ?? 0,
-      dew: currentData?.dew_point ?? 0,
-      uvIndex: currentData?.uv_index ?? 0,
-      precipitationChance: currentData?.probability.precipitation ?? 0,
+      dew: currentData?.temperatureDewPoint ?? 0,
+      uvIndex: currentData?.uvIndex ?? 0,
+      precipitationChance: currentData?.precipitationChance ?? 0,
     })
   }, [graphData, hasD, weatherData])
 

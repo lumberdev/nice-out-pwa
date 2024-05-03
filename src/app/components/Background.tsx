@@ -6,7 +6,7 @@ const Background = ({
   id,
   isItDay,
 }: {
-  icon: number
+  icon: number | string
   id: string
   isItDay: boolean
 }) => {
