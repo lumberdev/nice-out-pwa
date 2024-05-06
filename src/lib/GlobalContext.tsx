@@ -35,7 +35,6 @@ interface GlobalContextValue {
   circleRef: RefObject<SVGCircleElement>
   groupRef: RefObject<SVGGElement>
   containerRef: RefObject<HTMLDivElement>
-  dotRef: RefObject<HTMLDivElement>
   timestamp: {
     time: string
     meridiem: string
@@ -275,7 +274,6 @@ export const GlobalContextProvider = ({
     error,
     isLoading,
     currentDay,
-    dotRef,
   }
 
   return (
