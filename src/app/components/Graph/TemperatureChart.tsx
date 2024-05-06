@@ -53,10 +53,10 @@ const TemperatureChart = ({ className }: { className?: string }) => {
         <text x={0} y={0} textLength={40}>
           {timestamp.time}
         </text>
-        <text x={42} y={-6} className="text-3xs">
+        <text x={42} y={-6} className="text-4xs">
           {timestamp.meridiem}
         </text>
-        <text x={0} y={20} className="text-2xs">
+        <text x={0} y={20} className="text-3xs">
           {timestamp.summary}
         </text>
       </g>

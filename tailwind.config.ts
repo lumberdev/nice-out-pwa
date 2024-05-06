@@ -24,8 +24,9 @@ const config: Config = {
           'linear-gradient(to right, #989AA7, #93939F, #66758C, #667789, #405574, #363A52)',
       },
       fontSize: {
-        '2xs': '0.625rem',
-        '3xs': '0.5rem',
+        '2xs': '0.675rem',
+        '3xs': '0.625rem',
+        '4xs': '0.5rem',
       },
     },
   },
