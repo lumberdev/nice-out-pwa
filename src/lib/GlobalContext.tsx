@@ -1,6 +1,5 @@
 import { useLocation } from '@/hooks/useLocation'
 import { useWeatherData } from '@/hooks/useWeatherData'
-import * as array from 'd3-array'
 import {
   GraphData,
   WeatherData,
@@ -136,20 +135,16 @@ export const GlobalContextProvider = ({
       !weatherData ||
       !groupRef.current
     ) {
-      console.log('early return')
       return
     }
     const { timezone } = weatherData
-    const { formattedValues, timestamps } = graphData
+    const { getYForX } = graphData
     const scrollX = containerRef.current?.scrollLeft ?? 0
 
     const { scaleX, scaleY, formattedSevenDayHourly, dayBreaks } = graphData
     const x = scrollX + window.innerWidth / 2
     const timestamp = scaleX.invert(x)
-
-    const index = array.bisectCenter(timestamps, timestamp.getTime())
-    const y = scaleY(formattedValues[index][0])
-
+    const y = getYForX({ timestamp, timezone })
     circleRef.current.setAttribute('cx', x.toString())
     circleRef.current.setAttribute('cy', y.toString())
     groupRef.current.setAttribute('transform', `translate(${x + 6}, ${y - 40})`)
