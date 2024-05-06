@@ -36,7 +36,6 @@ interface GlobalContextValue {
   groupRef: RefObject<SVGGElement>
   containerRef: RefObject<HTMLDivElement>
   dotRef: RefObject<HTMLDivElement>
-  chartContainerRef: RefObject<HTMLDivElement>
   timestamp: {
     time: string
     meridiem: string
@@ -84,7 +83,6 @@ export const GlobalContextProvider = ({
   const groupRef = useRef<SVGGElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const dotRef = useRef<HTMLDivElement>(null)
-  const chartContainerRef = useRef<HTMLDivElement>(null)
 
   const [timestamp, setTimestamp] = useState<{
     time: string
@@ -278,7 +276,6 @@ export const GlobalContextProvider = ({
     isLoading,
     currentDay,
     dotRef,
-    chartContainerRef,
   }
 
   return (

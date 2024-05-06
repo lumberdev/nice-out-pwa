@@ -6,7 +6,7 @@ import PopChart from './PopChart'
 import Loader from '../Loader'
 
 const Graph = () => {
-  const { graphData, handleAnimation, chartContainerRef } = useGlobalContext()
+  const { graphData, handleAnimation } = useGlobalContext()
 
   useEffect(() => {
     handleAnimation()
@@ -21,7 +21,7 @@ const Graph = () => {
   }
 
   return (
-    <div ref={chartContainerRef} className="relative">
+    <div className="relative">
       <DayBreaks className="" />
       <TemperatureChart className="" />
       <PopChart className="" />
