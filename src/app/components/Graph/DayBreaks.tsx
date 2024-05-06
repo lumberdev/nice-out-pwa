@@ -39,7 +39,7 @@ const DayBreaks = ({ className }: { className?: string }) => {
                 <text
                   x={25}
                   y={dayBreak.twilight.sunrise.y - 10}
-                  className="fill-white/75 text-sm font-bold tracking-wider"
+                  className="fill-white/60 text-xs font-semibold tracking-wider md:text-sm md:font-bold"
                 >
                   {dayBreak.twilight.sunrise.time}
                 </text>
@@ -64,7 +64,7 @@ const DayBreaks = ({ className }: { className?: string }) => {
                 <text
                   x={25}
                   y={dayBreak.twilight.sunset.y - 10}
-                  className="fill-white/75 text-sm font-bold tracking-wider"
+                  className="fill-white/60 text-xs font-semibold tracking-wider md:text-sm md:font-bold"
                 >
                   {dayBreak.twilight.sunset.time}
                 </text>
