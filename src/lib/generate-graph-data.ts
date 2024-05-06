@@ -67,13 +67,17 @@ export const generateGraphData = (
   )
   const formattedPopValues = sevenDayHourly.map(
     (reading: {
+      precipitationAmount: number
       precipitationChance: number
       forecastStart: string | number | Date
     }) =>
       [
-        reading.precipitationChance * 100,
+        Math.cbrt(
+          reading.precipitationAmount / 25.4 + reading.precipitationChance,
+        ),
         Math.floor(toZonedTime(reading.forecastStart, timeZone).getTime()),
       ] as [number, number],
+    // converting precipitationAmount to inches and using the formula in: https://github.com/lumberdev/nice-out/blob/9b5d445cff95dc83d8bb5215309e1638191bdde3/utils/GraphModel.ts#L78-L82
   )
 
   // const formattedPTValues = sevenDayHourly.map(
@@ -98,7 +102,7 @@ export const generateGraphData = (
   const minTemp = Math.min(...temperatures)
   const maxTemp = Math.max(...temperatures)
   const minPops = 0
-  const maxPops = 100
+  const maxPops = 1.26 // highest possible value on the graph ~~ cube root of 2 inches/hr which is rare.
   // const minPT = 0
   // const maxPT = 1.26 // highest possible value on the graph ~~ cube root of 2 inches/hr which is rare.
 
