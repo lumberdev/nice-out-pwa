@@ -81,7 +81,6 @@ export const GlobalContextProvider = ({
   const circleRef = useRef<SVGCircleElement>(null)
   const groupRef = useRef<SVGGElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
-  const dotRef = useRef<HTMLDivElement>(null)
 
   const [timestamp, setTimestamp] = useState<{
     time: string
