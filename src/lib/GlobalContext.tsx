@@ -81,6 +81,7 @@ export const GlobalContextProvider = ({
   const circleRef = useRef<SVGCircleElement>(null)
   const groupRef = useRef<SVGGElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
+
   const [timestamp, setTimestamp] = useState<{
     time: string
     meridiem: string
@@ -130,21 +131,20 @@ export const GlobalContextProvider = ({
       !weatherData ||
       !groupRef.current
     ) {
-      console.log('early return')
       return
     }
     const { timezone } = weatherData
-
+    const { getYForX } = graphData
     const scrollX = containerRef.current?.scrollLeft ?? 0
-    const { width: lineWidth } = lineRef.current.getBoundingClientRect()
-    const progress = Math.min(Math.max(scrollX / lineWidth, 0), 1)
-    const totalLength = lineRef.current.getTotalLength()
-    const { x, y } = lineRef.current.getPointAtLength(progress * totalLength)
+
+    const { scaleX, scaleY, formattedSevenDayHourly, dayBreaks } = graphData
+    const x = scrollX + window.innerWidth / 2
+    const timestamp = scaleX.invert(x)
+    const y = getYForX({ timestamp, timezone })
     circleRef.current.setAttribute('cx', x.toString())
     circleRef.current.setAttribute('cy', y.toString())
     groupRef.current.setAttribute('transform', `translate(${x + 6}, ${y - 40})`)
-    const { scaleX, scaleY, formattedSevenDayHourly, dayBreaks } = graphData
-    const timestamp = scaleX.invert(x)
+
     /**
      * This timestamp is rounded to the nearest hour.
      * Useful for fiding the closest data point in the hourly data.

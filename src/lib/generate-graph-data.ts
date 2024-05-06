@@ -3,9 +3,10 @@
 import { scaleLinear, scaleTime } from 'd3-scale'
 import * as shape from 'd3-shape'
 import * as array from 'd3-array'
+import * as interpolate from 'd3-interpolate'
 import { HourlyWeather, WeatherData } from '@/types'
 import { format, toZonedTime } from 'date-fns-tz'
-import { startOfDay, addHours, getHours } from 'date-fns'
+import { startOfDay, addHours, getHours, roundToNearestHours } from 'date-fns'
 
 // Screen Dimentions for Graph sizing & position
 
@@ -234,6 +235,36 @@ export const generateGraphData = (
     },
     [],
   )
+  const getYForX = ({
+    timestamp,
+    timezone,
+  }: {
+    timestamp: number | Date
+    timezone: string
+  }) => {
+    const currentTimeInMs = toZonedTime(timestamp, timezone).getTime()
+    const fooredTimeInMs = roundToNearestHours(currentTimeInMs, {
+      roundingMethod: 'floor',
+    }).getTime()
+    const index = array.bisectCenter(timestamps, fooredTimeInMs)
+    const highIndex = Math.min(formattedValues.length - 1, index + 1)
+
+    const [previousTemperature, previousHour] = formattedValues[index]
+    const [nextTemperature, nextHour] = formattedValues[highIndex]
+
+    const normalized =
+      previousHour == nextHour
+        ? 1 // This avoids division by zero
+        : (currentTimeInMs - previousHour) / (nextHour - previousHour)
+
+    const interpolator = interpolate.interpolateNumber(
+      previousTemperature,
+      nextTemperature,
+    )
+    const interpolatedTemperature = interpolator(normalized)
+    const y = scaleY(interpolatedTemperature)
+    return y
+  }
 
   return {
     data: weatherData,
@@ -264,5 +295,8 @@ export const generateGraphData = (
     scaleX,
     scaleY,
     margins,
+    formattedValues,
+    timestamps,
+    getYForX,
   }
 }
