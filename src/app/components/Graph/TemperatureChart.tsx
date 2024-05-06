@@ -3,6 +3,8 @@ import { graphTempColorStops } from '@/utils'
 import React from 'react'
 import WeatherIcon from '../Icon'
 import LinearGradient from '../LinearGradient'
+import clsx from 'clsx'
+import { roboto } from '@/app/fonts'
 
 const TemperatureChart = ({ className }: { className?: string }) => {
   const {
@@ -46,17 +48,22 @@ const TemperatureChart = ({ className }: { className?: string }) => {
         <WeatherIcon
           icon={timestamp.icon}
           x={0}
-          y={-40}
+          y={-45}
           width={'100%'}
           height={'100%'}
         />
-        <text x={0} y={0} textLength={40}>
+        <text
+          x={0}
+          y={0}
+          textLength={50}
+          className={clsx(roboto.className, 'text-xl font-medium')}
+        >
           {timestamp.time}
         </text>
-        <text x={42} y={-6} className="text-3xs">
+        <text x={54} y={-6} className="text-3xs">
           {timestamp.meridiem}
         </text>
-        <text x={0} y={20} className="text-2xs">
+        <text x={0} y={16} className={clsx(roboto.className, 'text-3xs')}>
           {timestamp.summary}
         </text>
       </g>

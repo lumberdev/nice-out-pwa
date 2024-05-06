@@ -32,22 +32,26 @@ const Footer = () => {
               'relative flex w-full flex-col items-center justify-between gap-1 px-2 py-3',
             )}
           >
-            <span className="text-sm font-light uppercase">
+            <span className="text-2xs uppercase opacity-60 md:text-sm">
               {formatInTimeZone(day.day, weatherData?.timezone ?? '', 'E')}
             </span>
-            <WeatherIcon
-              icon={day.icon}
-              x={0}
-              y={0}
-              height={16}
-              width={16}
-              viewBox="0 0 24 24"
-            />
-            <span className="text-xs">{day.statistics.temperature.avg}°</span>
+            <span className="pb-0.5">
+              <WeatherIcon
+                icon={day.icon}
+                x={0}
+                y={0}
+                height={16}
+                width={16}
+                viewBox="0 0 24 24"
+              />
+            </span>
+            <span className="relative left-0.5 text-2xs opacity-60 md:text-sm">
+              {Math.round(day.statistics.temperature.avg)}°
+            </span>
             {isSameDay(day.day, currentDay?.day ?? '') && (
               <motion.div
                 layoutId="selected"
-                className={clsx('absolute inset-0 bg-white/50')}
+                className={clsx('absolute inset-0 bg-white/30')}
               />
             )}
           </button>

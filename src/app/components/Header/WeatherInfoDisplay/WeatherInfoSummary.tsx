@@ -59,11 +59,13 @@ const WeatherInfoSummary = () => {
     <div className="relative left-1 md:left-3">
       {weatherInfos.map((info, index) => {
         return (
-          <div key={index} className="flex items-center gap-2">
-            <div className="text-xs md:text-sm text-white">{info.title}: </div>
-            <div className="text-xs md:text-sm font-medium text-white">
-              {info.value}
-              <span className="text-xs md:text-sm">{info.unit}</span>
+          <div key={index} className="flex items-center gap-1">
+            <div className="text-3xs font-extralight tracking-wide text-white md:text-sm md:font-light">
+              {info.title}:{' '}
+            </div>
+            <div className="flex gap-0.5 text-3xs font-medium tracking-wide text-white md:text-sm">
+              <span>{info.value}</span>
+              <span className="text-3xs md:text-sm">{info.unit}</span>
             </div>
           </div>
         )
