@@ -30,7 +30,10 @@ import {
   getConvertedPressure,
   getConvertedWindSpeed,
 } from '@/utils/unitConverter'
-import { weatherKitConditionCodes } from '@/utils/WeatherKitConditionCodes'
+import {
+  weatherKitConditionCodes,
+  getAdjustedConditionCode,
+} from '@/utils/WeatherKitConditionCodes'
 
 interface GlobalContextValue {
   weatherData: WeatherData | undefined
@@ -47,6 +50,7 @@ interface GlobalContextValue {
     meridiem: string
     summary: string
     icon: number | string
+    daylight: boolean
   }
   isItDay: boolean
   temperatureData: TemperatureData
@@ -107,11 +111,13 @@ export const GlobalContextProvider = ({
     meridiem: string
     summary: string
     icon: number | string
+    daylight: boolean
   }>({
     time: '10:40',
     meridiem: 'AM',
     summary: 'Sunny',
     icon: 'Clear',
+    daylight: true,
   })
   const [isItDay, setIsItDay] = useState(true)
 
@@ -229,6 +235,7 @@ export const GlobalContextProvider = ({
           (codes) => codes.code === currentData?.conditionCode,
         )?.description ?? '',
       icon: currentData?.conditionCode ?? '',
+      daylight: currentData?.daylight ?? true,
     })
     setTemperatureData({
       temperature: getConvertedTemperature(temperature, isUnitMetric) as number,

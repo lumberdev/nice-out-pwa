@@ -261,3 +261,19 @@ export const weatherKitConditionCodes: WeatherKitConditionCode[] = [
     type: 'hazardous',
   },
 ]
+
+export function getAdjustedConditionCode(
+  conditionCode?: string | number,
+  daylight?: boolean,
+) {
+  // Used for generate night icons for night time
+  if (
+    !daylight &&
+    (conditionCode === 'Clear' ||
+      conditionCode === 'PartlyCloudy' ||
+      conditionCode === 'MostlyClear')
+  ) {
+    return conditionCode + 'Night'
+  }
+  return conditionCode
+}

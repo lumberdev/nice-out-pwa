@@ -5,6 +5,7 @@ import WeatherIcon from '../Icon'
 import LinearGradient from '../LinearGradient'
 import clsx from 'clsx'
 import { roboto } from '@/app/fonts'
+import { getAdjustedConditionCode } from '@/utils/WeatherKitConditionCodes'
 
 const TemperatureChart = ({ className }: { className?: string }) => {
   const {
@@ -46,7 +47,7 @@ const TemperatureChart = ({ className }: { className?: string }) => {
       />
       <g ref={groupRef} fill="white">
         <WeatherIcon
-          icon={timestamp.icon}
+          icon={getAdjustedConditionCode(timestamp.icon, timestamp.daylight)}
           x={0}
           y={-45}
           width={'100%'}

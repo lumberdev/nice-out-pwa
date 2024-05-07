@@ -30,7 +30,7 @@ const WeatherIcon = ({
   height,
   viewBox
 }: {
-  icon: number | string
+  icon: number | string | undefined
   x: number
   y: number
   width: number | string
@@ -191,8 +191,14 @@ const WeatherIcon = ({
     case 'TropicalStorm':
     case 'Hurricane':
       return <BsCloudLightningRain width={width} height={height} x={x} y={y} viewBox={viewBox} />;
+
+    case 'ClearNight':
+      return <BsMoon width={width} height={height} x={x} y={y} viewBox={viewBox} />;
+    case 'MostlyClearNight':
+    case 'PartlyCloudyNight':
+      return <BsCloudMoon width={width} height={height} x={x} y={y} viewBox={viewBox} />
     default:
-      return null
+      return <BsCloudy width={width} height={height} x={x} y={y} viewBox={viewBox} /> // Sending back a general Cloudy Icon as default
   }
 }
 
