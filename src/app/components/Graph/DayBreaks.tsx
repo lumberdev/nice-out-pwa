@@ -44,7 +44,7 @@ const DayBreaks = ({ className }: { className?: string }) => {
                   {dayBreak.twilight.sunrise.time}
                 </text>
                 <WeatherIcon
-                  icon={5}
+                  icon={'sunrise'}
                   x={-12.5}
                   y={dayBreak.twilight.sunrise.y - 25}
                   width={'100%'}
@@ -69,7 +69,7 @@ const DayBreaks = ({ className }: { className?: string }) => {
                   {dayBreak.twilight.sunset.time}
                 </text>
                 <WeatherIcon
-                  icon={5}
+                  icon={'sunset'}
                   x={-12.5}
                   y={dayBreak.twilight.sunset.y - 25}
                   width={'100%'}

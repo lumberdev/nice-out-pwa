@@ -11,7 +11,7 @@ const Footer = () => {
   const { weatherData, currentDay, graphData, containerRef, isUnitMetric } =
     useGlobalContext()
 
-  const firstSevenDays = graphData?.derivedSevenDayTemperatures.slice(0, 7)
+  const firstSevenDays = weatherData?.daily.slice(0, 7)
 
   const handleClick = (index: number) => {
     if (!graphData) return
@@ -20,6 +20,15 @@ const Footer = () => {
       left: noon.noonValue.x - window.innerWidth / 2,
       behavior: 'smooth',
     })
+  }
+  const getAverageTemperature = (date: string, isUnitMetric: boolean) => {
+    const day = graphData?.derivedSevenDayTemperatures.find((day) =>
+      isSameDay(day.date, date),
+    )
+    if (day) {
+      return getConvertedTemperature(day.dailyAverageTemp, isUnitMetric)
+    }
+    return '-'
   }
 
   return (
@@ -34,12 +43,15 @@ const Footer = () => {
             )}
           >
             <span className="text-2xs uppercase opacity-60 md:text-sm">
-              {formatInTimeZone(day.date, weatherData?.timezone ?? '', 'E')}
+              {formatInTimeZone(
+                day.forecastStart,
+                weatherData?.timezone ?? '',
+                'E',
+              )}
             </span>
             <span className="pb-0.5">
               <WeatherIcon
-                icon={5}
-                // icon={day.icon}
+                icon={day.conditionCode}
                 x={0}
                 y={0}
                 height={16}
@@ -48,9 +60,9 @@ const Footer = () => {
               />
             </span>
             <span className="relative left-0.5 text-2xs opacity-60 md:text-sm">
-              {getConvertedTemperature(day.dailyAverageTemp, isUnitMetric)}°
+              {getAverageTemperature(day.forecastStart, isUnitMetric)}
             </span>
-            {isSameDay(day.date, currentDay?.forecastStart ?? '') && (
+            {isSameDay(day.forecastStart, currentDay?.forecastStart ?? '') && (
               <motion.div
                 layoutId="selected"
                 className={clsx('absolute inset-0 bg-white/30')}

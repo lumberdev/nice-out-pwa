@@ -46,7 +46,7 @@ const TemperatureChart = ({ className }: { className?: string }) => {
       />
       <g ref={groupRef} fill="white">
         <WeatherIcon
-          icon={5}
+          icon={timestamp.icon}
           x={0}
           y={-45}
           width={'100%'}
