@@ -11,13 +11,7 @@ const Footer = () => {
   const { weatherData, currentDay, graphData, containerRef, isUnitMetric } =
     useGlobalContext()
 
-  const firstSevenDays = weatherData?.daily.slice(0, 7)
-
-  const getAverageTemp = (min: number, max: number, isUnitMetric: boolean) => {
-    if (!min || !max) return '-'
-    const averageTemp = Math.round((min + max) / 2)
-    return getConvertedTemperature(averageTemp, isUnitMetric)
-  }
+  const firstSevenDays = graphData?.derivedSevenDayTemperatures.slice(0, 7)
 
   const handleClick = (index: number) => {
     if (!graphData) return
@@ -40,11 +34,7 @@ const Footer = () => {
             )}
           >
             <span className="text-2xs uppercase opacity-60 md:text-sm">
-              {formatInTimeZone(
-                day.forecastStart,
-                weatherData?.timezone ?? '',
-                'E',
-              )}
+              {formatInTimeZone(day.date, weatherData?.timezone ?? '', 'E')}
             </span>
             <span className="pb-0.5">
               <WeatherIcon
@@ -58,14 +48,9 @@ const Footer = () => {
               />
             </span>
             <span className="relative left-0.5 text-2xs opacity-60 md:text-sm">
-              {getAverageTemp(
-                day.temperatureMin,
-                day.temperatureMax,
-                isUnitMetric,
-              )}
-              °
+              {getConvertedTemperature(day.dailyAverageTemp, isUnitMetric)}°
             </span>
-            {isSameDay(day.forecastStart, currentDay?.forecastStart ?? '') && (
+            {isSameDay(day.date, currentDay?.forecastStart ?? '') && (
               <motion.div
                 layoutId="selected"
                 className={clsx('absolute inset-0 bg-white/30')}

@@ -166,6 +166,7 @@ export type TemperatureData = {
   currentDayMinTemp?: number
   currentDayFeelsLikeMaxTemp?: number
   currentDayFeelsLikeMinTemp?: number
+  currentDayDailyAverageTemp?: number
 }
 
 export type WeatherInfo = {

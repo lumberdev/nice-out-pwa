@@ -70,6 +70,7 @@ const initialTemperatureData = {
   currentDayMinTemp: 0,
   currentDayFeelsLikeMaxTemp: 0,
   currentDayFeelsLikeMinTemp: 0,
+  currentDayDailyAverageTemp: 0,
 }
 
 export const useGlobalContext = (): GlobalContextValue => {
@@ -150,7 +151,13 @@ export const GlobalContextProvider = ({
     const { getYForX } = graphData
     const scrollX = containerRef.current?.scrollLeft ?? 0
 
-    const { scaleX, scaleY, formattedSevenDayHourly, dayBreaks } = graphData
+    const {
+      scaleX,
+      scaleY,
+      formattedSevenDayHourly,
+      dayBreaks,
+      derivedSevenDayTemperatures,
+    } = graphData
     const x = scrollX + window.innerWidth / 2
     const timestamp = scaleX.invert(x)
     const y = getYForX({ timestamp, timezone })
@@ -185,6 +192,12 @@ export const GlobalContextProvider = ({
         toZonedTime(flooredTimestamp, timezone),
       ),
     )
+    const currentDayDerivedTemps = derivedSevenDayTemperatures.find((day) => {
+      return isSameDay(
+        toZonedTime(day.date, timezone),
+        toZonedTime(flooredTimestamp, timezone),
+      )
+    })
     if (currentDay) {
       setCurrentDay(currentDay)
     }
@@ -196,9 +209,7 @@ export const GlobalContextProvider = ({
       isSameDay(currentDay, roundedTimestamp),
     )
     let currentDayMaxTemp: number | undefined,
-      currentDayMinTemp: number | undefined,
-      currentDayFeelsLikeMaxTemp: number | undefined,
-      currentDayFeelsLikeMinTemp: number | undefined
+      currentDayMinTemp: number | undefined
 
     if (currentDayBreaks) {
       const isItDay = isWithinInterval(timestamp, {
@@ -208,8 +219,6 @@ export const GlobalContextProvider = ({
       setIsItDay(isItDay)
       currentDayMaxTemp = currentDayBreaks.dayMaxTemp
       currentDayMinTemp = currentDayBreaks.dayMinTemp
-      currentDayFeelsLikeMaxTemp = currentDayBreaks.dayFeelsLikeMaxTemp
-      currentDayFeelsLikeMinTemp = currentDayBreaks.dayFeelsLikeMinTemp
     }
     setTimestamp({
       time: formatInTimeZone(timestamp, timezone, 'hh:mm'),
@@ -232,11 +241,15 @@ export const GlobalContextProvider = ({
         isUnitMetric,
       ),
       currentDayFeelsLikeMaxTemp: getConvertedTemperature(
-        currentDayFeelsLikeMaxTemp,
+        currentDayDerivedTemps?.feelsLikeMaxTemp,
         isUnitMetric,
       ),
       currentDayFeelsLikeMinTemp: getConvertedTemperature(
-        currentDayFeelsLikeMinTemp,
+        currentDayDerivedTemps?.feelsLikeMinTemp,
+        isUnitMetric,
+      ),
+      currentDayDailyAverageTemp: getConvertedTemperature(
+        currentDayDerivedTemps?.dailyAverageTemp,
         isUnitMetric,
       ),
     })

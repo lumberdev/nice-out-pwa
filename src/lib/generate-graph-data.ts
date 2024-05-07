@@ -6,7 +6,13 @@ import * as array from 'd3-array'
 import * as interpolate from 'd3-interpolate'
 import { format, toZonedTime } from 'date-fns-tz'
 import { HourlyWeather, WeatherData } from '@/types/weatherKit'
-import { startOfDay, addHours, getHours, formatISO, roundToNearestHours } from 'date-fns'
+import {
+  startOfDay,
+  addHours,
+  getHours,
+  formatISO,
+  roundToNearestHours,
+} from 'date-fns'
 
 // Screen Dimentions for Graph sizing & position
 
@@ -264,6 +270,30 @@ export const generateGraphData = (
     },
     [],
   )
+
+  const derivedSevenDayTemperatures = formattedSevenDayHourly.map(
+    (dailyMap) => {
+      let minTemp = Infinity
+      let maxTemp = -Infinity
+      let tempSum = 0
+
+      // Find the min and max temperature for the current day
+      dailyMap.forEach((value) => {
+        minTemp = Math.min(minTemp, value.temperatureApparent)
+        maxTemp = Math.max(maxTemp, value.temperatureApparent)
+        tempSum += value.temperatureApparent
+      })
+      const averageTemp = Math.round(tempSum / dailyMap.size)
+      const dayKey = dailyMap.keys().next().value
+      return {
+        date: dayKey,
+        feelsLikeMinTemp: minTemp,
+        feelsLikeMaxTemp: maxTemp,
+        dailyAverageTemp: averageTemp,
+      }
+    },
+  )
+
   const getYForX = ({
     timestamp,
     timezone,
@@ -327,5 +357,6 @@ export const generateGraphData = (
     formattedValues,
     timestamps,
     getYForX,
+    derivedSevenDayTemperatures,
   }
 }
