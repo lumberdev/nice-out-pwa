@@ -2,7 +2,7 @@ import React from 'react'
 import { useGlobalContext } from '@/lib/GlobalContext'
 
 const WeatherInfoSummary = () => {
-  const { weatherInfo } = useGlobalContext()
+  const { weatherInfo, isUnitMetric } = useGlobalContext()
   const {
     wind,
     precipitation,
@@ -17,44 +17,50 @@ const WeatherInfoSummary = () => {
     {
       title: 'Wind',
       value: wind,
-      unit: 'km/h',
-      // unit: 'mph',
+      metricUnit: 'km/h',
+      imperialUnit: 'mph',
     },
     {
       title: 'Precipitation',
       value: precipitation,
-      unit: 'mm',
+      metricUnit: 'mm',
+      imperialUnit: 'in',
     },
     {
       title: 'Humidity',
       value: humidity,
-      unit: '%',
+      metricUnit: '%',
+      imperialUnit: '%',
     },
     {
       title: 'Feels Like',
       value: feelsLike,
-      unit: '°',
+      metricUnit: '°',
+      imperialUnit: '°',
     },
     {
       title: 'Cloud Cover',
       value: cloudCover,
-      unit: '%',
+      metricUnit: '%',
+      imperialUnit: '%',
     },
     {
       title: 'Pressure',
       value: pressure,
-      unit: 'mb',
-      // unit: 'hg',
+      metricUnit: 'mb',
+      imperialUnit: 'hg',
     },
     {
       title: 'Dew Point',
       value: dew,
-      unit: '°',
+      metricUnit: '°',
+      imperialUnit: '°',
     },
     {
       title: 'UV Index',
       value: uvIndex,
-      unit: '',
+      metricUnit: '',
+      imperialUnit: '',
     },
   ]
   return (
@@ -67,7 +73,9 @@ const WeatherInfoSummary = () => {
             </div>
             <div className="flex gap-0.5 text-3xs font-medium tracking-wide text-white md:text-sm">
               <span>{info.value}</span>
-              <span className="text-3xs md:text-sm">{info.unit}</span>
+              <span className="text-3xs md:text-sm">
+                {isUnitMetric ? info.metricUnit : info.imperialUnit}
+              </span>
             </div>
           </div>
         )

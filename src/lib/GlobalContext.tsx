@@ -24,7 +24,12 @@ import {
   isWithinInterval,
 } from 'date-fns'
 import { formatInTimeZone, toZonedTime } from 'date-fns-tz'
-import { getConvertedTemperature } from '@/utils/unitConverter'
+import {
+  getConvertedTemperature,
+  getConvertedPrecipitation,
+  getConvertedPressure,
+  getConvertedWindSpeed,
+} from '@/utils/unitConverter'
 
 interface GlobalContextValue {
   weatherData: WeatherData | undefined
@@ -237,13 +242,25 @@ export const GlobalContextProvider = ({
     })
 
     setWeatherInfo({
-      wind: currentData?.windSpeed ?? 0,
-      precipitation: currentData?.precipitationAmount ?? 0,
+      wind: getConvertedWindSpeed(currentData?.windSpeed, isUnitMetric) ?? 0,
+      precipitation:
+        getConvertedPrecipitation(
+          currentData?.precipitationAmount,
+          isUnitMetric,
+        ) ?? 0,
       humidity: currentData?.humidity ?? 0,
-      feelsLike: currentData?.temperatureApparent ?? 0,
+      feelsLike:
+        getConvertedTemperature(
+          currentData?.temperatureApparent,
+          isUnitMetric,
+        ) ?? 0,
       cloudCover: currentData?.cloudCover ?? 0,
-      pressure: currentData?.pressure ?? 0,
-      dew: currentData?.temperatureDewPoint ?? 0,
+      pressure: getConvertedPressure(currentData?.pressure, isUnitMetric) ?? 0,
+      dew:
+        getConvertedTemperature(
+          currentData?.temperatureDewPoint,
+          isUnitMetric,
+        ) ?? 0,
       uvIndex: currentData?.uvIndex ?? 0,
       precipitationChance: currentData?.precipitationChance ?? 0,
     })
