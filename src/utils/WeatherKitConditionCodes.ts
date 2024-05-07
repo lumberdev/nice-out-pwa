@@ -4,7 +4,7 @@
 // 1. Extracted from WeatherKit Swift API Docs https://gist.github.com/mikesprague/048a93b832e2862050356ca233ef4dc1
 // 2. https://github.com/hrbrmstr/weatherkit/blob/batman/R/enumerations.R
 
-export interface ConditionCode {
+export interface WeatherKitConditionCode {
   code: string
   description: string
   type:
@@ -17,7 +17,7 @@ export interface ConditionCode {
     | 'tropical-hazard'
 }
 
-export const conditionCodes: ConditionCode[] = [
+export const weatherKitConditionCodes: WeatherKitConditionCode[] = [
   // from the 1st reference
   {
     code: 'BlowingDust',

@@ -59,7 +59,7 @@ const Footer = () => {
                 viewBox="0 0 24 24"
               />
             </span>
-            <span className="relative left-0.5 text-2xs opacity-60 md:text-sm">
+            <span className="relative text-2xs opacity-60 md:text-sm">
               {getAverageTemperature(day.forecastStart, isUnitMetric)}
             </span>
             {isSameDay(day.forecastStart, currentDay?.forecastStart ?? '') && (

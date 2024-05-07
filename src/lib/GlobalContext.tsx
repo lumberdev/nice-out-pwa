@@ -30,6 +30,7 @@ import {
   getConvertedPressure,
   getConvertedWindSpeed,
 } from '@/utils/unitConverter'
+import { weatherKitConditionCodes } from '@/utils/WeatherKitConditionCodes'
 
 interface GlobalContextValue {
   weatherData: WeatherData | undefined
@@ -223,7 +224,10 @@ export const GlobalContextProvider = ({
     setTimestamp({
       time: formatInTimeZone(timestamp, timezone, 'hh:mm'),
       meridiem: formatInTimeZone(timestamp, timezone, 'a'),
-      summary: currentData?.conditionCode ?? '',
+      summary:
+        weatherKitConditionCodes.find(
+          (codes) => codes.code === currentData?.conditionCode,
+        )?.description ?? '',
       icon: currentData?.conditionCode ?? '',
     })
     setTemperatureData({
