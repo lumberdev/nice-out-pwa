@@ -24,6 +24,7 @@ import {
   isWithinInterval,
 } from 'date-fns'
 import { formatInTimeZone, toZonedTime } from 'date-fns-tz'
+import { getConvertedTemperature } from '@/utils/unitConverter'
 
 interface GlobalContextValue {
   weatherData: WeatherData | undefined
@@ -51,9 +52,20 @@ interface GlobalContextValue {
   }
   currentDay: DailyWeather | undefined
   handleAnimation: () => void
+  isUnitMetric: boolean
+  setIsUnitMetric: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 const GlobalContext = createContext<GlobalContextValue | undefined>(undefined)
+
+const initialTemperatureData = {
+  temperature: 0,
+  feelsLikeTemperature: 0,
+  currentDayMaxTemp: 0,
+  currentDayMinTemp: 0,
+  currentDayFeelsLikeMaxTemp: 0,
+  currentDayFeelsLikeMinTemp: 0,
+}
 
 export const useGlobalContext = (): GlobalContextValue => {
   const context = useContext(GlobalContext)
@@ -72,6 +84,7 @@ export const GlobalContextProvider = ({
 }) => {
   const [graphData, setGraphData] = useState<GraphData>()
   const [currentDay, setCurrentDay] = useState<DailyWeather | undefined>()
+  const [isUnitMetric, setIsUnitMetric] = useState(true)
 
   const location = useLocation()
   const { data: weatherData, error, isLoading } = useWeatherData({ location })
@@ -95,14 +108,9 @@ export const GlobalContextProvider = ({
   })
   const [isItDay, setIsItDay] = useState(true)
 
-  const [temperatureData, setTemperatureData] = useState<TemperatureData>({
-    temperature: 0,
-    feelsLikeTemperature: 0,
-    currentDayMaxTemp: 0,
-    currentDayMinTemp: 0,
-    currentDayFeelsLikeMaxTemp: 0,
-    currentDayFeelsLikeMinTemp: 0,
-  })
+  const [temperatureData, setTemperatureData] = useState<TemperatureData>(
+    initialTemperatureData,
+  )
 
   const [weatherInfo, setWeatherInfo] = useState<WeatherInfo>({
     wind: 0,
@@ -205,12 +213,27 @@ export const GlobalContextProvider = ({
       icon: currentData?.conditionCode ?? '',
     })
     setTemperatureData({
-      temperature,
-      feelsLikeTemperature,
-      currentDayMaxTemp,
-      currentDayMinTemp,
-      currentDayFeelsLikeMaxTemp,
-      currentDayFeelsLikeMinTemp,
+      temperature: getConvertedTemperature(temperature, isUnitMetric) as number,
+      feelsLikeTemperature: getConvertedTemperature(
+        feelsLikeTemperature,
+        isUnitMetric,
+      ),
+      currentDayMaxTemp: getConvertedTemperature(
+        currentDayMaxTemp,
+        isUnitMetric,
+      ),
+      currentDayMinTemp: getConvertedTemperature(
+        currentDayMinTemp,
+        isUnitMetric,
+      ),
+      currentDayFeelsLikeMaxTemp: getConvertedTemperature(
+        currentDayFeelsLikeMaxTemp,
+        isUnitMetric,
+      ),
+      currentDayFeelsLikeMinTemp: getConvertedTemperature(
+        currentDayFeelsLikeMinTemp,
+        isUnitMetric,
+      ),
     })
 
     setWeatherInfo({
@@ -224,7 +247,7 @@ export const GlobalContextProvider = ({
       uvIndex: currentData?.uvIndex ?? 0,
       precipitationChance: currentData?.precipitationChance ?? 0,
     })
-  }, [graphData, hasD, weatherData])
+  }, [graphData, hasD, weatherData, isUnitMetric])
 
   useEffect(() => {
     if (!weatherData) return
@@ -274,6 +297,8 @@ export const GlobalContextProvider = ({
     error,
     isLoading,
     currentDay,
+    isUnitMetric,
+    setIsUnitMetric,
   }
 
   return (

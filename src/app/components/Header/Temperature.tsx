@@ -9,7 +9,7 @@ const Temperature = () => {
   const [isFeelsLikeTemperature, setIsFeelsLikeTemperature] = useState(false)
   const longPressTimer = useRef<NodeJS.Timeout | null>(null)
   const [longPressTriggered, setLongPressTriggered] = useState(false)
-  const { temperatureData } = useGlobalContext()
+  const { temperatureData, setIsUnitMetric } = useGlobalContext()
   const {
     temperature,
     feelsLikeTemperature,
@@ -35,6 +35,7 @@ const Temperature = () => {
     setLongPressTriggered(false)
     longPressTimer.current = setTimeout(() => {
       setLongPressTriggered(true)
+      setIsUnitMetric((prev) => !prev)
       console.log('Long press activated')
     }, 700)
   }

@@ -5,12 +5,19 @@ import clsx from 'clsx'
 import { motion } from 'framer-motion'
 import { isSameDay } from 'date-fns'
 import { formatInTimeZone } from 'date-fns-tz'
+import { getConvertedTemperature } from '@/utils/unitConverter'
 
 const Footer = () => {
-  const { weatherData, currentDay, graphData, containerRef } =
+  const { weatherData, currentDay, graphData, containerRef, isUnitMetric } =
     useGlobalContext()
 
   const firstSevenDays = weatherData?.daily.slice(0, 7)
+
+  const getAverageTemp = (min: number, max: number, isUnitMetric: boolean) => {
+    if (!min || !max) return '-'
+    const averageTemp = Math.round((min + max) / 2)
+    return getConvertedTemperature(averageTemp, isUnitMetric)
+  }
 
   const handleClick = (index: number) => {
     if (!graphData) return
@@ -33,7 +40,11 @@ const Footer = () => {
             )}
           >
             <span className="text-2xs uppercase opacity-60 md:text-sm">
-              {formatInTimeZone(day.forecastStart, weatherData?.timezone ?? '', 'E')}
+              {formatInTimeZone(
+                day.forecastStart,
+                weatherData?.timezone ?? '',
+                'E',
+              )}
             </span>
             <span className="pb-0.5">
               <WeatherIcon
@@ -47,7 +58,12 @@ const Footer = () => {
               />
             </span>
             <span className="relative left-0.5 text-2xs opacity-60 md:text-sm">
-              {Math.round((day.temperatureMax + day.temperatureMin) / 2)}°
+              {getAverageTemp(
+                day.temperatureMin,
+                day.temperatureMax,
+                isUnitMetric,
+              )}
+              °
             </span>
             {isSameDay(day.forecastStart, currentDay?.forecastStart ?? '') && (
               <motion.div
