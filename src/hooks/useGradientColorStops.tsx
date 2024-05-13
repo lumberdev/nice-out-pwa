@@ -31,8 +31,11 @@ const cloudyDay = [
   '#946a50',
 ]
 
-export const useGradientColorStops = (isItDay: boolean, icon: number) => {
-  return isItDay ? dayWeatherGradients[icon] : nightWeatherGradients[icon]
+export const useGradientColorStops = (
+  isItDay: boolean,
+  icon: number | string,
+) => {
+  return isItDay ? dayAppleConditionCodesWeatherGradient[icon] : nightAppleConditionCodesWeatherGradient[icon]
 }
 
 export const dayWeatherGradients: { [key: string]: string[] } = {
@@ -111,4 +114,96 @@ export const nightWeatherGradients: { [key: string]: string[] } = {
   34: cloudyNight, // 34 - Snow shower (night)
   35: cloudyNight, // 35 - Rain and snow (night)
   36: cloudyNight, // 36 - Possible freezing rain (night)
+}
+
+// https://github.com/hrbrmstr/weatherkit/blob/batman/R/enumerations.R
+
+export const dayAppleConditionCodesWeatherGradient: {
+  [key: string]: string[]
+} = {
+  Clear: clearDay,
+  Cloudy: cloudyDay,
+  Dust: cloudyDay,
+  Fog: cloudyDay,
+  Haze: cloudyDay,
+  MostlyClear: clearDay,
+  MostlyCloudy: cloudyDay,
+  PartlyCloudy: cloudyDay,
+  ScatteredThunderstorms: cloudyDay,
+  Smoke: cloudyDay,
+  Breezy: cloudyDay,
+  Windy: cloudyDay,
+  Drizzle: cloudyDay,
+  HeavyRain: cloudyDay,
+  Rain: cloudyDay,
+  Showers: cloudyDay,
+  Flurries: cloudyDay,
+  HeavySnow: cloudyDay,
+  MixedRainAndSleet: cloudyDay,
+  MixedRainAndSnow: cloudyDay,
+  MixedRainfall: cloudyDay,
+  MixedSnowAndSleet: cloudyDay,
+  ScatteredShowers: cloudyDay,
+  ScatteredSnowShowers: cloudyDay,
+  Sleet: cloudyDay,
+  Snow: cloudyDay,
+  SnowShowers: cloudyDay,
+  Blizzard: cloudyDay,
+  BlowingSnow: cloudyDay,
+  FreezingDrizzle: cloudyDay,
+  FreezingRain: cloudyDay,
+  Frigid: cloudyDay,
+  Hail: cloudyDay,
+  Hot: clearDay,
+  Hurricane: cloudyDay,
+  IsolatedThunderstorms: cloudyDay,
+  SevereThunderstorm: cloudyDay,
+  Thunderstorm: cloudyDay,
+  Tornado: cloudyDay,
+  TropicalStorm: cloudyDay,
+}
+
+export const nightAppleConditionCodesWeatherGradient: {
+  [key: string]: string[]
+} = {
+  Clear: clearNight,
+  Cloudy: cloudyNight,
+  Dust: cloudyNight,
+  Fog: cloudyNight,
+  Haze: cloudyNight,
+  MostlyClear: clearNight,
+  MostlyCloudy: cloudyNight,
+  PartlyCloudy: cloudyNight,
+  ScatteredThunderstorms: cloudyNight,
+  Smoke: cloudyNight,
+  Breezy: cloudyNight,
+  Windy: cloudyNight,
+  Drizzle: cloudyNight,
+  HeavyRain: cloudyNight,
+  Rain: cloudyNight,
+  Showers: cloudyNight,
+  Flurries: cloudyNight,
+  HeavySnow: cloudyNight,
+  MixedRainAndSleet: cloudyNight,
+  MixedRainAndSnow: cloudyNight,
+  MixedRainfall: cloudyNight,
+  MixedSnowAndSleet: cloudyNight,
+  ScatteredShowers: cloudyNight,
+  ScatteredSnowShowers: cloudyNight,
+  Sleet: cloudyNight,
+  Snow: cloudyNight,
+  SnowShowers: cloudyNight,
+  Blizzard: cloudyNight,
+  BlowingSnow: cloudyNight,
+  FreezingDrizzle: cloudyNight,
+  FreezingRain: cloudyNight,
+  Frigid: cloudyNight,
+  Hail: cloudyNight,
+  Hot: clearNight,
+  Hurricane: cloudyNight,
+  IsolatedThunderstorms: cloudyNight,
+  SevereThunderstorm: cloudyNight,
+  Thunderstorm: cloudyNight,
+  Tornado: cloudyNight,
+  TropicalStorm: cloudyNight,
 }

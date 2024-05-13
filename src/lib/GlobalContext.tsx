@@ -6,7 +6,7 @@ import {
   TemperatureData,
   DailyWeather,
   WeatherInfo,
-} from '@/types'
+} from '@/types/weatherKit'
 import React, {
   RefObject,
   createContext,
@@ -24,6 +24,16 @@ import {
   isWithinInterval,
 } from 'date-fns'
 import { formatInTimeZone, toZonedTime } from 'date-fns-tz'
+import {
+  getConvertedTemperature,
+  getConvertedPrecipitation,
+  getConvertedPressure,
+  getConvertedWindSpeed,
+} from '@/utils/unitConverter'
+import {
+  weatherKitConditionCodes,
+  getAdjustedConditionCode,
+} from '@/utils/WeatherKitConditionCodes'
 
 interface GlobalContextValue {
   weatherData: WeatherData | undefined
@@ -39,7 +49,8 @@ interface GlobalContextValue {
     time: string
     meridiem: string
     summary: string
-    icon: number
+    icon: number | string
+    daylight: boolean
   }
   isItDay: boolean
   temperatureData: TemperatureData
@@ -51,9 +62,21 @@ interface GlobalContextValue {
   }
   currentDay: DailyWeather | undefined
   handleAnimation: () => void
+  isUnitMetric: boolean
+  setIsUnitMetric: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 const GlobalContext = createContext<GlobalContextValue | undefined>(undefined)
+
+const initialTemperatureData = {
+  temperature: 0,
+  feelsLikeTemperature: 0,
+  currentDayMaxTemp: 0,
+  currentDayMinTemp: 0,
+  currentDayFeelsLikeMaxTemp: 0,
+  currentDayFeelsLikeMinTemp: 0,
+  currentDayDailyAverageTemp: 0,
+}
 
 export const useGlobalContext = (): GlobalContextValue => {
   const context = useContext(GlobalContext)
@@ -72,6 +95,7 @@ export const GlobalContextProvider = ({
 }) => {
   const [graphData, setGraphData] = useState<GraphData>()
   const [currentDay, setCurrentDay] = useState<DailyWeather | undefined>()
+  const [isUnitMetric, setIsUnitMetric] = useState(true)
 
   const location = useLocation()
   const { data: weatherData, error, isLoading } = useWeatherData({ location })
@@ -86,23 +110,20 @@ export const GlobalContextProvider = ({
     time: string
     meridiem: string
     summary: string
-    icon: number
+    icon: number | string
+    daylight: boolean
   }>({
     time: '10:40',
     meridiem: 'AM',
     summary: 'Sunny',
-    icon: 2,
+    icon: 'Clear',
+    daylight: true,
   })
   const [isItDay, setIsItDay] = useState(true)
 
-  const [temperatureData, setTemperatureData] = useState<TemperatureData>({
-    temperature: 0,
-    feelsLikeTemperature: 0,
-    currentDayMaxTemp: 0,
-    currentDayMinTemp: 0,
-    currentDayFeelsLikeMaxTemp: 0,
-    currentDayFeelsLikeMinTemp: 0,
-  })
+  const [temperatureData, setTemperatureData] = useState<TemperatureData>(
+    initialTemperatureData,
+  )
 
   const [weatherInfo, setWeatherInfo] = useState<WeatherInfo>({
     wind: 0,
@@ -137,7 +158,13 @@ export const GlobalContextProvider = ({
     const { getYForX } = graphData
     const scrollX = containerRef.current?.scrollLeft ?? 0
 
-    const { scaleX, scaleY, formattedSevenDayHourly, dayBreaks } = graphData
+    const {
+      scaleX,
+      scaleY,
+      formattedSevenDayHourly,
+      dayBreaks,
+      derivedSevenDayTemperatures,
+    } = graphData
     const x = scrollX + window.innerWidth / 2
     const timestamp = scaleX.invert(x)
     const y = getYForX({ timestamp, timezone })
@@ -166,25 +193,30 @@ export const GlobalContextProvider = ({
     )
     const currentData = activeDay?.get(roundedTimestamp)
 
-    const currentDay = weatherData.daily.find(({ day }) =>
+    const currentDay = weatherData.daily.find(({ forecastStart }) =>
       isSameDay(
-        toZonedTime(day, timezone),
+        toZonedTime(forecastStart, timezone),
         toZonedTime(flooredTimestamp, timezone),
       ),
     )
+    const currentDayDerivedTemps = derivedSevenDayTemperatures.find((day) => {
+      return isSameDay(
+        toZonedTime(day.date, timezone),
+        toZonedTime(flooredTimestamp, timezone),
+      )
+    })
     if (currentDay) {
       setCurrentDay(currentDay)
     }
     const temperature = scaleY.invert(y)
-    const feelsLikeTemperature = activeDay?.get(roundedTimestamp)?.feels_like
+    const feelsLikeTemperature =
+      activeDay?.get(roundedTimestamp)?.temperatureApparent
 
     const currentDayBreaks = dayBreaks.find(({ currentDay }) =>
       isSameDay(currentDay, roundedTimestamp),
     )
     let currentDayMaxTemp: number | undefined,
-      currentDayMinTemp: number | undefined,
-      currentDayFeelsLikeMaxTemp: number | undefined,
-      currentDayFeelsLikeMinTemp: number | undefined
+      currentDayMinTemp: number | undefined
 
     if (currentDayBreaks) {
       const isItDay = isWithinInterval(timestamp, {
@@ -194,36 +226,69 @@ export const GlobalContextProvider = ({
       setIsItDay(isItDay)
       currentDayMaxTemp = currentDayBreaks.dayMaxTemp
       currentDayMinTemp = currentDayBreaks.dayMinTemp
-      currentDayFeelsLikeMaxTemp = currentDayBreaks.dayFeelsLikeMaxTemp
-      currentDayFeelsLikeMinTemp = currentDayBreaks.dayFeelsLikeMinTemp
     }
     setTimestamp({
       time: formatInTimeZone(timestamp, timezone, 'hh:mm'),
       meridiem: formatInTimeZone(timestamp, timezone, 'a'),
-      summary: currentData?.summary ?? '',
-      icon: currentData?.icon ?? 0,
+      summary:
+        weatherKitConditionCodes.find(
+          (codes) => codes.code === currentData?.conditionCode,
+        )?.description ?? '',
+      icon: currentData?.conditionCode ?? '',
+      daylight: currentData?.daylight ?? true,
     })
     setTemperatureData({
-      temperature,
-      feelsLikeTemperature,
-      currentDayMaxTemp,
-      currentDayMinTemp,
-      currentDayFeelsLikeMaxTemp,
-      currentDayFeelsLikeMinTemp,
+      temperature: getConvertedTemperature(temperature, isUnitMetric) as number,
+      feelsLikeTemperature: getConvertedTemperature(
+        feelsLikeTemperature,
+        isUnitMetric,
+      ),
+      currentDayMaxTemp: getConvertedTemperature(
+        currentDayMaxTemp,
+        isUnitMetric,
+      ),
+      currentDayMinTemp: getConvertedTemperature(
+        currentDayMinTemp,
+        isUnitMetric,
+      ),
+      currentDayFeelsLikeMaxTemp: getConvertedTemperature(
+        currentDayDerivedTemps?.feelsLikeMaxTemp,
+        isUnitMetric,
+      ),
+      currentDayFeelsLikeMinTemp: getConvertedTemperature(
+        currentDayDerivedTemps?.feelsLikeMinTemp,
+        isUnitMetric,
+      ),
+      currentDayDailyAverageTemp: getConvertedTemperature(
+        currentDayDerivedTemps?.dailyAverageTemp,
+        isUnitMetric,
+      ),
     })
 
     setWeatherInfo({
-      wind: currentData?.wind.speed ?? 0,
-      precipitation: currentData?.precipitation.total ?? 0,
+      wind: getConvertedWindSpeed(currentData?.windSpeed, isUnitMetric) ?? 0,
+      precipitation:
+        getConvertedPrecipitation(
+          currentData?.precipitationAmount,
+          isUnitMetric,
+        ) ?? 0,
       humidity: currentData?.humidity ?? 0,
-      feelsLike: currentData?.feels_like ?? 0,
-      cloudCover: currentData?.cloud_cover.total ?? 0,
-      pressure: currentData?.pressure ?? 0,
-      dew: currentData?.dew_point ?? 0,
-      uvIndex: currentData?.uv_index ?? 0,
-      precipitationChance: currentData?.probability.precipitation ?? 0,
+      feelsLike:
+        getConvertedTemperature(
+          currentData?.temperatureApparent,
+          isUnitMetric,
+        ) ?? 0,
+      cloudCover: currentData?.cloudCover ?? 0,
+      pressure: getConvertedPressure(currentData?.pressure, isUnitMetric) ?? 0,
+      dew:
+        getConvertedTemperature(
+          currentData?.temperatureDewPoint,
+          isUnitMetric,
+        ) ?? 0,
+      uvIndex: currentData?.uvIndex ?? 0,
+      precipitationChance: currentData?.precipitationChance ?? 0,
     })
-  }, [graphData, hasD, weatherData])
+  }, [graphData, hasD, weatherData, isUnitMetric])
 
   useEffect(() => {
     if (!weatherData) return
@@ -273,6 +338,8 @@ export const GlobalContextProvider = ({
     error,
     isLoading,
     currentDay,
+    isUnitMetric,
+    setIsUnitMetric,
   }
 
   return (

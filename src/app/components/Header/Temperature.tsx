@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useRef } from 'react'
 import { useGlobalContext } from '@/lib/GlobalContext'
 import WeatherIcon from '../Icon'
 import clsx from 'clsx'
@@ -7,7 +7,9 @@ import ChipButton from '@/app/components/common/ChipButton'
 
 const Temperature = () => {
   const [isFeelsLikeTemperature, setIsFeelsLikeTemperature] = useState(false)
-  const { temperatureData } = useGlobalContext()
+  const longPressTimer = useRef<NodeJS.Timeout | null>(null)
+  const [longPressTriggered, setLongPressTriggered] = useState(false)
+  const { temperatureData, setIsUnitMetric } = useGlobalContext()
   const {
     temperature,
     feelsLikeTemperature,
@@ -27,9 +29,43 @@ const Temperature = () => {
   const handleTemperatureTypeChange = () => {
     setIsFeelsLikeTemperature((prev) => !prev)
   }
+
+  // Start long press detection
+  const handleMouseDown = () => {
+    setLongPressTriggered(false)
+    longPressTimer.current = setTimeout(() => {
+      setLongPressTriggered(true)
+      setIsUnitMetric((prev) => !prev)
+      console.log('Long press activated')
+    }, 700)
+  }
+
+  // Clear the timer on mouse up
+  const handleMouseUp = () => {
+    if (longPressTimer.current) {
+      clearTimeout(longPressTimer.current)
+      longPressTimer.current = null
+    }
+  }
+
+  // Handle onClick only if it's not a long press
+  const handleClick = () => {
+    if (!longPressTriggered) {
+      console.log('Click without long press')
+    }
+  }
+
   return (
-    <div className="min-w-40 flex flex-col items-center text-white md:min-w-60 ">
-      <div className={clsx(roboto.className, 'flex gap-0 font-thin md:gap-1')}>
+    <div className="flex min-w-40 flex-col items-center text-white md:min-w-60 ">
+      <div
+        onMouseDown={handleMouseDown}
+        onMouseUp={handleMouseUp}
+        onClick={handleClick}
+        className={clsx(
+          roboto.className,
+          'flex cursor-pointer gap-0 font-thin md:gap-1',
+        )}
+      >
         <div className="text-[7.5rem] leading-none md:text-9xl">
           {isFeelsLikeTemperature
             ? formattedTemperature(feelsLikeTemperature)

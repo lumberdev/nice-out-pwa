@@ -13,12 +13,12 @@ const WeatherInfoDisplay = () => {
   const components = [
     <CircularProgressInfoDisplay
       key="precip"
-      value={precipitationChance}
+      value={Math.round(precipitationChance * 100)}
       label="Precip"
     />,
     <CircularProgressInfoDisplay
       key="humidity"
-      value={humidity}
+      value={Math.round(humidity * 100)}
       label="Humidity"
     />,
     <WeatherInfoSummary key="summary" />,

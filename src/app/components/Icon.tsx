@@ -11,6 +11,7 @@ import BsSleet from '@/assets/svg/weather/BsCloudSleet.svg'
 import BsCloudSnow from '@/assets/svg/weather/BsCloudSnow.svg'
 import BsCloudSun from '@/assets/svg/weather/BsCloudSun.svg'
 import BsCloudy from '@/assets/svg/weather/BsCloudy.svg'
+import BsWind from '@/assets/svg/weather/BsWind.svg'
 import BsMoon from '@/assets/svg/weather/BsMoon.svg'
 import BsSun from '@/assets/svg/weather/BsSun.svg'
 import BsSunrise from '@/assets/svg/weather/BsSunrise.svg'
@@ -29,7 +30,7 @@ const WeatherIcon = ({
   height,
   viewBox
 }: {
-  icon: number | string
+  icon: number | string | undefined
   x: number
   y: number
   width: number | string
@@ -127,8 +128,77 @@ const WeatherIcon = ({
       return <BsSunset width={width} height={height} x={x} y={y} viewBox={viewBox} />
     case 'sunrise':
       return <BsSunrise width={width} height={height} x={x} y={y} viewBox={viewBox} />
+
+    case 'BlowingDust':
+      return <BsWind width={width} height={height} x={x} y={y} viewBox={viewBox} />;
+    case 'Clear':
+    case 'MostlyClear':
+      return <BsSun width={width} height={height} x={x} y={y} viewBox={viewBox} />;
+    case 'SunShowers':
+      return <BsLightRain width={width} height={height} x={x} y={y} viewBox={viewBox} />;
+    case 'Cloudy':
+    case 'MostlyCloudy':
+    case 'PartlyCloudy':
+    case 'Overcast':
+      return <BsCloudy width={width} height={height} x={x} y={y} viewBox={viewBox} />;
+    case 'Foggy':
+    case 'Haze':
+    case 'Smoky':
+    case 'Dust':
+    case 'Fog':
+    case 'Smoke':
+      return <BsFog width={width} height={height} x={x} y={y} viewBox={viewBox} />;
+    case 'Breezy':
+    case 'Windy':
+      return <BsWind width={width} height={height} x={x} y={y} viewBox={viewBox} />;
+    case 'Drizzle':
+    case 'LightRain':
+    case 'MixedRainfall':
+      return <BsLightRain width={width} height={height} x={x} y={y} viewBox={viewBox} />;
+    case 'HeavyRain':
+    case 'Rain':
+    case 'Showers':
+    case 'ScatteredShowers':
+      return <BsCloudRainHeavy width={width} height={height} x={x} y={y} viewBox={viewBox} />;
+    case 'IsolatedThunderstorms':
+    case 'ScatteredThunderstorms':
+    case 'StrongStorms':
+    case 'Thunderstorms':
+    case 'SevereThunderstorm':
+    case 'Thunderstorm':
+      return <BsCloudLightningRain width={width} height={height} x={x} y={y} viewBox={viewBox} />;
+    case 'Frigid':
+    case 'HeavySnow':
+    case 'Blizzard':
+    case 'BlowingSnow':
+    case 'FreezingDrizzle':
+    case 'FreezingRain':
+    case 'MixedRainAndSnow':
+    case 'MixedSnowAndSleet':
+    case 'PossibleFreezingRain':
+    case 'PossibleRainAndSnow':
+    case 'Snow':
+    case 'SnowShowers':
+    case 'ScatteredSnowShowers':
+    case 'WintryMix':
+    case 'Sleet':
+      return <BsCloudSnow width={width} height={height} x={x} y={y} viewBox={viewBox} />;
+    case 'Hail':
+      return <BsCloudHail width={width} height={height} x={x} y={y} viewBox={viewBox} />;
+    case 'Hot':
+      return <BsSun width={width} height={height} x={x} y={y} viewBox={viewBox} />;
+    case 'Tornado':
+    case 'TropicalStorm':
+    case 'Hurricane':
+      return <BsCloudLightningRain width={width} height={height} x={x} y={y} viewBox={viewBox} />;
+
+    case 'ClearNight':
+      return <BsMoon width={width} height={height} x={x} y={y} viewBox={viewBox} />;
+    case 'MostlyClearNight':
+    case 'PartlyCloudyNight':
+      return <BsCloudMoon width={width} height={height} x={x} y={y} viewBox={viewBox} />
     default:
-      return null
+      return <BsCloudy width={width} height={height} x={x} y={y} viewBox={viewBox} /> // Sending back a general Cloudy Icon as default
   }
 }
 
