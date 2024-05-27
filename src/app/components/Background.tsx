@@ -17,7 +17,7 @@ const Background = ({
       <svg width="100%" height="100%">
         <defs>
           <linearGradient id={id} x1="50%" y1="0%" x2="75%" y2="100%">
-            {colorStops.map((color, i) => (
+            {colorStops?.map((color, i) => (
               <stop key={i} offset={`${offsets[i]}%`} stopColor={color} />
             ))}
           </linearGradient>

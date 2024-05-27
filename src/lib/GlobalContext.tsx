@@ -88,6 +88,14 @@ export const useGlobalContext = (): GlobalContextValue => {
   return context
 }
 
+const defaultTimestamp = {
+  time: '10:40',
+  meridiem: 'AM',
+  summary: 'Sunny',
+  icon: 'Clear',
+  daylight: true,
+}
+
 export const GlobalContextProvider = ({
   children,
 }: {
@@ -112,13 +120,7 @@ export const GlobalContextProvider = ({
     summary: string
     icon: number | string
     daylight: boolean
-  }>({
-    time: '10:40',
-    meridiem: 'AM',
-    summary: 'Sunny',
-    icon: 'Clear',
-    daylight: true,
-  })
+  }>(defaultTimestamp)
   const [isItDay, setIsItDay] = useState(true)
 
   const [temperatureData, setTemperatureData] = useState<TemperatureData>(
@@ -166,8 +168,8 @@ export const GlobalContextProvider = ({
       derivedSevenDayTemperatures,
     } = graphData
     const x = scrollX + window.innerWidth / 2
-    const timestamp = scaleX.invert(x)
-    const y = getYForX({ timestamp, timezone })
+    const graphTimestamp = scaleX.invert(x)
+    const y = getYForX({ timestamp: graphTimestamp, timezone })
     circleRef.current.setAttribute('cx', x.toString())
     circleRef.current.setAttribute('cy', y.toString())
     groupRef.current.setAttribute('transform', `translate(${x + 6}, ${y - 40})`)
@@ -176,17 +178,16 @@ export const GlobalContextProvider = ({
      * This timestamp is rounded to the nearest hour.
      * Useful for fiding the closest data point in the hourly data.
      */
-    const roundedTimestamp = formatISO(roundToNearestHours(timestamp)).slice(
-      0,
-      -6,
-    )
+    const roundedTimestamp = formatISO(
+      roundToNearestHours(graphTimestamp),
+    ).slice(0, -6)
     /**
      * This timestamp is floored to the nearest hour.
      * Useful for finding the current day's data.
      * If we use the rounded timestamp, we might get the next day's data.
      */
     const flooredTimestamp = formatISO(
-      roundToNearestHours(timestamp, { roundingMethod: 'floor' }),
+      roundToNearestHours(graphTimestamp, { roundingMethod: 'floor' }),
     ).slice(0, -6)
     const activeDay = formattedSevenDayHourly.find((day) =>
       day.get(roundedTimestamp),
@@ -219,7 +220,7 @@ export const GlobalContextProvider = ({
       currentDayMinTemp: number | undefined
 
     if (currentDayBreaks) {
-      const isItDay = isWithinInterval(timestamp, {
+      const isItDay = isWithinInterval(graphTimestamp, {
         start: currentDayBreaks.twilight.sunrise.fullSunriseTime,
         end: currentDayBreaks.twilight.sunset.fullSunsetTime,
       })
@@ -227,15 +228,18 @@ export const GlobalContextProvider = ({
       currentDayMaxTemp = currentDayBreaks.dayMaxTemp
       currentDayMinTemp = currentDayBreaks.dayMinTemp
     }
+    // when the graph is scrolled to the leftmost edge or rightmost edge, icon becomes undefined breaking the graph background
+    // to prevent that, we set the icon to the previous icon as fallback
+    const oldTimestamp = timestamp
     setTimestamp({
-      time: formatInTimeZone(timestamp, timezone, 'hh:mm'),
-      meridiem: formatInTimeZone(timestamp, timezone, 'a'),
+      time: formatInTimeZone(graphTimestamp, timezone, 'hh:mm'),
+      meridiem: formatInTimeZone(graphTimestamp, timezone, 'a'),
       summary:
         weatherKitConditionCodes.find(
           (codes) => codes.code === currentData?.conditionCode,
         )?.description ?? '',
-      icon: currentData?.conditionCode ?? '',
-      daylight: currentData?.daylight ?? true,
+      icon: currentData?.conditionCode ?? oldTimestamp?.icon ?? 'Clear',
+      daylight: currentData?.daylight ?? oldTimestamp?.daylight ?? true,
     })
     setTemperatureData({
       temperature: getConvertedTemperature(temperature, isUnitMetric) as number,

@@ -82,8 +82,8 @@ const Temperature = () => {
               icon={'min'}
               x={0}
               y={0}
-              width={'1rem'}
-              height={'1rem'}
+              width={16}
+              height={16}
               viewBox="0 0 24 24"
             />
             <div className="text-sm font-medium md:text-xl">
@@ -97,8 +97,8 @@ const Temperature = () => {
               icon={'max'}
               x={0}
               y={0}
-              width={'1rem'}
-              height={'1rem'}
+              width={16}
+              height={16}
               viewBox="0 0 24 24"
             />
             <div className="text-sm font-medium md:text-xl">
