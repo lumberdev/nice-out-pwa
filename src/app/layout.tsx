@@ -4,6 +4,8 @@ import type { Metadata, Viewport } from 'next'
 import type { ReactNode } from 'react'
 import Providers from '@/lib/Providers'
 import clsx from 'clsx'
+import * as snippet from '@segment/snippet'
+import Script from 'next/script'
 
 const APP_NAME = 'Nice out App'
 const APP_DEFAULT_TITLE = 'Nice Out'
@@ -54,9 +56,21 @@ export default function RootLayout({
 }: Readonly<{
   children: ReactNode
 }>) {
+  const loadSegment = () => {
+    const options = {
+      apiKey: process.env.NEXT_PUBLIC_SEGMENT_WRITE_KEY,
+    }
+    if (process.env.NEXT_PUBLIC_NODE_ENV) return snippet.max(options)
+    else return snippet.min(options)
+  }
   return (
-    <html lang='en' className='overflow-hidden'>
+    <html lang="en" className="overflow-hidden">
       <head />
+      <Script
+        id="segmentScript"
+        dangerouslySetInnerHTML={{ __html: loadSegment() }}
+        strategy="lazyOnload"
+      />
       <body className={clsx(inter.className)}>
         <Providers>{children}</Providers>
       </body>

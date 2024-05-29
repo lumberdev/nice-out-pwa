@@ -1,4 +1,5 @@
 import jwt from 'jsonwebtoken'
+import { HttpError } from '@/utils/httpError'
 
 export async function GET(req: Request) {
   try {
@@ -11,7 +12,7 @@ export async function GET(req: Request) {
       !process.env.TEAM_ID ||
       !process.env.KEY_ID
     )
-      throw new Error(`Missing Credentials`)
+      throw new HttpError('Missing Credentials', 400)
 
     // decode the base64 encoded .p8 secret key file stored in PRIVATE_KEY
     const privateKey = Buffer.from(process.env.PRIVATE_KEY, 'base64').toString(
@@ -20,7 +21,7 @@ export async function GET(req: Request) {
 
     // Reference: https://allthecode.co/blog/post/setting-up-weatherkit-rest-api-in-node-js
     // https://developer.apple.com/documentation/weatherkitrestapi/request_authentication_for_weatherkit_rest_api
-    
+
     // @ts-ignore
     const token = jwt.sign(
       {
@@ -54,7 +55,7 @@ export async function GET(req: Request) {
     })
 
     if (!response.ok) {
-      throw new Error(`HTTP error! Status: ${response.status}`)
+      throw new HttpError(response.statusText, response.status)
     }
 
     // get the JSON data
@@ -63,7 +64,16 @@ export async function GET(req: Request) {
     // // return the data to your front end
     return Response.json(data, { status: 200 })
   } catch (error) {
-    console.error(error)
-    return Response.json({ error: 'It happens' }, { status: 500 })
+    let errorMessage = 'An unknown error occurred'
+    let status = 500
+
+    if (error instanceof HttpError) {
+      errorMessage = error.message
+      status = error.status
+    } else if (error instanceof Error) {
+      errorMessage = error.message
+    }
+
+    return new Response(JSON.stringify({ error: errorMessage }), { status })
   }
 }
