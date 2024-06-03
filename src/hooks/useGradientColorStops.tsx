@@ -35,7 +35,15 @@ export const useGradientColorStops = (
   isItDay: boolean,
   icon: number | string,
 ) => {
-  return isItDay ? dayAppleConditionCodesWeatherGradient[icon] : nightAppleConditionCodesWeatherGradient[icon]
+  const defaultIcon = 'Cloudy' // in case the API returns an unknown icon
+  const dayGradient =
+    dayAppleConditionCodesWeatherGradient[icon] ||
+    dayAppleConditionCodesWeatherGradient[defaultIcon]
+  const nightGradient =
+    nightAppleConditionCodesWeatherGradient[icon] ||
+    nightAppleConditionCodesWeatherGradient[defaultIcon]
+
+  return isItDay ? dayGradient : nightGradient
 }
 
 export const dayWeatherGradients: { [key: string]: string[] } = {
