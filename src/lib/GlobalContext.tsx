@@ -91,8 +91,8 @@ export const useGlobalContext = (): GlobalContextValue => {
 const defaultTimestamp = {
   time: '10:40',
   meridiem: 'AM',
-  summary: 'Sunny',
-  icon: 'Clear',
+  summary: 'Cloudy',
+  icon: 'Cloudy',
   daylight: true,
 }
 
@@ -238,7 +238,7 @@ export const GlobalContextProvider = ({
         weatherKitConditionCodes.find(
           (codes) => codes.code === currentData?.conditionCode,
         )?.description ?? '',
-      icon: currentData?.conditionCode ?? oldTimestamp?.icon ?? 'Clear',
+      icon: currentData?.conditionCode ?? oldTimestamp?.icon ?? 'Cloudy',
       daylight: currentData?.daylight ?? oldTimestamp?.daylight ?? true,
     })
     setTemperatureData({
