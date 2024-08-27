@@ -157,6 +157,8 @@ export type WeatherData = {
   current: CurrentWeather
   hourly: HourlyWeather[]
   daily: DailyWeather[]
+  locationName?: string
+  locationId?: string
 }
 
 export type TemperatureData = {
