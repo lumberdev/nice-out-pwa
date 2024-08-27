@@ -95,6 +95,8 @@ export const useWeatherData = ({
         current: json.currentWeather,
         hourly: json.forecastHourly.hours,
         daily: json.forecastDaily.days,
+        locationName: name,
+        locationId: id,
       }
     } catch (err) {
       console.log(err)
@@ -131,12 +133,5 @@ export const useWeatherData = ({
     staleTime: 1000 * 60 * 15, // Cache for 1 hour
   })
 
-  if (!query?.data?.current) {
-    return query
-  } else {
-    return {
-      ...query,
-      data: { ...query?.data, locationName: name, locationId: id },
-    }
-  }
+  return query
 }
