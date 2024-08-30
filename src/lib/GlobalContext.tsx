@@ -6,6 +6,7 @@ import {
   TemperatureData,
   DailyWeather,
   WeatherInfo,
+  cachedLocation,
 } from '@/types/weatherKit'
 import React, {
   RefObject,
@@ -34,6 +35,7 @@ import {
   weatherKitConditionCodes,
   getAdjustedConditionCode,
 } from '@/utils/WeatherKitConditionCodes'
+import { useCachedLocations } from '@/hooks/useGetCachedLocations'
 
 interface GlobalContextValue {
   weatherData: WeatherData | undefined
@@ -64,6 +66,11 @@ interface GlobalContextValue {
   handleAnimation: () => void
   isUnitMetric: boolean
   setIsUnitMetric: React.Dispatch<React.SetStateAction<boolean>>
+  cachedLocations: cachedLocation[] | null
+  activeLocationId: string | null | undefined
+  setActiveLocationId: React.Dispatch<
+    React.SetStateAction<string | null | undefined>
+  >
 }
 
 const GlobalContext = createContext<GlobalContextValue | undefined>(undefined)
@@ -104,9 +111,43 @@ export const GlobalContextProvider = ({
   const [graphData, setGraphData] = useState<GraphData>()
   const [currentDay, setCurrentDay] = useState<DailyWeather | undefined>()
   const [isUnitMetric, setIsUnitMetric] = useState(true)
+  const [activeLocationId, setActiveLocationId] = useState<
+    string | null | undefined
+  >(null)
 
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const storedActiveLocation =
+        localStorage.getItem('activeLocationId') || null
+      setActiveLocationId(storedActiveLocation)
+    }
+  }, [])
+
+  const cachedLocations = useCachedLocations({ activeLocationId })
   const location = useLocation()
-  const { data: weatherData, error, isLoading } = useWeatherData({ location })
+
+  const findLocation = cachedLocations?.find(
+    (location) => location.queryData.locationId === activeLocationId,
+  )?.queryData.location
+  const activeLocation = findLocation || location
+
+  const {
+    data: weatherData,
+    error,
+    isLoading,
+  } = useWeatherData({ location: activeLocation })
+
+  useEffect(() => {
+    if (
+      weatherData &&
+      weatherData?.locationId &&
+      activeLocationId !== weatherData?.locationId &&
+      typeof window !== 'undefined'
+    ) {
+      localStorage.setItem('activeLocationId', weatherData.locationId)
+      setActiveLocationId(weatherData?.locationId)
+    }
+  }, [weatherData, activeLocationId])
 
   const mainChart = useRef<SVGSVGElement>(null)
   const lineRef = useRef<SVGPathElement>(null)
@@ -344,6 +385,9 @@ export const GlobalContextProvider = ({
     currentDay,
     isUnitMetric,
     setIsUnitMetric,
+    cachedLocations,
+    activeLocationId,
+    setActiveLocationId,
   }
 
   return (

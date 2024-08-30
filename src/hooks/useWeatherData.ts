@@ -1,4 +1,4 @@
-import { WeatherData } from '@/types/weatherKit'
+import { GeoLocationData, WeatherData } from '@/types/weatherKit'
 import { useQuery } from '@tanstack/react-query'
 import useAnalytics from '@/hooks/useAnalytics'
 import { HttpError } from '@/utils/httpError'
@@ -11,15 +11,16 @@ type GetWeatherDataArgs = {
 export const useWeatherData = ({
   location,
 }: {
-  location: GeolocationPosition | null
+  location: GeoLocationData | null
 }) => {
   const { trackRequestError, trackRequestCompleted } = useAnalytics()
 
   const formatedLat =
-    Number(location?.coords.latitude.toFixed(2)) || location?.coords.latitude
+    Number(location?.coords?.latitude?.toFixed(2)) || location?.coords?.latitude
 
   const formatedLong =
-    Number(location?.coords.longitude.toFixed(2)) || location?.coords.longitude
+    Number(location?.coords?.longitude?.toFixed(2)) ||
+    location?.coords?.longitude
 
   const getlocationNameInfo = async ({ lat, lon }: GetWeatherDataArgs) => {
     try {
@@ -35,7 +36,7 @@ export const useWeatherData = ({
       const json = await res.json()
       return {
         name: json.name,
-        id: json.name + json.state + json.country,
+        id: 'weather-' + json.name + json.state + json.country,
       }
     } catch (err) {
       if (err instanceof HttpError) {
@@ -97,6 +98,14 @@ export const useWeatherData = ({
         daily: json.forecastDaily.days,
         locationName: name,
         locationId: id,
+        googleLocationID: location?.googleLocationID || '',
+        isGPSLocation: location?.isGPSLocation,
+        location: {
+          coords: {
+            latitude: formatedLat,
+            longitude: formatedLong,
+          },
+        },
       }
     } catch (err) {
       console.log(err)

@@ -159,6 +159,14 @@ export type WeatherData = {
   daily: DailyWeather[]
   locationName?: string
   locationId?: string
+  googleLocationID?: string
+  location?: {
+    coords: {
+      latitude: number | undefined
+      longitude: number | undefined
+    }
+  }
+  isGPSLocation?: boolean
 }
 
 export type TemperatureData = {
@@ -181,6 +189,23 @@ export type WeatherInfo = {
   dew: number
   uvIndex: number
   precipitationChance: number
+}
+
+export type cachedLocation = {
+  queryKey: [string, { lat: string; lon: string }]
+  queryData: WeatherData
+  queryStatus: string
+}
+
+export type GeoLocationData = {
+  coords: {
+    latitude: number | undefined
+    longitude: number | undefined
+  }
+  timeStamp?: EpochTimeStamp
+  name?: string
+  googleLocationID?: string
+  isGPSLocation?: boolean
 }
 
 export type GraphData = ReturnType<typeof generateGraphData>

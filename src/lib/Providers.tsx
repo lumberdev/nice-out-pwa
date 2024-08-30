@@ -9,7 +9,7 @@ import { GlobalContextProvider } from './GlobalContext'
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      gcTime: 1000 * 60 * 60, // 15 min
+      gcTime: 1000 * 60 * 15, // 15 min
     },
   },
 })
