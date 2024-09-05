@@ -23,9 +23,20 @@ export const LocationInfoCard = ({
 }: Props) => {
   const router = useRouter()
 
-  const { timezone, current, locationId, isGPSLocation } = location.queryData
+  const { timezone, current, locationId, isGPSLocation, daily } =
+    location.queryData
 
-  const currenTime = formatInTimeZone(getTime(new Date()), timezone, 'hh:mm a')
+  const currentTimeStamp = getTime(new Date())
+  const currenTime = formatInTimeZone(currentTimeStamp, timezone, 'hh:mm a')
+
+  // check its day or not based on if the time is between sunrise and sunset
+  const sunsetToday = getTime(daily[0].sunset)
+  const sunriseToday = getTime(daily[0].sunrise)
+  const isItDay =
+    sunriseToday && sunsetToday
+      ? sunriseToday < currentTimeStamp && sunsetToday > currentTimeStamp
+      : false
+
   const currentTemp =
     getConvertedTemperature(current?.temperature, isUnitMetric) ?? 0
 
@@ -40,7 +51,12 @@ export const LocationInfoCard = ({
       className="relative h-[20vh] max-h-[150px] cursor-pointer"
       onClick={handleLocationSelection}
     >
-      <Background card={true} icon={''} id="card-bg-gradient" isItDay={false} />
+      <Background
+        card={true}
+        icon={''}
+        id={`card-bg-gradient-${locationId}`}
+        isItDay={isItDay}
+      />
       <div className="absolute top-0 h-full w-full px-4 py-6">
         <div className="flex flex h-full items-center justify-between">
           <div className="flex h-full flex-col justify-between">

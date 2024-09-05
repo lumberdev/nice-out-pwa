@@ -14,10 +14,9 @@ const queryClient = new QueryClient({
   },
 })
 
-const persister =
-  typeof window !== 'undefined'
-    ? createSyncStoragePersister({ storage: window.localStorage })
-    : null
+const persister = createSyncStoragePersister({
+  storage: typeof window !== 'undefined' ? window.localStorage : null,
+})
 
 export default function Providers({
   children,

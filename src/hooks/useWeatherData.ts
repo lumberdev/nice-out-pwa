@@ -14,7 +14,6 @@ export const useWeatherData = ({
   location: GeoLocationData | null
 }) => {
   const { trackRequestError, trackRequestCompleted } = useAnalytics()
-
   const formatedLat =
     Number(location?.coords?.latitude?.toFixed(2)) || location?.coords?.latitude
 
@@ -34,9 +33,11 @@ export const useWeatherData = ({
       }
 
       const json = await res.json()
+      const formattedId = `weather-${json.name}-${json.state}-${json.country}`
       return {
         name: json.name,
-        id: 'weather-' + json.name + json.state + json.country,
+        id: formattedId.replace(/\s/g, ''),
+        timeZone: json.timeZone,
       }
     } catch (err) {
       if (err instanceof HttpError) {
@@ -68,11 +69,12 @@ export const useWeatherData = ({
         lon: formatedLong,
       }),
     enabled: location !== null,
-    staleTime: 1000 * 60 * 15, // Cache for 1 hour
+    staleTime: 1000 * 60 * 15, // Refresh cache after 15 minutes
+    gcTime: Infinity, // dont delete cache ever
   })
 
-  const { data = { name: '', id: '' } } = locationInfoQuery
-  const { name, id } = data
+  const { data = { name: '', id: '', timeZone: '' } } = locationInfoQuery
+  const { name, id, timeZone } = data
 
   const getWeather = async ({
     lat,
@@ -92,7 +94,7 @@ export const useWeatherData = ({
       trackRequestCompleted({ lat, lon })
 
       return {
-        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        timezone: timeZone,
         current: json.currentWeather,
         hourly: json.forecastHourly.hours,
         daily: json.forecastDaily.days,
@@ -139,7 +141,8 @@ export const useWeatherData = ({
         lon: formatedLong,
       }),
     enabled: location !== null && !!id,
-    staleTime: 1000 * 60 * 15, // Cache for 1 hour
+    staleTime: 1000 * 60 * 15, // Refresh cache after 15 minutes
+    gcTime: Infinity, // dont delete cache ever
   })
 
   return query
