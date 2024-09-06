@@ -182,7 +182,7 @@ export const GlobalContextProvider = ({
   const handleAnimation = useCallback(() => {
     if (
       !lineRef.current ||
-      !hasD ||
+      // !hasD ||
       !circleRef.current ||
       !graphData ||
       !weatherData ||

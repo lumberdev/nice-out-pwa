@@ -15,10 +15,10 @@ export const useWeatherData = ({
 }) => {
   const { trackRequestError, trackRequestCompleted } = useAnalytics()
   const formatedLat =
-    Number(location?.coords?.latitude?.toFixed(2)) || location?.coords?.latitude
+    Number(location?.coords?.latitude?.toFixed(3)) || location?.coords?.latitude
 
   const formatedLong =
-    Number(location?.coords?.longitude?.toFixed(2)) ||
+    Number(location?.coords?.longitude?.toFixed(3)) ||
     location?.coords?.longitude
 
   const getlocationNameInfo = async ({ lat, lon }: GetWeatherDataArgs) => {

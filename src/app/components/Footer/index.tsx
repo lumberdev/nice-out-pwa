@@ -6,7 +6,7 @@ import { motion } from 'framer-motion'
 import { getConvertedTemperature } from '@/utils/unitConverter'
 import 'moment'
 import 'moment/min/locales'
-import moment from 'moment-timezone'
+import moment, { Moment } from 'moment-timezone'
 
 const Footer = () => {
   const { weatherData, currentDay, graphData, containerRef, isUnitMetric } =
@@ -23,12 +23,19 @@ const Footer = () => {
     })
   }
   const getAverageTemperature = (
-    date: string | number,
+    date: string | number | Moment,
     isUnitMetric: boolean,
   ) => {
-    const day = graphData?.derivedSevenDayTemperatures.find((day) =>
-      moment(day.date).isSame(date, 'day'),
-    )
+    // certain edge cases like London - UK will have start of day 11pm GST previous day
+    // as it is GMT + 1
+    // to match the "Same Day" both values need to be in timezone and not in timestamp
+    const footerDate = moment
+      .tz(date, weatherData?.timezone ?? '')
+      .startOf('day')
+    const day = graphData?.derivedSevenDayTemperatures.find((day) => {
+      const weatherDayDate = moment.tz(day.date, weatherData?.timezone ?? '')
+      return moment(weatherDayDate).isSame(footerDate, 'day')
+    })
     if (day) {
       return getConvertedTemperature(day.dailyAverageTemp, isUnitMetric)
     }
@@ -62,13 +69,7 @@ const Footer = () => {
               />
             </span>
             <span className="relative text-2xs opacity-60 md:text-sm">
-              {getAverageTemperature(
-                moment
-                  .tz(day.forecastStart, weatherData?.timezone ?? '')
-                  .startOf('day')
-                  .valueOf(),
-                isUnitMetric,
-              )}
+              {getAverageTemperature(day.forecastStart, isUnitMetric)}
             </span>
             {moment
               .tz(day.forecastStart, weatherData?.timezone ?? '')
