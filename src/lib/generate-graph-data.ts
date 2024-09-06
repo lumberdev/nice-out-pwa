@@ -4,15 +4,10 @@ import { scaleLinear, scaleTime } from 'd3-scale'
 import * as shape from 'd3-shape'
 import * as array from 'd3-array'
 import * as interpolate from 'd3-interpolate'
-import { format, toZonedTime } from 'date-fns-tz'
 import { HourlyWeather, WeatherData } from '@/types/weatherKit'
-import {
-  startOfDay,
-  addHours,
-  getHours,
-  formatISO,
-  roundToNearestHours,
-} from 'date-fns'
+import 'moment'
+import 'moment/min/locales'
+import moment from 'moment-timezone'
 
 // Screen Dimentions for Graph sizing & position
 
@@ -35,21 +30,18 @@ export const generateGraphData = (
   const hourlyWeather = weatherData.hourly
 
   // Removing extradata from graph to stop it after 11:59PM of last day
-  const lastDayTime = toZonedTime(
-    dailyWeather[7].forecastStart,
-    timeZone,
-  ).getTime()
-  const lastTimeInData = toZonedTime(
-    hourlyWeather.at(-1)?.forecastStart ?? '',
-    timeZone,
-  ).getTime()
+  const lastDayTime = moment
+    .tz(dailyWeather[7].forecastStart, timeZone)
+    .valueOf()
+  const lastTimeInData = moment
+    .tz(hourlyWeather.at(-1)?.forecastStart ?? '', timeZone)
+    .valueOf()
 
-  const firstTimeInData = toZonedTime(
-    hourlyWeather.at(0)?.forecastStart ?? '',
-    timeZone,
-  ).getTime()
+  const firstTimeInData = moment
+    .tz(hourlyWeather.at(0)?.forecastStart ?? '', timeZone)
+    .valueOf()
 
-  const currentTime = new Date().getTime()
+  const currentTime = moment().tz(timeZone).valueOf()
 
   // Apple weatherKit gives data from 23:00 of the previous day
   // get extra elapsed hours (extra data in the start)
@@ -68,7 +60,7 @@ export const generateGraphData = (
     (reading: { temperature: number; forecastStart: string | number | Date }) =>
       [
         reading.temperature,
-        Math.floor(toZonedTime(reading.forecastStart, timeZone).getTime()),
+        Math.floor(moment.tz(reading.forecastStart, timeZone).valueOf()),
       ] as [number, number],
   )
   const formattedPopValues = sevenDayHourly.map(
@@ -81,7 +73,7 @@ export const generateGraphData = (
         Math.cbrt(
           reading.precipitationAmount / 25.4 + reading.precipitationChance,
         ),
-        Math.floor(toZonedTime(reading.forecastStart, timeZone).getTime()),
+        Math.floor(moment.tz(reading.forecastStart, timeZone).valueOf()),
       ] as [number, number],
     // converting precipitationAmount to inches and using the formula in: https://github.com/lumberdev/nice-out/blob/9b5d445cff95dc83d8bb5215309e1638191bdde3/utils/GraphModel.ts#L78-L82
   )
@@ -121,7 +113,7 @@ export const generateGraphData = (
 
   // Generating Scale Function for Temp & POP
   const scaleX = scaleTime()
-    .domain([new Date(startTime), new Date(endTime)])
+    .domain([startTime, endTime])
     .range([margins.left, GRAPH_WIDTH - margins.right])
   const scaleY = scaleLinear()
     .domain([minTemp, maxTemp])
@@ -184,29 +176,35 @@ export const generateGraphData = (
   const dayBreaks = dailyWeather
     .filter((_, index) => index < 7)
     .map((day) => {
-      const sunrise = toZonedTime(
+      const sunrise = moment.tz(
         day.sunrise ?? new Date(day.forecastStart).setHours(6, 0, 0, 0),
         timeZone,
-      ).getTime()
-      const sunset = toZonedTime(
+      )
+      const sunset = moment.tz(
         day.sunset ?? new Date(day.forecastStart).setHours(18, 0, 0, 0),
         timeZone,
-      ).getTime()
-      const sunriseTime = format(sunrise, 'hh:mm a')
-      const sunsetTime = format(sunset, 'hh:mm a')
+      )
+
+      const sunriseTime = sunrise.format('hh:mm A')
+      const sunsetTime = sunset.format('hh:mm A')
       const sunriseX = scaleX(sunrise)
       const sunriseY = scaleY(
-        formattedValues[array.bisectCenter(timestamps, sunrise)][0],
+        formattedValues[array.bisectCenter(timestamps, sunrise.valueOf())][0],
       )
       const sunsetX = scaleX(sunset)
       const sunsetY = scaleY(
-        formattedValues[array.bisectCenter(timestamps, sunset)][0],
+        formattedValues[array.bisectCenter(timestamps, sunset.valueOf())][0],
       )
 
-      const currentDay = startOfDay(
-        toZonedTime(day.forecastStart, timeZone),
-      ).getTime()
-      const noon = addHours(currentDay, 12).getTime()
+      const currentDay = moment
+        .tz(day.forecastStart, timeZone)
+        .startOf('day')
+        .valueOf()
+      const noon = moment
+        .tz(currentDay, timeZone)
+        .startOf('day')
+        .hour(12)
+        .valueOf()
       const noonValue = {
         x: Math.max(scaleX(noon), 0),
         y: scaleY(formattedValues[array.bisectCenter(timestamps, noon)][0]),
@@ -250,12 +248,12 @@ export const generateGraphData = (
   // Breaking up hourly data into daily arrays of hourly data (total 7 arrays) to improve speed of 'find()' in 'updateData()' inside Cursor component
   const formattedSevenDayHourly = sevenDayHourly.reduce(
     (
-      result: Map<string, HourlyWeather>[],
+      result: Map<number, HourlyWeather>[],
       item: HourlyWeather,
       index: number,
     ) => {
       const firstDayHours =
-        24 - getHours(toZonedTime(sevenDayHourly[0].forecastStart, timeZone))
+        24 - moment.tz(sevenDayHourly[0].forecastStart, timeZone).hours()
       const perArray = index >= firstDayHours ? 24 : firstDayHours
       const startindex = index >= firstDayHours ? index + 24 - firstDayHours : 0
       const insertIndex = Math.floor(startindex / perArray)
@@ -263,7 +261,7 @@ export const generateGraphData = (
         result[insertIndex] = new Map()
       }
       result[insertIndex].set(
-        formatISO(toZonedTime(item.forecastStart, timeZone)).slice(0, -6),
+        moment.tz(item.forecastStart, timeZone).startOf('hour').valueOf(),
         item,
       )
       return result
@@ -301,11 +299,9 @@ export const generateGraphData = (
     timestamp: number | Date
     timezone: string
   }) => {
-    const currentTimeInMs = toZonedTime(timestamp, timezone).getTime()
-    const fooredTimeInMs = roundToNearestHours(currentTimeInMs, {
-      roundingMethod: 'floor',
-    }).getTime()
-    const index = array.bisectCenter(timestamps, fooredTimeInMs)
+    const currentTimeInMs = moment.tz(timestamp, timezone).valueOf()
+    const flooredTimeInMs = moment(currentTimeInMs).startOf('hour').valueOf()
+    const index = array.bisectCenter(timestamps, flooredTimeInMs)
     const highIndex = Math.min(formattedValues.length - 1, index + 1)
 
     const [previousTemperature, previousHour] = formattedValues[index]
@@ -331,7 +327,7 @@ export const generateGraphData = (
     maxPops,
     minTemp,
     maxTemp,
-    initialTime: scaleX(toZonedTime(new Date(), timeZone).getTime()),
+    initialTime: scaleX(moment().tz(timeZone).valueOf()),
     startTime,
     endTime,
     endXValue: scaleX(endTime),

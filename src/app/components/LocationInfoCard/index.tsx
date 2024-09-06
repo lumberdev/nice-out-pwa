@@ -1,12 +1,12 @@
 import React from 'react'
 import Background from '../../components/Background'
-import { formatInTimeZone } from 'date-fns-tz'
-import { getTime } from 'date-fns'
 import WeatherIcon from '../Icon'
 import { getConvertedTemperature } from '@/utils/unitConverter'
 import { cachedLocation, WeatherData } from '@/types/weatherKit'
-import { redirect } from 'next/dist/server/api-utils'
 import { useRouter } from 'next/navigation'
+import 'moment'
+import 'moment/min/locales'
+import moment from 'moment-timezone'
 
 interface Props {
   location: cachedLocation
@@ -26,12 +26,12 @@ export const LocationInfoCard = ({
   const { timezone, current, locationId, isGPSLocation, daily } =
     location.queryData
 
-  const currentTimeStamp = getTime(new Date())
-  const currenTime = formatInTimeZone(currentTimeStamp, timezone, 'hh:mm a')
+  const currentTimeStamp = moment().valueOf()
+  const currenTime = moment.tz(currentTimeStamp, timezone).format('hh:mm a')
 
   // check its day or not based on if the time is between sunrise and sunset
-  const sunsetToday = getTime(daily[0].sunset)
-  const sunriseToday = getTime(daily[0].sunrise)
+  const sunsetToday = moment(daily[0].sunset).valueOf()
+  const sunriseToday = moment(daily[0].sunrise).valueOf()
   const isItDay =
     sunriseToday && sunsetToday
       ? sunriseToday < currentTimeStamp && sunsetToday > currentTimeStamp

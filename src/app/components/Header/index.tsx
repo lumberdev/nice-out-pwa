@@ -3,14 +3,18 @@ import Temperature from './Temperature'
 import WeatherInfoDisplay from './WeatherInfoDisplay'
 import { useGlobalContext } from '@/lib/GlobalContext'
 import WeatherIcon from '../Icon'
-import { format } from 'date-fns'
 import Link from 'next/link'
+import 'moment'
+import 'moment/min/locales'
+import moment from 'moment-timezone'
 
 const Header = () => {
   const { currentDay, graphData, weatherData } = useGlobalContext()
 
   const currentDate = currentDay?.sunset
-    ? format(currentDay.sunset, 'MMMM dd')
+    ? moment
+        .tz(currentDay.sunset, weatherData?.timezone ?? '')
+        .format('MMMM DD')
     : ''
   if (!graphData) return null
 

@@ -45,7 +45,6 @@ const Search = () => {
 
     if (!isItSaved) {
       const details = await fetchLocationCoordinates(r.place_id)
-      console.log(details)
       setnewLocation(details)
     } else {
       router.push('/locations')

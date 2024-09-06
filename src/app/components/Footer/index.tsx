@@ -3,9 +3,10 @@ import React from 'react'
 import WeatherIcon from '../Icon'
 import clsx from 'clsx'
 import { motion } from 'framer-motion'
-import { isSameDay } from 'date-fns'
-import { formatInTimeZone } from 'date-fns-tz'
 import { getConvertedTemperature } from '@/utils/unitConverter'
+import 'moment'
+import 'moment/min/locales'
+import moment from 'moment-timezone'
 
 const Footer = () => {
   const { weatherData, currentDay, graphData, containerRef, isUnitMetric } =
@@ -21,9 +22,12 @@ const Footer = () => {
       behavior: 'smooth',
     })
   }
-  const getAverageTemperature = (date: string, isUnitMetric: boolean) => {
+  const getAverageTemperature = (
+    date: string | number,
+    isUnitMetric: boolean,
+  ) => {
     const day = graphData?.derivedSevenDayTemperatures.find((day) =>
-      isSameDay(day.date, date),
+      moment(day.date).isSame(date, 'day'),
     )
     if (day) {
       return getConvertedTemperature(day.dailyAverageTemp, isUnitMetric)
@@ -43,11 +47,9 @@ const Footer = () => {
             )}
           >
             <span className="text-2xs uppercase opacity-60 md:text-sm">
-              {formatInTimeZone(
-                day.forecastStart,
-                weatherData?.timezone ?? '',
-                'E',
-              )}
+              {moment
+                .tz(day.forecastStart, weatherData?.timezone ?? '')
+                .format('ddd')}
             </span>
             <span className="pb-0.5">
               <WeatherIcon
@@ -60,9 +62,17 @@ const Footer = () => {
               />
             </span>
             <span className="relative text-2xs opacity-60 md:text-sm">
-              {getAverageTemperature(day.forecastStart, isUnitMetric)}
+              {getAverageTemperature(
+                moment
+                  .tz(day.forecastStart, weatherData?.timezone ?? '')
+                  .startOf('day')
+                  .valueOf(),
+                isUnitMetric,
+              )}
             </span>
-            {isSameDay(day.forecastStart, currentDay?.forecastStart ?? '') && (
+            {moment
+              .tz(day.forecastStart, weatherData?.timezone ?? '')
+              .isSame(currentDay?.forecastStart, 'day') && (
               <motion.div
                 layoutId="selected"
                 className={clsx('absolute inset-0 bg-white/30')}
