@@ -43,7 +43,7 @@ const Footer = () => {
   }
 
   return (
-    <div className="sticky bottom-0 left-0 right-0 flex w-full bg-white/10 text-white">
+    <div className="animate-fade-in sticky bottom-0 left-0 right-0 flex w-full bg-white/10 text-white">
       {firstSevenDays?.map((day, index) => {
         return (
           <button

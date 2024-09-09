@@ -21,7 +21,7 @@ const Graph = () => {
   }
 
   return (
-    <div className="relative">
+    <div className="animate-fade-in relative">
       <DayBreaks className="" />
       <TemperatureChart className="" />
       <PopChart className="" />
