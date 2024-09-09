@@ -134,13 +134,12 @@ export const GlobalContextProvider = ({
     if (
       weatherData &&
       weatherData?.locationId &&
-      activeLocationId !== weatherData?.locationId &&
       typeof window !== 'undefined'
     ) {
       localStorage.setItem('activeLocationId', weatherData.locationId)
       setActiveLocationId(weatherData?.locationId)
     }
-  }, [weatherData, activeLocationId])
+  }, [weatherData])
 
   const mainChart = useRef<SVGSVGElement>(null)
   const lineRef = useRef<SVGPathElement>(null)

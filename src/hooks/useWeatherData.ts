@@ -69,7 +69,7 @@ export const useWeatherData = ({
         lon: formatedLong,
       }),
     enabled: location !== null,
-    staleTime: 1000 * 60 * 15, // Refresh cache after 15 minutes
+    staleTime: 1000 * 60 * 60 * 30, // Refresh cache after 30 days
     gcTime: Infinity, // dont delete cache ever
   })
 

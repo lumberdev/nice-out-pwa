@@ -1,15 +1,24 @@
-import React, { useState, useRef } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import { useGlobalContext } from '@/lib/GlobalContext'
 import WeatherIcon from '../Icon'
 import clsx from 'clsx'
 import { roboto } from '@/app/fonts'
 import ChipButton from '@/app/components/common/ChipButton'
+import 'moment'
+import 'moment/min/locales'
+import moment from 'moment-timezone'
 
 const Temperature = () => {
   const [isFeelsLikeTemperature, setIsFeelsLikeTemperature] = useState(false)
   const longPressTimer = useRef<NodeJS.Timeout | null>(null)
   const [longPressTriggered, setLongPressTriggered] = useState(false)
-  const { temperatureData, setIsUnitMetric } = useGlobalContext()
+  const {
+    temperatureData,
+    setIsUnitMetric,
+    containerRef,
+    graphData,
+    weatherData,
+  } = useGlobalContext()
   const {
     temperature,
     feelsLikeTemperature,
@@ -50,9 +59,14 @@ const Temperature = () => {
 
   // Handle onClick only if it's not a long press
   const handleClick = () => {
-    if (!longPressTriggered) {
-      console.log('Click without long press')
-    }
+    containerRef.current?.scrollTo({
+      left:
+        (graphData?.scaleX(
+          moment.tz(moment(), weatherData?.timezone ?? '').valueOf() ?? 0,
+        ) ?? 0) -
+        window.innerWidth / 2,
+      behavior: 'smooth',
+    })
   }
 
   return (

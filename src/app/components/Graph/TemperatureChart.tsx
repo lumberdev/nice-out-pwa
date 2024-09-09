@@ -1,11 +1,15 @@
+'use Client'
 import { useGlobalContext } from '@/lib/GlobalContext'
 import { graphTempColorStops } from '@/utils'
-import React from 'react'
+import React, { useEffect } from 'react'
 import WeatherIcon from '../Icon'
 import LinearGradient from '../LinearGradient'
 import clsx from 'clsx'
 import { roboto } from '@/app/fonts'
 import { getAdjustedConditionCode } from '@/utils/WeatherKitConditionCodes'
+import 'moment'
+import 'moment/min/locales'
+import moment from 'moment-timezone'
 
 const TemperatureChart = ({ className }: { className?: string }) => {
   const {
@@ -16,7 +20,25 @@ const TemperatureChart = ({ className }: { className?: string }) => {
     timestamp,
     circleRef,
     groupRef,
+    containerRef,
+    weatherData,
   } = useGlobalContext()
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      containerRef.current?.scrollTo({
+        left:
+          (graphData?.scaleX(
+            moment.tz(moment(), weatherData?.timezone ?? '').valueOf() ?? 0,
+          ) ?? 0) -
+          window.innerWidth / 2,
+      })
+    }, 50)
+    return () => {
+      clearTimeout(timeout)
+    }
+  }, [graphData])
+
   return (
     <svg
       className={className}
