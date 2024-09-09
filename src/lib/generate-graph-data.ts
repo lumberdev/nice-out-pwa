@@ -42,10 +42,12 @@ export const generateGraphData = (
     .valueOf()
 
   const currentTime = moment().tz(timeZone).valueOf()
+  const currentDayStartTime = moment().tz(timeZone).startOf('day').valueOf()
 
   // Apple weatherKit gives data from 23:00 of the previous day
   // get extra elapsed hours (extra data in the start)
-  const extraElapsedHours = Math.abs(firstTimeInData - currentTime) / 3600000
+  const extraElapsedHours =
+    Math.abs(firstTimeInData - currentDayStartTime) / 3600000
 
   // extra hours at the end
   const extraHours = (lastTimeInData - lastDayTime) / 3600000 // converting extratime difference into hours
