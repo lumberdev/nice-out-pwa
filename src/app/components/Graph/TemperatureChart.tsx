@@ -33,11 +33,11 @@ const TemperatureChart = ({ className }: { className?: string }) => {
           ) ?? 0) -
           window.innerWidth / 2,
       })
-    }, 50)
+    }, 100)
     return () => {
       clearTimeout(timeout)
     }
-  }, [graphData])
+  }, [JSON.stringify(graphData)])
 
   return (
     <svg
