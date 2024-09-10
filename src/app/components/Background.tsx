@@ -6,16 +6,19 @@ const Background = ({
   id,
   isItDay,
   card = false,
+  colors,
 }: {
   icon: number | string
   id: string
   isItDay: boolean
   card?: boolean
+  colors?: string[]
 }) => {
   const colorStops = useGradientColorStops(isItDay, icon)
+  const finalColors = colors || colorStops
   const offsets = [2, 24, 46, 60, 81, 99]
   return (
-    <div className={`${card ? 'h-full' : 'fixed'} inset-0 -z-10`}>
+    <div className={`${card ? 'h-full' : 'fixed'} inset-0 -z-10 min-h-[100vh]`}>
       <svg width="100%" height="100%">
         <defs>
           <linearGradient
@@ -25,7 +28,7 @@ const Background = ({
             x2={card ? '100%' : '75%'}
             y2={card ? '100%' : '100%'}
           >
-            {colorStops?.map((color, i) => (
+            {finalColors?.map((color, i) => (
               <stop key={i} offset={`${offsets[i]}%`} stopColor={color} />
             ))}
           </linearGradient>

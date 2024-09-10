@@ -33,7 +33,7 @@ const TemperatureChart = ({ className }: { className?: string }) => {
           ) ?? 0) -
           window.innerWidth / 2,
       })
-    }, 100)
+    }, 50)
     return () => {
       clearTimeout(timeout)
     }

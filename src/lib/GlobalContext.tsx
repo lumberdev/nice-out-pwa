@@ -64,6 +64,7 @@ interface GlobalContextValue {
   setActiveLocationId: React.Dispatch<
     React.SetStateAction<string | null | undefined>
   >
+  initialGradient: string[]
 }
 
 const GlobalContext = createContext<GlobalContextValue | undefined>(undefined)
@@ -354,6 +355,15 @@ export const GlobalContextProvider = ({
     })
   }, [graphData])
 
+  const initialGradient = [
+    '#555f6e',
+    '#45505d',
+    '#414c59',
+    '#4e525b',
+    '#68534c',
+    '#684338',
+  ]
+
   const value = {
     mainChart,
     lineRef,
@@ -376,6 +386,7 @@ export const GlobalContextProvider = ({
     cachedLocations,
     activeLocationId,
     setActiveLocationId,
+    initialGradient,
   }
 
   return (
