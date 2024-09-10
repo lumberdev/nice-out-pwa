@@ -29,6 +29,14 @@
     transform: translateX(0%);
   }
 }
+@keyframes slide-in-left {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(0%);
+  }
+}
 
 @keyframes slide-up {
   0% {
@@ -36,5 +44,14 @@
   }
   100% {
     transform: translateY(0);
+  }
+}
+
+@keyframes slide-out {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(100%);
   }
 }

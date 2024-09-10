@@ -4,8 +4,10 @@ import { useEffect, useState } from 'react'
 
 export const useCachedLocations = ({
   activeLocationId,
+  update,
 }: {
   activeLocationId: string | null | undefined
+  update?: boolean
 }) => {
   const queryClient = useQueryClient()
   const [result, setResult] = useState<cachedLocation[] | null>(null)
@@ -26,7 +28,7 @@ export const useCachedLocations = ({
         }
       })
     setResult(r)
-  }, [queryClient, activeLocationId])
+  }, [queryClient, activeLocationId, update])
 
   return result
 }

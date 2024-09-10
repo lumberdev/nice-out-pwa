@@ -6,6 +6,8 @@ import { LocationInfoCard } from '../components/LocationInfoCard'
 import Link from 'next/link'
 import { cachedLocation } from '@/types/weatherKit'
 import { useCachedLocations } from '@/hooks/useGetCachedLocations'
+import { useState } from 'react'
+import { QueryKey, useQueryClient } from '@tanstack/react-query'
 
 const Locations = () => {
   const {
@@ -14,7 +16,24 @@ const Locations = () => {
     setActiveLocationId,
     initialGradient,
   } = useGlobalContext()
-  const cachedLocations = useCachedLocations({ activeLocationId })
+  const [update, setUpdate] = useState(false)
+  const cachedLocations = useCachedLocations({ activeLocationId, update })
+  const [isEditing, setIsEditing] = useState(false)
+  const queryClient = useQueryClient()
+
+  const handleRemoval = (
+    queryKey: QueryKey,
+    e: React.MouseEvent<HTMLDivElement, MouseEvent>,
+  ) => {
+    e.stopPropagation()
+    console.log(queryKey)
+
+    setTimeout(() => {
+      queryClient.removeQueries({ queryKey, exact: true })
+      setActiveLocationId(cachedLocations?.[0]?.queryData?.locationId)
+      setUpdate((p) => !p)
+    }, 500)
+  }
 
   return (
     <main className="flex h-svh flex-col overflow-hidden text-white">
@@ -56,18 +75,38 @@ const Locations = () => {
               Number(a.queryData.isGPSLocation),
           )
           ?.map((location: cachedLocation, i: number) => (
-            <div
-              key={location.queryKey[0]}
-              className="translate-tranform translate-y-[100vh] animate-[slide-up_0.5s_ease-in-out_forwards] overflow-hidden"
-              style={{ animationDelay: `${(i + 1) * 0.05}s` }}
-            >
-              <LocationInfoCard
-                location={location}
-                isUnitMetric={isUnitMetric}
-                setActiveLocationId={setActiveLocationId}
-              />
-            </div>
+            <LocationInfoCard
+              location={location}
+              isUnitMetric={isUnitMetric}
+              setActiveLocationId={setActiveLocationId}
+              isEditing={isEditing}
+              handleRemoval={handleRemoval}
+              i={i}
+            />
           ))}
+        {!!cachedLocations?.length ? (
+          <div
+            className="translate-tranform translate-y-[100vh] animate-[slide-up_0.5s_ease-in-out_forwards] overflow-hidden"
+            style={{
+              animationDelay: `${(cachedLocations?.length + 2) * 0.05}s`,
+            }}
+          >
+            <div
+              onClick={() => setIsEditing((prev) => !prev)}
+              className="flex h-[125px] items-center justify-center"
+            >
+              <span
+                className="w-[200px] border border-[#ffffff6D] py-[1rem] text-center text-xl"
+                style={{
+                  borderWidth: 1,
+                  textAlign: 'center',
+                }}
+              >
+                {!isEditing ? 'Edit' : 'Done'}
+              </span>
+            </div>
+          </div>
+        ) : null}
       </div>
       <Background
         icon={''}
