@@ -26,7 +26,6 @@ const Locations = () => {
     e: React.MouseEvent<HTMLDivElement, MouseEvent>,
   ) => {
     e.stopPropagation()
-    console.log(queryKey)
 
     setTimeout(() => {
       queryClient.removeQueries({ queryKey, exact: true })

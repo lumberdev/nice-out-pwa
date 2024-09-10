@@ -18,7 +18,7 @@
 }
 
 .animate-fade-in {
-  animation: fade-in 0.75s ease-in-out;
+  animation: fade-in 1s ease-in-out;
 }
 
 @keyframes slide-in {
@@ -53,5 +53,14 @@
   }
   100% {
     transform: translateX(100%);
+  }
+}
+
+@keyframes slide-up-footer {
+  0% {
+    transform: translateY(100%);
+  }
+  100% {
+    transform: translateY(0);
   }
 }

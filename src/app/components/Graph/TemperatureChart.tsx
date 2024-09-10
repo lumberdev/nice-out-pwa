@@ -66,8 +66,13 @@ const TemperatureChart = ({ className }: { className?: string }) => {
         fill="white"
         stroke="rgba(255, 255, 255, 0.3)"
         strokeWidth={8}
+        className="animate-[fade-in_1.5s_ease-in-out_forwards] transition-transform"
       />
-      <g ref={groupRef} fill="white">
+      <g
+        ref={groupRef}
+        fill="white"
+        className="animate-[fade-in_1.5s_ease-in-out_forwards] transition-opacity"
+      >
         <WeatherIcon
           icon={getAdjustedConditionCode(timestamp.icon, timestamp.daylight)}
           x={0}

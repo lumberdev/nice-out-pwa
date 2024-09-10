@@ -50,8 +50,9 @@ const Footer = () => {
             onClick={() => handleClick(index)}
             key={index}
             className={clsx(
-              'relative flex w-full flex-col items-center justify-between gap-1 px-2 py-3',
+              `relative flex w-full translate-y-[100%] animate-[slide-up-footer_0.3s_ease-in-out_forwards] flex-col items-center justify-between gap-1 px-2 py-3 transition-transform`,
             )}
+            style={{ animationDelay: `${(index + 1) * 0.15}s` }}
           >
             <span className="text-2xs uppercase opacity-60 md:text-sm">
               {moment
@@ -76,7 +77,7 @@ const Footer = () => {
               .isSame(currentDay?.forecastStart, 'day') && (
               <motion.div
                 layoutId="selected"
-                className={clsx('absolute inset-0 bg-white/30')}
+                className="absolute inset-0 bg-white/30"
               />
             )}
           </button>
