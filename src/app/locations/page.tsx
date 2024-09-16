@@ -75,6 +75,7 @@ const Locations = () => {
           )
           ?.map((location: cachedLocation, i: number) => (
             <LocationInfoCard
+              key={location.queryKey[0]}
               location={location}
               isUnitMetric={isUnitMetric}
               setActiveLocationId={setActiveLocationId}

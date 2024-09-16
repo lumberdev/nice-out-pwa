@@ -63,7 +63,6 @@ export const LocationInfoCard = ({
   }
   return (
     <div
-      key={location.queryKey[0]}
       className={`translate-tranform translate-y-[100vh] ${remove === location.queryKey[0] ? 'animate-[slide-out_0.25s_ease-in-out_forwards]' : 'animate-[slide-up_0.5s_ease-in-out_forwards]'} overflow-hidden`}
       style={{ animationDelay: `${(i + 1) * 0.05}s` }}
     >
