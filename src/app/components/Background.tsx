@@ -18,7 +18,9 @@ const Background = ({
   const finalColors = colors || colorStops
   const offsets = [2, 24, 46, 60, 81, 99]
   return (
-    <div className={`${card ? 'h-full' : 'fixed'} inset-0 -z-10 min-h-[100vh]`}>
+    <div
+      className={`${card ? 'h-full max-h-[150px]' : 'fixed min-h-[100vh] '} inset-0 -z-10`}
+    >
       <svg width="100%" height="100%">
         <defs>
           <linearGradient

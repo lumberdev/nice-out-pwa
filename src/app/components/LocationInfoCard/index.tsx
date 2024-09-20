@@ -67,7 +67,7 @@ export const LocationInfoCard = ({
       style={{ animationDelay: `${(i + 1) * 0.05}s` }}
     >
       <div
-        className="relative h-[20vh] max-h-[150px] cursor-pointer"
+        className="relative h-[20vh] max-h-[150px] cursor-pointer overflow-hidden"
         onClick={(e) => handleLocationSelection(e)}
       >
         <Background
