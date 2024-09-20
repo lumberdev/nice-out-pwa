@@ -31,10 +31,7 @@ const Header = () => {
             viewBox="0 0 30 30"
           />
         </Link>
-        <div
-          className="flex w-full flex-1 flex-col items-center"
-          onClick={() => setShowHeightInfo((p) => !p)}
-        >
+        <div className="flex w-full flex-1 flex-col items-center">
           <div className="md:text-md text-sm font-medium text-white">
             {currentDate}
           </div>
