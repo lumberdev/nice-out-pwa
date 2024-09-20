@@ -40,6 +40,18 @@ const Header = () => {
           </div>
         </div>
       </div>
+      {graphData?.SCREEN_HEIGHT &&
+        document?.body?.clientHeight &&
+        graphData?.GRAPH_HEIGHT && (
+          <div className="text-md font-medium text-white md:text-3xl">
+            {'SH --> '}
+            {graphData?.SCREEN_HEIGHT} {'||'}
+            {' client height --> '}
+            {document?.body?.clientHeight} {'||'}
+            {' GH --> '}
+            {graphData?.GRAPH_HEIGHT}
+          </div>
+        )}
       <div className="flex flex-1 items-center justify-start">
         <Temperature />
       </div>
