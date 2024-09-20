@@ -18,6 +18,16 @@ const Header = () => {
     : ''
   if (!graphData) return null
 
+  console.log(
+    'SH --> ',
+    graphData?.SCREEN_HEIGHT,
+    '||',
+    ' client height --> ',
+    document?.body?.clientHeight,
+    '||',
+    ' GH --> ',
+    graphData?.GRAPH_HEIGHT,
+  )
   return (
     <div className="animate-fade-in fixed top-0 z-10 flex w-full flex-wrap items-center justify-between p-4 md:p-6 lg:p-10">
       <div className="relative mb-[2rem] flex w-full items-center justify-start">
