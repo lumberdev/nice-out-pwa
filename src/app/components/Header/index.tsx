@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import Temperature from './Temperature'
 import WeatherInfoDisplay from './WeatherInfoDisplay'
 import { useGlobalContext } from '@/lib/GlobalContext'
@@ -10,6 +10,7 @@ import moment from 'moment-timezone'
 
 const Header = () => {
   const { currentDay, graphData, weatherData } = useGlobalContext()
+  const [showHeightInfo, setShowHeightInfo] = useState<boolean>(false)
 
   const currentDate = currentDay?.sunset
     ? moment
@@ -41,7 +42,10 @@ const Header = () => {
             viewBox="0 0 30 30"
           />
         </Link>
-        <div className="flex w-full flex-1 flex-col items-center">
+        <div
+          className="flex w-full flex-1 flex-col items-center"
+          onClick={() => setShowHeightInfo((p) => !p)}
+        >
           <div className="md:text-md text-sm font-medium text-white">
             {currentDate}
           </div>
@@ -50,7 +54,8 @@ const Header = () => {
           </div>
         </div>
       </div>
-      {graphData?.SCREEN_HEIGHT &&
+      {showHeightInfo &&
+        graphData?.SCREEN_HEIGHT &&
         document?.body?.clientHeight &&
         graphData?.GRAPH_HEIGHT && (
           <div className="text-md font-medium text-white md:text-3xl">
