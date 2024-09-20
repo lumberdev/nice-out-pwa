@@ -167,6 +167,8 @@ export type WeatherData = {
     }
   }
   isGPSLocation?: boolean
+  SCREEN_HEIGHT: number
+  GRAPH_HEIGHT: number
 }
 
 export type TemperatureData = {
