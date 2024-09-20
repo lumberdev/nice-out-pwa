@@ -9,8 +9,7 @@ import 'moment/min/locales'
 import moment from 'moment-timezone'
 
 const Header = () => {
-  const { currentDay, graphData, weatherData, SCREEN_HEIGHT, GRAPH_HEIGHT } =
-    useGlobalContext()
+  const { currentDay, graphData, weatherData } = useGlobalContext()
 
   const currentDate = currentDay?.sunset
     ? moment
@@ -40,14 +39,6 @@ const Header = () => {
             {weatherData?.locationName}
           </div>
         </div>
-      </div>
-      <div className="text-md font-medium text-white md:text-3xl">
-        {'SH --> '}
-        {SCREEN_HEIGHT} ||
-        {' client height --> '}
-        {document.body.clientHeight} ||
-        {' GH --> '}
-        {GRAPH_HEIGHT}
       </div>
       <div className="flex flex-1 items-center justify-start">
         <Temperature />

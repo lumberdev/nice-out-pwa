@@ -65,8 +65,6 @@ interface GlobalContextValue {
     React.SetStateAction<string | null | undefined>
   >
   initialGradient: string[]
-  SCREEN_HEIGHT: number | undefined
-  GRAPH_HEIGHT: number | undefined
 }
 
 const GlobalContext = createContext<GlobalContextValue | undefined>(undefined)
@@ -389,8 +387,6 @@ export const GlobalContextProvider = ({
     activeLocationId,
     setActiveLocationId,
     initialGradient,
-    SCREEN_HEIGHT: graphData?.SCREEN_HEIGHT,
-    GRAPH_HEIGHT: graphData?.GRAPH_HEIGHT,
   }
 
   return (
