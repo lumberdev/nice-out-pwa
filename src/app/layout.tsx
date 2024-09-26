@@ -13,6 +13,7 @@ const APP_TITLE_TEMPLATE = '%s - PWA'
 const APP_DESCRIPTION = 'Best PWA app in the world!'
 
 export const metadata: Metadata = {
+  manifest: '/manifest.json',
   applicationName: APP_NAME,
   title: {
     default: APP_DEFAULT_TITLE,

@@ -3,9 +3,10 @@ import React from 'react'
 import WeatherIcon from '../Icon'
 import clsx from 'clsx'
 import { motion } from 'framer-motion'
-import { isSameDay } from 'date-fns'
-import { formatInTimeZone } from 'date-fns-tz'
 import { getConvertedTemperature } from '@/utils/unitConverter'
+import 'moment'
+import 'moment/min/locales'
+import moment, { Moment } from 'moment-timezone'
 
 const Footer = () => {
   const { weatherData, currentDay, graphData, containerRef, isUnitMetric } =
@@ -21,10 +22,20 @@ const Footer = () => {
       behavior: 'smooth',
     })
   }
-  const getAverageTemperature = (date: string, isUnitMetric: boolean) => {
-    const day = graphData?.derivedSevenDayTemperatures.find((day) =>
-      isSameDay(day.date, date),
-    )
+  const getAverageTemperature = (
+    date: string | number | Moment,
+    isUnitMetric: boolean,
+  ) => {
+    // certain edge cases like London - UK will have start of day 11pm GST previous day
+    // as it is GMT + 1
+    // to match the "Same Day" both values need to be in timezone and not in timestamp
+    const footerDate = moment
+      .tz(date, weatherData?.timezone ?? '')
+      .startOf('day')
+    const day = graphData?.derivedSevenDayTemperatures.find((day) => {
+      const weatherDayDate = moment.tz(day.date, weatherData?.timezone ?? '')
+      return moment(weatherDayDate).isSame(footerDate, 'day')
+    })
     if (day) {
       return getConvertedTemperature(day.dailyAverageTemp, isUnitMetric)
     }
@@ -32,22 +43,21 @@ const Footer = () => {
   }
 
   return (
-    <div className="sticky bottom-0 left-0 right-0 flex w-full bg-white/10 text-white">
+    <div className="animate-fade-in sticky bottom-0 left-0 right-0 flex w-full bg-white/10 text-white">
       {firstSevenDays?.map((day, index) => {
         return (
           <button
             onClick={() => handleClick(index)}
             key={index}
             className={clsx(
-              'relative flex w-full flex-col items-center justify-between gap-1 px-2 py-3',
+              `relative flex w-full translate-y-[100%] animate-[slide-up-footer_0.3s_ease-in-out_forwards] flex-col items-center justify-between gap-1 px-2 py-3 transition-transform`,
             )}
+            style={{ animationDelay: `${(index + 1) * 0.15}s` }}
           >
             <span className="text-2xs uppercase opacity-60 md:text-sm">
-              {formatInTimeZone(
-                day.forecastStart,
-                weatherData?.timezone ?? '',
-                'E',
-              )}
+              {moment
+                .tz(day.forecastStart, weatherData?.timezone ?? '')
+                .format('ddd')}
             </span>
             <span className="pb-0.5">
               <WeatherIcon
@@ -62,10 +72,12 @@ const Footer = () => {
             <span className="relative text-2xs opacity-60 md:text-sm">
               {getAverageTemperature(day.forecastStart, isUnitMetric)}
             </span>
-            {isSameDay(day.forecastStart, currentDay?.forecastStart ?? '') && (
+            {moment
+              .tz(day.forecastStart, weatherData?.timezone ?? '')
+              .isSame(currentDay?.forecastStart, 'day') && (
               <motion.div
                 layoutId="selected"
-                className={clsx('absolute inset-0 bg-white/30')}
+                className="absolute inset-0 bg-white/30"
               />
             )}
           </button>

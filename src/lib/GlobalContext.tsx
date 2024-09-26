@@ -6,6 +6,7 @@ import {
   TemperatureData,
   DailyWeather,
   WeatherInfo,
+  cachedLocation,
 } from '@/types/weatherKit'
 import React, {
   RefObject,
@@ -18,22 +19,16 @@ import React, {
 } from 'react'
 import { generateGraphData } from './generate-graph-data'
 import {
-  formatISO,
-  roundToNearestHours,
-  isSameDay,
-  isWithinInterval,
-} from 'date-fns'
-import { formatInTimeZone, toZonedTime } from 'date-fns-tz'
-import {
   getConvertedTemperature,
   getConvertedPrecipitation,
   getConvertedPressure,
   getConvertedWindSpeed,
 } from '@/utils/unitConverter'
-import {
-  weatherKitConditionCodes,
-  getAdjustedConditionCode,
-} from '@/utils/WeatherKitConditionCodes'
+import { weatherKitConditionCodes } from '@/utils/WeatherKitConditionCodes'
+import { useCachedLocations } from '@/hooks/useGetCachedLocations'
+import 'moment'
+import 'moment/min/locales'
+import moment from 'moment-timezone'
 
 interface GlobalContextValue {
   weatherData: WeatherData | undefined
@@ -64,6 +59,12 @@ interface GlobalContextValue {
   handleAnimation: () => void
   isUnitMetric: boolean
   setIsUnitMetric: React.Dispatch<React.SetStateAction<boolean>>
+  cachedLocations: cachedLocation[] | null
+  activeLocationId: string | null | undefined
+  setActiveLocationId: React.Dispatch<
+    React.SetStateAction<string | null | undefined>
+  >
+  initialGradient: string[]
 }
 
 const GlobalContext = createContext<GlobalContextValue | undefined>(undefined)
@@ -104,9 +105,42 @@ export const GlobalContextProvider = ({
   const [graphData, setGraphData] = useState<GraphData>()
   const [currentDay, setCurrentDay] = useState<DailyWeather | undefined>()
   const [isUnitMetric, setIsUnitMetric] = useState(true)
+  const [activeLocationId, setActiveLocationId] = useState<
+    string | null | undefined
+  >(null)
 
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const storedActiveLocation =
+        localStorage.getItem('activeLocationId') || null
+      setActiveLocationId(storedActiveLocation)
+    }
+  }, [])
+
+  const cachedLocations = useCachedLocations({ activeLocationId })
   const location = useLocation()
-  const { data: weatherData, error, isLoading } = useWeatherData({ location })
+
+  const findLocation = cachedLocations?.find(
+    (location) => location.queryData.locationId === activeLocationId,
+  )?.queryData.location
+  const activeLocation = findLocation || location
+
+  const {
+    data: weatherData,
+    error,
+    isLoading,
+  } = useWeatherData({ location: activeLocation })
+
+  useEffect(() => {
+    if (
+      weatherData &&
+      weatherData?.locationId &&
+      typeof window !== 'undefined'
+    ) {
+      localStorage.setItem('activeLocationId', weatherData.locationId)
+      setActiveLocationId(weatherData?.locationId)
+    }
+  }, [weatherData])
 
   const mainChart = useRef<SVGSVGElement>(null)
   const lineRef = useRef<SVGPathElement>(null)
@@ -148,7 +182,7 @@ export const GlobalContextProvider = ({
   const handleAnimation = useCallback(() => {
     if (
       !lineRef.current ||
-      !hasD ||
+      // !hasD ||
       !circleRef.current ||
       !graphData ||
       !weatherData ||
@@ -168,7 +202,7 @@ export const GlobalContextProvider = ({
       derivedSevenDayTemperatures,
     } = graphData
     const x = scrollX + window.innerWidth / 2
-    const graphTimestamp = scaleX.invert(x)
+    const graphTimestamp = moment.tz(scaleX.invert(x), timezone).valueOf()
     const y = getYForX({ timestamp: graphTimestamp, timezone })
     circleRef.current.setAttribute('cx', x.toString())
     circleRef.current.setAttribute('cy', y.toString())
@@ -178,33 +212,24 @@ export const GlobalContextProvider = ({
      * This timestamp is rounded to the nearest hour.
      * Useful for fiding the closest data point in the hourly data.
      */
-    const roundedTimestamp = formatISO(
-      roundToNearestHours(graphTimestamp),
-    ).slice(0, -6)
+    const roundedTimestamp = moment(graphTimestamp).startOf('hour').valueOf()
+
     /**
      * This timestamp is floored to the nearest hour.
      * Useful for finding the current day's data.
      * If we use the rounded timestamp, we might get the next day's data.
      */
-    const flooredTimestamp = formatISO(
-      roundToNearestHours(graphTimestamp, { roundingMethod: 'floor' }),
-    ).slice(0, -6)
+    const flooredTimestamp = graphTimestamp
     const activeDay = formattedSevenDayHourly.find((day) =>
       day.get(roundedTimestamp),
     )
     const currentData = activeDay?.get(roundedTimestamp)
 
     const currentDay = weatherData.daily.find(({ forecastStart }) =>
-      isSameDay(
-        toZonedTime(forecastStart, timezone),
-        toZonedTime(flooredTimestamp, timezone),
-      ),
+      moment.tz(forecastStart, timezone)?.isSame(flooredTimestamp, 'day'),
     )
     const currentDayDerivedTemps = derivedSevenDayTemperatures.find((day) => {
-      return isSameDay(
-        toZonedTime(day.date, timezone),
-        toZonedTime(flooredTimestamp, timezone),
-      )
+      return moment(day.date)?.isSame(flooredTimestamp, 'day')
     })
     if (currentDay) {
       setCurrentDay(currentDay)
@@ -214,16 +239,24 @@ export const GlobalContextProvider = ({
       activeDay?.get(roundedTimestamp)?.temperatureApparent
 
     const currentDayBreaks = dayBreaks.find(({ currentDay }) =>
-      isSameDay(currentDay, roundedTimestamp),
+      moment(moment.tz(currentDay, timezone)).isSame(
+        moment.tz(roundedTimestamp, timezone),
+        'day',
+      ),
     )
     let currentDayMaxTemp: number | undefined,
       currentDayMinTemp: number | undefined
 
+    const sunriseCurrentDay =
+      currentDayBreaks?.twilight.sunrise.fullSunriseTime.valueOf()
+    const sunsetCurrentDay =
+      currentDayBreaks?.twilight.sunset.fullSunsetTime.valueOf()
     if (currentDayBreaks) {
-      const isItDay = isWithinInterval(graphTimestamp, {
-        start: currentDayBreaks.twilight.sunrise.fullSunriseTime,
-        end: currentDayBreaks.twilight.sunset.fullSunsetTime,
-      })
+      const isItDay =
+        sunriseCurrentDay && sunsetCurrentDay
+          ? sunriseCurrentDay < graphTimestamp &&
+            sunsetCurrentDay > graphTimestamp
+          : false
       setIsItDay(isItDay)
       currentDayMaxTemp = currentDayBreaks.dayMaxTemp
       currentDayMinTemp = currentDayBreaks.dayMinTemp
@@ -232,8 +265,8 @@ export const GlobalContextProvider = ({
     // to prevent that, we set the icon to the previous icon as fallback
     const oldTimestamp = timestamp
     setTimestamp({
-      time: formatInTimeZone(graphTimestamp, timezone, 'hh:mm'),
-      meridiem: formatInTimeZone(graphTimestamp, timezone, 'a'),
+      time: moment.tz(graphTimestamp, timezone).format('hh:mm'),
+      meridiem: moment.tz(graphTimestamp, timezone).format('A'),
       summary:
         weatherKitConditionCodes.find(
           (codes) => codes.code === currentData?.conditionCode,
@@ -292,7 +325,7 @@ export const GlobalContextProvider = ({
       uvIndex: currentData?.uvIndex ?? 0,
       precipitationChance: currentData?.precipitationChance ?? 0,
     })
-  }, [graphData, hasD, weatherData, isUnitMetric])
+  }, [JSON.stringify(graphData), hasD, weatherData, isUnitMetric])
 
   useEffect(() => {
     if (!weatherData) return
@@ -313,7 +346,7 @@ export const GlobalContextProvider = ({
     }
     window.addEventListener('resize', handleResize)
     return () => window.removeEventListener('resize', handleResize)
-  }, [weatherData])
+  }, [JSON.stringify(weatherData)])
 
   useEffect(() => {
     if (!graphData) return
@@ -324,6 +357,15 @@ export const GlobalContextProvider = ({
       popHeight: GRAPH_POP_HEIGHT,
     })
   }, [graphData])
+
+  const initialGradient = [
+    '#555f6e',
+    '#45505d',
+    '#414c59',
+    '#4e525b',
+    '#68534c',
+    '#684338',
+  ]
 
   const value = {
     mainChart,
@@ -344,6 +386,10 @@ export const GlobalContextProvider = ({
     currentDay,
     isUnitMetric,
     setIsUnitMetric,
+    cachedLocations,
+    activeLocationId,
+    setActiveLocationId,
+    initialGradient,
   }
 
   return (

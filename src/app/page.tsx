@@ -13,7 +13,7 @@ export default function Home() {
     <main
       ref={containerRef}
       onScroll={handleAnimation}
-      className="flex h-svh flex-col justify-end overflow-x-scroll"
+      className="flex h-svh flex-col justify-end overflow-y-hidden overflow-x-scroll"
     >
       <Header />
       <Graph />
