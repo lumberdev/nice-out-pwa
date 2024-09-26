@@ -67,7 +67,7 @@ export const LocationInfoCard = ({
       style={{ animationDelay: `${(i + 1) * 0.05}s` }}
     >
       <div
-        className="relative h-[20vh] max-h-[150px] cursor-pointer overflow-hidden"
+        className="relative h-[20vh] max-h-[150px] min-h-[150px] cursor-pointer overflow-hidden"
         onClick={(e) => handleLocationSelection(e)}
       >
         <Background
@@ -98,7 +98,7 @@ export const LocationInfoCard = ({
               </div>
             ) : null}
             <div
-              className={`flex h-full transition-all ${isEditing && !isGPSLocation ? 'max-w-[60vw] translate-x-[15%]' : 'max-w-[80vw] translate-x-[0%]'} w-full  flex-col justify-between duration-300`}
+              className={`flex h-full transition-all ${isEditing && !isGPSLocation ? 'max-w-[60vw] translate-x-[15%]' : 'max-w-[70vw] translate-x-[0%]'} w-full  flex-col justify-between duration-300`}
             >
               <div className="flex items-center">
                 <div className="mr-2 font-bold">{currenTime}</div>
@@ -114,7 +114,7 @@ export const LocationInfoCard = ({
                 )}
               </div>
               <div
-                className={`${isEditing && !isGPSLocation ? 'max-w-[60vw]' : 'max-w-[80vw]'} truncate text-[32px] font-thin`}
+                className={`${isEditing && !isGPSLocation ? 'max-w-[60vw]' : 'max-w-[70vw]'} truncate text-[32px] font-thin`}
               >
                 {location.queryData.locationName}
               </div>
@@ -133,7 +133,7 @@ export const LocationInfoCard = ({
               </div>
             </div>
             <div className="flex h-full min-w-[20vw] max-w-[20vw] items-center text-[45px] font-thin">
-              <span className="w-full text-center">
+              <span className="w-full text-right">
                 <span>
                   {Math.trunc(currentTemp)}
                   <span className="h-full align-top text-[25px] leading-[45px]">

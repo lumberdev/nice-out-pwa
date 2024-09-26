@@ -70,7 +70,7 @@ const Temperature = () => {
   }
 
   return (
-    <div className="flex min-w-40 animate-[slide-in-left_0.5s_ease-in-out_forwards] flex-col items-center text-white transition-transform md:min-w-60">
+    <div className="flex min-w-40 max-w-40 animate-[slide-in-left_0.5s_ease-in-out_forwards] flex-col items-center text-white transition-transform md:min-w-60">
       <div
         onMouseDown={handleMouseDown}
         onMouseUp={handleMouseUp}

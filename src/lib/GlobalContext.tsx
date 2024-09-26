@@ -239,7 +239,10 @@ export const GlobalContextProvider = ({
       activeDay?.get(roundedTimestamp)?.temperatureApparent
 
     const currentDayBreaks = dayBreaks.find(({ currentDay }) =>
-      moment(currentDay).isSame(roundedTimestamp, 'day'),
+      moment(moment.tz(currentDay, timezone)).isSame(
+        moment.tz(roundedTimestamp, timezone),
+        'day',
+      ),
     )
     let currentDayMaxTemp: number | undefined,
       currentDayMinTemp: number | undefined

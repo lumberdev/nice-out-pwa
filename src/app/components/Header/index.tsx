@@ -20,7 +20,7 @@ const Header = () => {
 
   return (
     <div className="animate-fade-in fixed top-0 z-10 flex w-full flex-wrap items-center justify-between p-4 md:p-6 lg:p-10">
-      <div className="relative mb-[2rem] flex w-full items-center justify-start">
+      <div className="mb-[calc(2rem, 2vh)] relative flex w-full items-center justify-start">
         <Link href="/locations" className="absolute">
           <WeatherIcon
             icon={'add'}
@@ -40,11 +40,13 @@ const Header = () => {
           </div>
         </div>
       </div>
-      <div className="flex flex-1 items-center justify-start">
-        <Temperature />
-      </div>
-      <div className="flex flex-1 items-center justify-end">
-        <WeatherInfoDisplay />
+      <div className="flex w-full justify-between">
+        <div className="flex flex-1 items-center justify-start">
+          <Temperature />
+        </div>
+        <div className="flex flex-1 items-center justify-end">
+          <WeatherInfoDisplay />
+        </div>
       </div>
     </div>
   )
