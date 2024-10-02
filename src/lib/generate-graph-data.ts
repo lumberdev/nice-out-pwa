@@ -124,6 +124,7 @@ export const generateGraphData = (
   const scalePopY = scaleLinear()
     .domain([minPops, maxPops])
     .range([GRAPH_POP_HEIGHT, 50])
+
   // const scalePTY = scaleLinear()
   //   .domain([minPT, maxPT])
   //   .range([GRAPH_POP_HEIGHT, 0])
