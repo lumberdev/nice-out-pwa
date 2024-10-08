@@ -9,16 +9,23 @@ import 'moment/min/locales'
 import moment, { Moment } from 'moment-timezone'
 
 const Footer = () => {
-  const { weatherData, currentDay, graphData, containerRef, isUnitMetric } =
-    useGlobalContext()
+  const {
+    weatherData,
+    currentDay,
+    graphData,
+    containerRef,
+    isUnitMetric,
+    setCurrentNoonValue,
+  } = useGlobalContext()
 
   const firstSevenDays = weatherData?.daily.slice(0, 7)
 
   const handleClick = (index: number) => {
     if (!graphData) return
     const noon = graphData.dayBreaks[index]
+    setCurrentNoonValue(noon?.noonValue?.x)
     containerRef.current?.scrollTo({
-      left: noon.noonValue.x - window.innerWidth / 2,
+      left: noon.noonValue.x,
       behavior: 'smooth',
     })
   }
