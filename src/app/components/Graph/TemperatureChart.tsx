@@ -28,10 +28,9 @@ const TemperatureChart = ({ className }: { className?: string }) => {
     const timeout = setTimeout(() => {
       containerRef.current?.scrollTo({
         left:
-          (graphData?.scaleX(
+          graphData?.scaleX(
             moment.tz(moment(), weatherData?.timezone ?? '').valueOf() ?? 0,
-          ) ?? 0) -
-          window.innerWidth / 2,
+          ) ?? 0,
       })
     }, 50)
     return () => {

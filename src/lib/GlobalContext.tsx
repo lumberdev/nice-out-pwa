@@ -210,16 +210,15 @@ export const GlobalContextProvider = ({
     // get noon value when using the footer, as scrollto value set to React Ref in footer is slightly off when accessed with containerRef?.current?.scrollLeft
     // To fix it we check the difference between noonValue and scrollX and if its in 1 pixel of each other we can say its very near to noon
     // And we snap the value to exact noon value
-    const scrollValueError = currentNoonValue
+    const scrollNoonValueError = currentNoonValue
       ? Math.abs(currentNoonValue - scrollX)
       : 0
-    const nearNoon = scrollValueError ? scrollValueError <= 1 : false
+    const nearNoon = scrollNoonValueError ? scrollNoonValueError <= 1 : false
 
     // In certain edge cases even when the noonValue and scrollX are exactly same, time will be 11:59am
     // adding 0.15 as a buffer/fallback to cover those cases.
     // This should make sure all noon values at at exact 12PM
-    const x = scrollX + (nearNoon ? scrollValueError : 0) + 0.15
-
+    const x = scrollX + (nearNoon ? scrollNoonValueError : 0) + 0.15
     const graphTimestamp = moment.tz(scaleX.invert(x), timezone).valueOf()
     const y = getYForX({ timestamp: graphTimestamp, timezone })
     circleRef.current.setAttribute('cx', x.toString())

@@ -27,7 +27,7 @@ const DayBreaks = ({ className }: { className?: string }) => {
                 strokeWidth={2}
               />
             )}
-            {dayBreak.twilight.sunrise.x > window.innerWidth / 2 && (
+            {dayBreak.twilight.sunrise.x > 0 && (
               <g transform={`translate(${dayBreak.twilight.sunrise.x}, 0)`}>
                 <line
                   y1={graphSize.height + graphSize.popHeight}
