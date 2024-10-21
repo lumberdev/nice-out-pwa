@@ -41,6 +41,7 @@ interface GlobalContextValue {
   groupRef: RefObject<SVGGElement>
   containerRef: RefObject<HTMLDivElement>
   timestamp: {
+    graphTimeStamp: number
     time: string
     meridiem: string
     summary: string
@@ -66,6 +67,7 @@ interface GlobalContextValue {
   >
   initialGradient: string[]
   setCurrentNoonValue: React.Dispatch<React.SetStateAction<number | null>>
+  savedCurrentDayBreaks: GraphData['dayBreaks'][0] | undefined
 }
 
 const GlobalContext = createContext<GlobalContextValue | undefined>(undefined)
@@ -91,6 +93,7 @@ export const useGlobalContext = (): GlobalContextValue => {
 }
 
 const defaultTimestamp = {
+  graphTimeStamp: 0,
   time: '10:40',
   meridiem: 'AM',
   summary: 'Cloudy',
@@ -105,10 +108,14 @@ export const GlobalContextProvider = ({
 }) => {
   const [graphData, setGraphData] = useState<GraphData>()
   const [currentDay, setCurrentDay] = useState<DailyWeather | undefined>()
+  const [savedCurrentDayBreaks, setSavedCurrentDayBreaks] = useState<
+    GraphData['dayBreaks'][0] | undefined
+  >()
   const [isUnitMetric, setIsUnitMetric] = useState(true)
   const [activeLocationId, setActiveLocationId] = useState<
     string | null | undefined
   >(null)
+  const [currentNoonValue, setCurrentNoonValue] = useState<number | null>(null)
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -148,9 +155,9 @@ export const GlobalContextProvider = ({
   const circleRef = useRef<SVGCircleElement>(null)
   const groupRef = useRef<SVGGElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
-  const [currentNoonValue, setCurrentNoonValue] = useState(null)
 
   const [timestamp, setTimestamp] = useState<{
+    graphTimeStamp: number
     time: string
     meridiem: string
     summary: string
@@ -261,6 +268,8 @@ export const GlobalContextProvider = ({
         'day',
       ),
     )
+    setSavedCurrentDayBreaks(currentDayBreaks)
+
     let currentDayMaxTemp: number | undefined,
       currentDayMinTemp: number | undefined
 
@@ -282,6 +291,7 @@ export const GlobalContextProvider = ({
     // to prevent that, we set the icon to the previous icon as fallback
     const oldTimestamp = timestamp
     setTimestamp({
+      graphTimeStamp: graphTimestamp,
       time: moment.tz(graphTimestamp, timezone).format('hh:mm'),
       meridiem: moment.tz(graphTimestamp, timezone).format('A'),
       summary:
@@ -414,6 +424,7 @@ export const GlobalContextProvider = ({
     setActiveLocationId,
     initialGradient,
     setCurrentNoonValue,
+    savedCurrentDayBreaks,
   }
 
   return (

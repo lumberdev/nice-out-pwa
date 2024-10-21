@@ -23,7 +23,7 @@ const Footer = () => {
   const handleClick = (index: number) => {
     if (!graphData) return
     const noon = graphData.dayBreaks[index]
-    setCurrentNoonValue(noon?.noonValue?.x)
+    setCurrentNoonValue(noon?.noonValue?.x ?? null)
     containerRef.current?.scrollTo({
       left: noon.noonValue.x,
       behavior: 'smooth',
