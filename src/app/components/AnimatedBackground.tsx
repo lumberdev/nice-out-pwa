@@ -103,13 +103,15 @@ const AnimatedBackground = ({
       savedCurrentDayBreaks?.twilight?.sunset?.x >= scrollX + sunOffset
 
     if (currentIndex) {
-      const gradient = isItDay
-        ? dayAppleConditionCodesWeatherGradient?.[currentIndex]
-        : nightAppleConditionCodesWeatherGradient?.[currentIndex]
+      const getGradient = (isDay: boolean, index: string) => {
+        const gradients = isDay
+          ? dayAppleConditionCodesWeatherGradient
+          : nightAppleConditionCodesWeatherGradient
+        return gradients?.[index] ?? gradients?.['Cloudy']
+      }
 
-      const nextGradient = nextIsItMorning
-        ? dayAppleConditionCodesWeatherGradient?.[nextIndex]
-        : nightAppleConditionCodesWeatherGradient?.[nextIndex]
+      const gradient = getGradient(isItDay, currentIndex)
+      const nextGradient = getGradient(nextIsItMorning, nextIndex)
 
       const match = JSON.stringify(gradient) === JSON.stringify(currentColors)
       const matchNext =
