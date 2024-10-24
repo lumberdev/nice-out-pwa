@@ -128,6 +128,41 @@ const AnimatedBackground = ({
     }
   }
 
+  //   Color Representation in 32-Bit Integers
+  // Hexadecimal Color Codes:
+
+  // A hexadecimal color code like #FF5733 represents a color in the RGB color model.
+  // Each pair of hexadecimal digits corresponds to one of the RGB components:
+  // FF (red)
+  // 57 (green)
+  // 33 (blue)
+
+  // Bit Representation:
+  // Each component (Red, Green, and Blue) can take values from 0 to 255, which is represented in 8 bits (since 2^8 = 256).
+  // Therefore, a full RGB color requires 24 bits (8 bits for each of the three colors).
+  // Storing in a 32-Bit Integer:
+
+  // Colors are often stored as a 32-bit integer.
+  // This integer typically consists of:
+  // 8 bits for the alpha channel (transparency)
+  // 8 bits for the red channel
+  // 8 bits for the green channel
+  // 8 bits for the blue channel
+  // The 24 bits that represent the RGB values are thus the last 24 bits of this integer.
+  // The alpha channel, if present, is often the first 8 bits (or it may be omitted, depending on the system or context).
+
+  // ParseInt(..., 16) converts the hexadecimal string to a base 10 integer.
+  // For example, parseInt('FFFFFF', 16) will give you 16777215 in decimal (which is the integer representation of white in RGB).
+  // Extracting RGB Components:
+  // The RGB values are stored in the last 24 bits of the integer:
+  // Red Component:
+  // bigint >> 16: This right-shifts the bits of the integer by 16 positions, effectively moving the red component to the rightmost position.
+  // & 255: This bitwise AND operation isolates the last 8 bits, giving you the red component (0-255).
+  // Green Component:
+  // bigint >> 8: This right-shifts the bits by 8 positions, moving the green component to the rightmost position.
+  // & 255: Again, this isolates the last 8 bits for the green component.
+  // Blue Component:
+  // bigint & 255: This isolates the last 8 bits directly, giving you the blue component.
   // Convert hex to RGB to allow interpolation
   const hexToRgb = (hex: string) => {
     const bigint = parseInt(hex.substring(1), 16)
