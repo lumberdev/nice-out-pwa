@@ -41,6 +41,7 @@ interface GlobalContextValue {
   groupRef: RefObject<SVGGElement>
   containerRef: RefObject<HTMLDivElement>
   timestamp: {
+    graphTimeStamp: number
     time: string
     meridiem: string
     summary: string
@@ -65,6 +66,8 @@ interface GlobalContextValue {
     React.SetStateAction<string | null | undefined>
   >
   initialGradient: string[]
+  setCurrentNoonValue: React.Dispatch<React.SetStateAction<number | null>>
+  savedCurrentDayBreaks: GraphData['dayBreaks'][0] | undefined
 }
 
 const GlobalContext = createContext<GlobalContextValue | undefined>(undefined)
@@ -90,6 +93,7 @@ export const useGlobalContext = (): GlobalContextValue => {
 }
 
 const defaultTimestamp = {
+  graphTimeStamp: 0,
   time: '10:40',
   meridiem: 'AM',
   summary: 'Cloudy',
@@ -104,10 +108,14 @@ export const GlobalContextProvider = ({
 }) => {
   const [graphData, setGraphData] = useState<GraphData>()
   const [currentDay, setCurrentDay] = useState<DailyWeather | undefined>()
+  const [savedCurrentDayBreaks, setSavedCurrentDayBreaks] = useState<
+    GraphData['dayBreaks'][0] | undefined
+  >()
   const [isUnitMetric, setIsUnitMetric] = useState(true)
   const [activeLocationId, setActiveLocationId] = useState<
     string | null | undefined
   >(null)
+  const [currentNoonValue, setCurrentNoonValue] = useState<number | null>(null)
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -149,6 +157,7 @@ export const GlobalContextProvider = ({
   const containerRef = useRef<HTMLDivElement>(null)
 
   const [timestamp, setTimestamp] = useState<{
+    graphTimeStamp: number
     time: string
     meridiem: string
     summary: string
@@ -192,7 +201,10 @@ export const GlobalContextProvider = ({
     }
     const { timezone } = weatherData
     const { getYForX } = graphData
-    const scrollX = containerRef.current?.scrollLeft ?? 0
+
+    const scrollX = containerRef?.current?.scrollLeft
+      ? containerRef?.current?.scrollLeft
+      : 0
 
     const {
       scaleX,
@@ -201,7 +213,19 @@ export const GlobalContextProvider = ({
       dayBreaks,
       derivedSevenDayTemperatures,
     } = graphData
-    const x = scrollX + window.innerWidth / 2
+
+    // get noon value when using the footer, as scrollto value set to React Ref in footer is slightly off when accessed with containerRef?.current?.scrollLeft
+    // To fix it we check the difference between noonValue and scrollX and if its in 1 pixel of each other we can say its very near to noon
+    // And we snap the value to exact noon value
+    const scrollNoonValueError = currentNoonValue
+      ? Math.abs(currentNoonValue - scrollX)
+      : 0
+    const nearNoon = scrollNoonValueError ? scrollNoonValueError <= 1 : false
+
+    // In certain edge cases even when the noonValue and scrollX are exactly same, time will be 11:59am
+    // adding 0.15 as a buffer/fallback to cover those cases.
+    // This should make sure all noon values at at exact 12PM
+    const x = scrollX + (nearNoon ? scrollNoonValueError : 0) + 0.15
     const graphTimestamp = moment.tz(scaleX.invert(x), timezone).valueOf()
     const y = getYForX({ timestamp: graphTimestamp, timezone })
     circleRef.current.setAttribute('cx', x.toString())
@@ -244,6 +268,8 @@ export const GlobalContextProvider = ({
         'day',
       ),
     )
+    setSavedCurrentDayBreaks(currentDayBreaks)
+
     let currentDayMaxTemp: number | undefined,
       currentDayMinTemp: number | undefined
 
@@ -265,6 +291,7 @@ export const GlobalContextProvider = ({
     // to prevent that, we set the icon to the previous icon as fallback
     const oldTimestamp = timestamp
     setTimestamp({
+      graphTimeStamp: graphTimestamp,
       time: moment.tz(graphTimestamp, timezone).format('hh:mm'),
       meridiem: moment.tz(graphTimestamp, timezone).format('A'),
       summary:
@@ -325,7 +352,13 @@ export const GlobalContextProvider = ({
       uvIndex: currentData?.uvIndex ?? 0,
       precipitationChance: currentData?.precipitationChance ?? 0,
     })
-  }, [JSON.stringify(graphData), hasD, weatherData, isUnitMetric])
+  }, [
+    JSON.stringify(graphData),
+    hasD,
+    weatherData,
+    isUnitMetric,
+    currentNoonValue,
+  ])
 
   useEffect(() => {
     if (!weatherData) return
@@ -390,6 +423,8 @@ export const GlobalContextProvider = ({
     activeLocationId,
     setActiveLocationId,
     initialGradient,
+    setCurrentNoonValue,
+    savedCurrentDayBreaks,
   }
 
   return (

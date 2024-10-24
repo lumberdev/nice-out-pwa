@@ -117,7 +117,8 @@ export const generateGraphData = (
   // Generating Scale Function for Temp & POP
   const scaleX = scaleTime()
     .domain([startTime, endTime])
-    .range([margins.left, GRAPH_WIDTH - margins.right])
+    .range([0, GRAPH_WIDTH])
+
   const scaleY = scaleLinear()
     .domain([minTemp, maxTemp])
     .range([GRAPH_HEIGHT - margins.bottom, margins.top])

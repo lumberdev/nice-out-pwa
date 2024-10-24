@@ -215,3 +215,182 @@ export const nightAppleConditionCodesWeatherGradient: {
   Tornado: cloudyNight,
   TropicalStorm: cloudyNight,
 }
+
+// FUTURE - Work on these conditions for more gradients
+// Apple doesnt specify what are the possible return condition Code values
+// Found this list on github
+// from - https://gist.github.com/mikesprague/048a93b832e2862050356ca233ef4dc1
+
+// export const conditionCodes: ConditionCode[] = [
+//   {
+//     code: 'BlowingDust',
+//     description: 'Blowing dust or sandstorm',
+//     type: 'visibility',
+//   },
+//   {
+//     code: 'Clear',
+//     description: 'Clear',
+//     type: 'visibility',
+//   },
+//   {
+//     code: 'Cloudy',
+//     description: 'Cloudy, overcast conditions',
+//     type: 'visibility',
+//   },
+//   {
+//     code: 'Foggy',
+//     description: 'Fog',
+//     type: 'visibility',
+//   },
+//   {
+//     code: 'Haze',
+//     description: 'Haze',
+//     type: 'visibility',
+//   },
+//   {
+//     code: 'MostlyClear',
+//     description: 'Mostly clear',
+//     type: 'visibility',
+//   },
+//   {
+//     code: 'MostlyCloudy',
+//     description: 'Mostly cloudy',
+//     type: 'visibility',
+//   },
+//   {
+//     code: 'PartlyCloudy',
+//     description: 'Partly cloudy',
+//     type: 'visibility',
+//   },
+//   {
+//     code: 'Smoky',
+//     description: 'Smoky',
+//     type: 'visibility',
+//   },
+//   {
+//     code: 'Breezy',
+//     description: 'Breezy, light wind',
+//     type: 'wind',
+//   },
+//   {
+//     code: 'Windy',
+//     description: 'Windy',
+//     type: 'wind',
+//   },
+//   {
+//     code: 'Drizzle',
+//     description: 'Drizzle or light rain',
+//     type: 'precipitation',
+//   },
+//   {
+//     code: 'HeavyRain',
+//     description: 'Heavy rain',
+//     type: 'precipitation',
+//   },
+//   {
+//     code: 'IsolatedThunderstorms',
+//     description: 'Thunderstorms covering less than 1/8 of the forecast area',
+//     type: 'precipitation',
+//   },
+//   {
+//     code: 'Rain',
+//     description: 'Rain',
+//     type: 'precipitation',
+//   },
+//   {
+//     code: 'SunShowers',
+//     description: 'Rain with visible sun',
+//     type: 'precipitation',
+//   },
+//   {
+//     code: 'ScatteredThunderstorms',
+//     description:
+//       'Numerous thunderstorms spread across up to 50% of the forecast area',
+//     type: 'precipitation',
+//   },
+//   {
+//     code: 'StrongStorms',
+//     description: 'Notably strong thunderstorms',
+//     type: 'precipitation',
+//   },
+//   {
+//     code: 'Thunderstorms',
+//     description: 'Thunderstorms',
+//     type: 'precipitation',
+//   },
+//   {
+//     code: 'Frigid',
+//     description: 'Frigid conditions, low temperatures, or ice crystals',
+//     type: 'hazardous',
+//   },
+//   {
+//     code: 'Hail',
+//     description: 'Hail',
+//     type: 'hazardous',
+//   },
+//   {
+//     code: 'Hot',
+//     description: 'High temperatures',
+//     type: 'hazardous',
+//   },
+//   {
+//     code: 'Flurries',
+//     description: 'Flurries or light snow',
+//     type: 'winter-precipitation',
+//   },
+//   {
+//     code: 'Sleet',
+//     description: 'Sleet',
+//     type: 'winter-precipitation',
+//   },
+//   {
+//     code: 'Snow',
+//     description: 'Snow',
+//     type: 'winter-precipitation',
+//   },
+//   {
+//     code: 'SunFlurries',
+//     description: 'Snow flurries with visible sun',
+//     type: 'winter-precipitation',
+//   },
+//   {
+//     code: 'WintryMix',
+//     description: 'Wintry mix',
+//     type: 'winter-precipitation',
+//   },
+//   {
+//     code: 'Blizzard',
+//     description: 'Blizzard',
+//     type: 'hazardous-winter',
+//   },
+//   {
+//     code: 'BlowingSnow',
+//     description: 'Blowing or drifting snow',
+//     type: 'hazardous-winter',
+//   },
+//   {
+//     code: 'FreezingDrizzle',
+//     description: 'Freezing drizzle or light rain',
+//     type: 'hazardous-winter',
+//   },
+//   {
+//     code: 'FreezingRain',
+//     description: 'Freezing rain',
+//     type: 'hazardous-winter',
+//   },
+//   {
+//     code: 'HeavySnow',
+//     description: 'Heavy snow',
+//     type: 'hazardous-winter',
+//   },
+//   {
+//     code: 'Hurricane',
+//     description: 'Hurricane',
+//     type: 'tropical-hazard',
+//   },
+//   {
+//     code: 'TropicalStorm',
+//     description: 'Tropical storm',
+//     type: 'tropical-hazard',
+//   },
+// ];

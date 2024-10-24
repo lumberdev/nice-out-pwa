@@ -61,10 +61,9 @@ const Temperature = () => {
   const handleClick = () => {
     containerRef.current?.scrollTo({
       left:
-        (graphData?.scaleX(
+        graphData?.scaleX(
           moment.tz(moment(), weatherData?.timezone ?? '').valueOf() ?? 0,
-        ) ?? 0) -
-        window.innerWidth / 2,
+        ) ?? 0,
       behavior: 'smooth',
     })
   }

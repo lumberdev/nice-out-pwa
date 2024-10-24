@@ -1,5 +1,9 @@
 interface Props {
   id: string
+  x1?: string
+  y1?: string
+  x2?: string
+  y2?: string
   stops: {
     offset: string
     stopColor: string
@@ -7,17 +11,24 @@ interface Props {
   }[]
 }
 
-const LinearGradient = ({ id, stops }: Props) => {
+const LinearGradient = ({
+  x1 = '0%',
+  y1 = '0%',
+  x2 = '0%',
+  y2 = '100%',
+  id,
+  stops,
+}: Props) => {
   return (
     <>
       <defs>
         <linearGradient
           id={id}
-          gradientUnits='userSpaceOnUse'
-          x1='0%'
-          y1='0%'
-          x2='0%'
-          y2='100%'
+          gradientUnits="userSpaceOnUse"
+          x1={x1}
+          y1={y1}
+          x2={x2}
+          y2={y2}
         >
           {stops.map((stop, index) => (
             <stop

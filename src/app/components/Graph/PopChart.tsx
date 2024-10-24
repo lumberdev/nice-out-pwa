@@ -16,6 +16,7 @@ const PopChart = ({ className }: { className?: string }) => {
         d={graphData?.graphPop.path ?? ''}
         fill={'url(#chart-pop-gradient)'}
         id="graph-pop-path"
+        mask="url(#fadeMask)"
       />
       <LinearGradient id="chart-pop-gradient" stops={graphTempColorStops} />
     </svg>

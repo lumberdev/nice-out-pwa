@@ -29,21 +29,52 @@ export const horizontalGradientStops = [
   {
     offset: '0%',
     stopColor: '#fff',
-    stopOpacity: '0',
+    stopOpacity: '0.01',
   },
   {
-    offset: '20%',
+    offset: '0.5%',
     stopColor: '#fff',
-    stopOpacity: '0.7',
+    stopOpacity: '0.2',
   },
   {
-    offset: '80%',
+    offset: '1%',
     stopColor: '#fff',
-    stopOpacity: '0.7',
+    stopOpacity: '0.4',
+  },
+  {
+    offset: '2%',
+    stopColor: '#fff',
+    stopOpacity: '0.8',
+  },
+  {
+    offset: '3%',
+    stopColor: '#fff',
+    stopOpacity: '1',
+  },
+
+  {
+    offset: '97%',
+    stopColor: '#fff',
+    stopOpacity: '1',
+  },
+  {
+    offset: '98%',
+    stopColor: '#fff',
+    stopOpacity: '0.8',
+  },
+  {
+    offset: '99%',
+    stopColor: '#fff',
+    stopOpacity: '0.4',
+  },
+  {
+    offset: '99.5%',
+    stopColor: '#fff',
+    stopOpacity: '0.2',
   },
   {
     offset: '100%',
     stopColor: '#fff',
-    stopOpacity: '0',
+    stopOpacity: '0.01',
   },
 ]
