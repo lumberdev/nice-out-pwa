@@ -13,6 +13,7 @@ import 'moment'
 import 'moment/min/locales'
 import moment from 'moment-timezone'
 import { WeatherData } from '@/types/weatherKit'
+import clsx from 'clsx'
 
 const AnimatedBackground = ({
   icon,
@@ -223,7 +224,13 @@ const AnimatedBackground = ({
 
   return (
     <div
-      className={`${card ? 'h-full max-h-[150px]' : 'fixed min-h-[100vh] '} inset-0 -z-10`}
+      className={clsx(
+        {
+          'h-full max-h-[150px]': card,
+          'fixed min-h-[100vh]': !card,
+        },
+        'inset-0 -z-10',
+      )}
     >
       <svg width="100%" height="100%">
         <defs>
