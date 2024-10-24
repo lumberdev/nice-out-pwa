@@ -90,23 +90,23 @@ const TemperatureChart = ({ className }: { className?: string }) => {
       >
         <WeatherIcon
           icon={getAdjustedConditionCode(timestamp.icon, timestamp.daylight)}
-          x={0}
+          x={-28}
           y={-45}
           width={'100%'}
           height={'100%'}
         />
         <text
-          x={0}
+          x={-28}
           y={0}
           textLength={50}
           className={clsx(roboto.className, 'text-xl font-medium')}
         >
           {timestamp.time}
         </text>
-        <text x={54} y={-6} className="text-3xs">
+        <text x={25} y={-6} className="text-3xs">
           {timestamp.meridiem}
         </text>
-        <text x={0} y={16} className={clsx(roboto.className, 'text-3xs')}>
+        <text x={-28} y={16} className={clsx(roboto.className, 'text-3xs')}>
           {timestamp.summary}
         </text>
       </g>
