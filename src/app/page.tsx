@@ -7,6 +7,7 @@ import Header from './components/Header'
 import Footer from './components/Footer'
 import AnimatedBackground from './components/AnimatedBackground'
 import { useState } from 'react'
+import PWAPrompt from 'react-ios-pwa-prompt'
 
 export default function Home() {
   const {
@@ -60,6 +61,7 @@ export default function Home() {
       onMouseUp={handleMouseUp}
       onMouseMove={handleMouseMove}
     >
+      <PWAPrompt />
       <Header />
       <Graph />
       <Footer />
