@@ -66,7 +66,7 @@ export default function Home() {
       onMouseUp={handleMouseUp}
       onMouseMove={handleMouseMove}
     >
-      <PWAPrompt promptOnVisit={1} timesToShow={1} />
+      <PWAPrompt promptOnVisit={2} timesToShow={2} delay={3000} />
       <Header />
       <Graph />
       <Footer />
