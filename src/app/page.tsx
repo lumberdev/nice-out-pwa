@@ -7,7 +7,12 @@ import Header from './components/Header'
 import Footer from './components/Footer'
 import AnimatedBackground from './components/AnimatedBackground'
 import { useState } from 'react'
-import PWAPrompt from 'react-ios-pwa-prompt'
+import dynamic from 'next/dynamic'
+
+// Avoid Build time errors
+const PWAPrompt = dynamic(() => import('react-ios-pwa-prompt'), {
+  ssr: false,
+})
 
 export default function Home() {
   const {
