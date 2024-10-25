@@ -6,7 +6,8 @@ import Graph from './components/Graph/Graph'
 import Header from './components/Header'
 import Footer from './components/Footer'
 import AnimatedBackground from './components/AnimatedBackground'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import PWAPrompt from 'react-ios-pwa-prompt'
 
 export default function Home() {
   const {
@@ -20,6 +21,14 @@ export default function Home() {
     initialGradient,
   } = useGlobalContext()
 
+  const [showPrompt, setShowPrompt] = useState(false)
+
+  useEffect(() => {
+    // Only show PWAPrompt after confirming it's safe to render on the client
+    if (typeof window !== 'undefined') {
+      setShowPrompt(true)
+    }
+  }, [])
   const [isDragging, setIsDragging] = useState<boolean>(false)
   const [startX, setStartX] = useState<number>(0)
   const [scrollLeft, setScrollLeft] = useState<number>(0)
@@ -60,6 +69,9 @@ export default function Home() {
       onMouseUp={handleMouseUp}
       onMouseMove={handleMouseMove}
     >
+      {showPrompt && (
+        <PWAPrompt promptOnVisit={2} timesToShow={2} delay={3000} />
+      )}
       <Header />
       <Graph />
       <Footer />
