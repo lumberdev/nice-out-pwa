@@ -26,7 +26,9 @@ export default function Home() {
   useEffect(() => {
     // Only show PWAPrompt after confirming it's safe to render on the client
     if (typeof window !== 'undefined') {
-      setShowPrompt(true)
+      setTimeout(() => {
+        setShowPrompt(true)
+      }, 3000)
     }
   }, [])
   const [isDragging, setIsDragging] = useState<boolean>(false)
@@ -69,9 +71,7 @@ export default function Home() {
       onMouseUp={handleMouseUp}
       onMouseMove={handleMouseMove}
     >
-      {showPrompt && (
-        <PWAPrompt promptOnVisit={2} timesToShow={2} delay={3000} />
-      )}
+      {showPrompt && <PWAPrompt promptOnVisit={1} timesToShow={1} />}
       <Header />
       <Graph />
       <Footer />
