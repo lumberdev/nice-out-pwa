@@ -28,7 +28,7 @@ export default function Home() {
     if (typeof window !== 'undefined' && showPrompt) {
       setTimeout(() => {
         setShowPrompt(false)
-      }, 3000)
+      }, 10000)
     }
   }, [showPrompt])
   const [isDragging, setIsDragging] = useState<boolean>(false)
@@ -72,7 +72,7 @@ export default function Home() {
       onMouseUp={handleMouseUp}
       onMouseMove={handleMouseMove}
     >
-      {showPrompt && <PWAPrompt promptOnVisit={2} timesToShow={2} />}
+      {showPrompt && <PWAPrompt promptOnVisit={1} timesToShow={10} />}
       <Header setShowPrompt={setShowPrompt} />
       <Graph />
       <Footer />
