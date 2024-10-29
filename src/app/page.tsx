@@ -25,12 +25,12 @@ export default function Home() {
 
   useEffect(() => {
     // Only show PWAPrompt after confirming it's safe to render on the client
-    if (typeof window !== 'undefined') {
+    if (typeof window !== 'undefined' && showPrompt) {
       setTimeout(() => {
-        setShowPrompt(true)
+        setShowPrompt(false)
       }, 3000)
     }
-  }, [])
+  }, [showPrompt])
   const [isDragging, setIsDragging] = useState<boolean>(false)
   const [startX, setStartX] = useState<number>(0)
   const [scrollLeft, setScrollLeft] = useState<number>(0)
@@ -60,6 +60,7 @@ export default function Home() {
     containerRef.current.scrollLeft = scrollLeft - walk // Scroll the container
   }
 
+  console.log(showPrompt)
   return (
     <main
       ref={containerRef}
@@ -72,7 +73,7 @@ export default function Home() {
       onMouseMove={handleMouseMove}
     >
       {showPrompt && <PWAPrompt promptOnVisit={2} timesToShow={2} />}
-      <Header />
+      <Header setShowPrompt={setShowPrompt} />
       <Graph />
       <Footer />
       {weatherData?.hourly ? (

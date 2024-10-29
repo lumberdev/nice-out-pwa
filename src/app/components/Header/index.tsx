@@ -8,7 +8,11 @@ import 'moment'
 import 'moment/min/locales'
 import moment from 'moment-timezone'
 
-const Header = () => {
+const Header = ({
+  setShowPrompt,
+}: {
+  setShowPrompt: React.Dispatch<React.SetStateAction<boolean>>
+}) => {
   const { currentDay, graphData, weatherData } = useGlobalContext()
 
   const currentDate = currentDay?.sunset
@@ -31,7 +35,13 @@ const Header = () => {
             viewBox="0 0 30 30"
           />
         </Link>
-        <div className="flex w-full flex-1 flex-col items-center">
+        <div
+          className="flex w-full flex-1 flex-col items-center"
+          onClick={() => {
+            console.log('hit true')
+            setShowPrompt(true)
+          }}
+        >
           <div className="md:text-md text-sm font-medium text-white">
             {currentDate}
           </div>
