@@ -78,7 +78,7 @@ export const LocationInfoCard = ({
         />
         <div className="absolute top-0 h-full w-full px-4 py-6">
           <div className="relative flex flex h-full w-full items-center justify-between">
-            {isEditing && !isGPSLocation ? (
+            {isEditing && !isGPSLocation && i >= 1 ? (
               <div className="translate-tranform absolute mr-[1rem] flex max-w-[20vw] animate-[slide-in-left_0.3s_ease-in-out_forwards]">
                 <div
                   onClick={(e) => {
