@@ -63,7 +63,7 @@ const Search = () => {
 
   return (
     <main className="flex h-svh min-h-[100vh] flex-col overflow-x-hidden pt-8 text-[#efefef]">
-      <div className="mb-[1rem] flex translate-x-full animate-[slide-in_0.5s_ease-in-out_forwards] justify-between overflow-hidden bg-[#00000099] p-6 transition-transform md:p-6 lg:p-10 ">
+      <div className="mb-[1rem] flex justify-between overflow-hidden bg-[#00000099] p-6 md:p-6 lg:p-10 ">
         <input
           type="text"
           className="w-full bg-transparent px-4 py-2 focus:outline-none"

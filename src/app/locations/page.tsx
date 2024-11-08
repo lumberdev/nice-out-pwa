@@ -36,7 +36,7 @@ const Locations = () => {
 
   return (
     <main className="flex h-svh flex-col overflow-hidden text-white">
-      <div className="mb-[1rem] flex translate-x-full animate-[slide-in_0.25s_ease-in-out_forwards] justify-between p-6 transition-transform md:p-6 lg:p-10">
+      <div className="mb-[1rem] flex justify-between p-6 md:p-6 lg:p-10">
         <Link
           href="/search"
           className="relative flex h-[60px] w-[60px] items-center justify-center rounded-full bg-[#00000026]"
@@ -86,7 +86,7 @@ const Locations = () => {
           ))}
         {cachedLocations?.length && cachedLocations?.length > 1 ? (
           <div
-            className="translate-tranform translate-y-[100vh] animate-[slide-up_0.5s_ease-in-out_forwards] overflow-hidden"
+            className="overflow-hidden"
             style={{
               animationDelay: `${(cachedLocations?.length + 2) * 0.05}s`,
             }}

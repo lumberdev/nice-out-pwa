@@ -63,7 +63,7 @@ export const LocationInfoCard = ({
   }
   return (
     <div
-      className={`translate-tranform translate-y-[100vh] ${remove === location.queryKey[0] ? 'animate-[slide-out_0.25s_ease-in-out_forwards]' : 'animate-[slide-up_0.5s_ease-in-out_forwards]'} overflow-hidden`}
+      className="overflow-hidden"
       style={{ animationDelay: `${(i + 1) * 0.05}s` }}
     >
       <div
@@ -98,7 +98,7 @@ export const LocationInfoCard = ({
               </div>
             ) : null}
             <div
-              className={`flex h-full transition-all ${isEditing && !isGPSLocation ? 'max-w-[60vw] translate-x-[15%]' : 'max-w-[70vw] translate-x-[0%]'} w-full  flex-col justify-between duration-300`}
+              className={`flex h-full transition-all ${isEditing && !isGPSLocation && i >= 1 ? 'max-w-[60vw] translate-x-[15%]' : 'max-w-[70vw] translate-x-[0%]'} w-full  flex-col justify-between duration-300`}
             >
               <div className="flex items-center">
                 <div className="mr-2 font-bold">{currenTime}</div>
@@ -114,7 +114,7 @@ export const LocationInfoCard = ({
                 )}
               </div>
               <div
-                className={`${isEditing && !isGPSLocation ? 'max-w-[60vw]' : 'max-w-[70vw]'} truncate text-[32px] font-thin`}
+                className={`${isEditing && !isGPSLocation && i >= 1 ? 'max-w-[60vw]' : 'max-w-[70vw]'} truncate text-[32px] font-thin`}
               >
                 {location.queryData.locationName}
               </div>
