@@ -5,6 +5,7 @@ import LinearGradient from '../LinearGradient'
 
 const PopChart = ({ className }: { className?: string }) => {
   const { graphData, graphSize } = useGlobalContext()
+
   return (
     <svg
       className=""
@@ -12,11 +13,18 @@ const PopChart = ({ className }: { className?: string }) => {
       height={graphSize.popHeight}
       viewBox={`0 0 ${graphSize.width} ${graphSize.popHeight}`}
     >
+      <mask id="fadeMaskPop" x="0" y="0">
+        <rect
+          width={graphSize.width}
+          height={graphSize.height}
+          fill="url(#horizontal-gradient)"
+        />
+      </mask>
       <path
         d={graphData?.graphPop.path ?? ''}
         fill={'url(#chart-pop-gradient)'}
         id="graph-pop-path"
-        mask="url(#fadeMask)"
+        mask={'url(#fadeMaskPop)'}
       />
       <LinearGradient id="chart-pop-gradient" stops={graphTempColorStops} />
     </svg>
