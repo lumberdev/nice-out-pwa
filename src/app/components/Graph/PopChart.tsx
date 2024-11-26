@@ -8,22 +8,24 @@ const PopChart = ({ className }: { className?: string }) => {
 
   return (
     <div className="overflow-hidden border-2 border-red-500">
-      <h4 className="fixed max-w-[25ch] text-lg text-white">
-        Pop graph height :- {(graphData?.SCREEN_HEIGHT ?? 0) / 8}
-        <br />
-        Popheight :- {graphSize.popHeight}
-      </h4>
       <svg
         className=""
         width={graphSize.width}
         height={graphSize.popHeight}
         viewBox={`0 0 ${graphSize.width} ${graphSize.popHeight}`}
       >
+        <mask id="fadeMask2" x="0" y="0">
+          <rect
+            width={graphSize.width}
+            height={graphSize.height}
+            fill="url(#horizontal-gradient)"
+          />
+        </mask>
         <path
           d={graphData?.graphPop.path ?? ''}
           fill={'url(#chart-pop-gradient)'}
           id="graph-pop-path"
-          mask="url(#fadeMask)"
+          mask="url(#fadeMask2)"
         />
         <LinearGradient id="chart-pop-gradient" stops={graphTempColorStops} />
       </svg>
