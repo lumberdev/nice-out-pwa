@@ -4,10 +4,8 @@ import React from 'react'
 import LinearGradient from '../LinearGradient'
 
 const PopChart = ({ className }: { className?: string }) => {
-  const { graphData, graphSize, weatherData } = useGlobalContext()
+  const { graphData, graphSize } = useGlobalContext()
 
-  const correctLocationName =
-    weatherData?.locationName !== 'City of Spruce Grove'
   return (
     <svg
       className=""
@@ -15,20 +13,18 @@ const PopChart = ({ className }: { className?: string }) => {
       height={graphSize.popHeight}
       viewBox={`0 0 ${graphSize.width} ${graphSize.popHeight}`}
     >
-      {correctLocationName && (
-        <mask id="fadeMask2" x="0" y="0">
-          <rect
-            width={graphSize.width}
-            height={graphSize.height}
-            fill="url(#horizontal-gradient)"
-          />
-        </mask>
-      )}
+      <mask id="fadeMaskPop" x="0" y="0">
+        <rect
+          width={graphSize.width}
+          height={graphSize.height}
+          fill="url(#horizontal-gradient)"
+        />
+      </mask>
       <path
         d={graphData?.graphPop.path ?? ''}
         fill={'url(#chart-pop-gradient)'}
         id="graph-pop-path"
-        mask={correctLocationName ? 'url(#fadeMask2)' : 'url(#fadeMask)'}
+        mask={'url(#fadeMaskPop)'}
       />
       <LinearGradient id="chart-pop-gradient" stops={graphTempColorStops} />
     </svg>

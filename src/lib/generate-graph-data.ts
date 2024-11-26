@@ -115,7 +115,6 @@ export const generateGraphData = (
   const GRAPH_POP_HEIGHT = SCREEN_HEIGHT / 8
 
   // Generating Scale Function for Temp & POP
-
   const scaleX = scaleTime()
     .domain([startTime, endTime])
     .range([0, GRAPH_WIDTH])
