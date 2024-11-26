@@ -110,11 +110,12 @@ export const generateGraphData = (
   // width of graphTemp === number of days
   const totalDays = (endTime - startTime) / 3600000 / 24
   const GRAPH_WIDTH = SCREEN_WIDTH * totalDays
-  // Smaller Screens (<725px) breaks the lineargradiant as the graph height is not emnough
+  // Smaller Screens (<725px) breaks the lineargradiant as the graph height is not enough
   const GRAPH_HEIGHT = Math.max(SCREEN_HEIGHT / 3, 250)
   const GRAPH_POP_HEIGHT = SCREEN_HEIGHT / 8
 
   // Generating Scale Function for Temp & POP
+
   const scaleX = scaleTime()
     .domain([startTime, endTime])
     .range([0, GRAPH_WIDTH])

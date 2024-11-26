@@ -371,6 +371,7 @@ export const GlobalContextProvider = ({
         window.innerWidth,
       )
       setGraphData(newGraphData)
+      console.log('New graphdata', newGraphData.GRAPH_POP_HEIGHT)
       setGraphSize({
         width: newGraphData.GRAPH_WIDTH,
         height: newGraphData.GRAPH_HEIGHT,
@@ -384,6 +385,7 @@ export const GlobalContextProvider = ({
   useEffect(() => {
     if (!graphData) return
     const { GRAPH_WIDTH, GRAPH_HEIGHT, GRAPH_POP_HEIGHT } = graphData
+    console.log('graphdata', GRAPH_POP_HEIGHT)
     setGraphSize({
       width: GRAPH_WIDTH,
       height: GRAPH_HEIGHT,
