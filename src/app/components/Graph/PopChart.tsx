@@ -13,6 +13,7 @@ const PopChart = ({ className }: { className?: string }) => {
       height={graphSize.popHeight}
       viewBox={`0 0 ${graphSize.width} ${graphSize.popHeight}`}
     >
+      {/* Separate mask for both graph as sharing single mask was causing render issues on Safari */}
       <mask id="fadeMaskPop" x="0" y="0">
         <rect
           width={graphSize.width}

@@ -45,7 +45,6 @@ const Temperature = () => {
     longPressTimer.current = setTimeout(() => {
       setLongPressTriggered(true)
       setIsUnitMetric((prev) => !prev)
-      console.log('Long press activated')
     }, 700)
   }
 
@@ -71,6 +70,8 @@ const Temperature = () => {
   return (
     <div className="flex min-w-40 max-w-40 animate-[slide-in-left_0.5s_ease-in-out_forwards] flex-col items-center text-white transition-transform md:min-w-60">
       <div
+        onTouchStart={handleMouseDown}
+        onTouchEnd={handleMouseUp}
         onMouseDown={handleMouseDown}
         onMouseUp={handleMouseUp}
         onClick={handleClick}
