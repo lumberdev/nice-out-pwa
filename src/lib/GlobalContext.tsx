@@ -101,6 +101,8 @@ const defaultTimestamp = {
   daylight: true,
 }
 
+const TEMPERATURE_UNIT_KEY = 'isUnitMetric'
+
 export const GlobalContextProvider = ({
   children,
 }: {
@@ -111,7 +113,18 @@ export const GlobalContextProvider = ({
   const [savedCurrentDayBreaks, setSavedCurrentDayBreaks] = useState<
     GraphData['dayBreaks'][0] | undefined
   >()
-  const [isUnitMetric, setIsUnitMetric] = useState(true)
+  // Initialize state with value from localStorage, default to true (metric)
+  const [isUnitMetric, setIsUnitMetric] = useState(() => {
+    if (typeof window === 'undefined') return true
+    const saved = localStorage.getItem(TEMPERATURE_UNIT_KEY)
+    return saved === null ? true : saved === 'true'
+  })
+
+  // Update localStorage when the unit changes
+  useEffect(() => {
+    localStorage.setItem(TEMPERATURE_UNIT_KEY, String(isUnitMetric))
+  }, [isUnitMetric])
+
   const [activeLocationId, setActiveLocationId] = useState<
     string | null | undefined
   >(null)
