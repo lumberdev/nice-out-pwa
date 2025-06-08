@@ -56,7 +56,7 @@ const Temperature = () => {
     longPressTimer.current = setTimeout(() => {
       setLongPressTriggered(true)
       setIsUnitMetric((prev) => !prev)
-    }, 700)
+    }, 500)
   }
 
   // Clear the timer on mouse up
