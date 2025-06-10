@@ -8,8 +8,14 @@ import 'moment'
 import 'moment/min/locales'
 import moment from 'moment-timezone'
 
+const FEELS_LIKE_KEY = 'isFeelsLikeTemperature'
+
 const Temperature = () => {
-  const [isFeelsLikeTemperature, setIsFeelsLikeTemperature] = useState(false)
+  const [isFeelsLikeTemperature, setIsFeelsLikeTemperature] = useState(() => {
+    if (typeof window === 'undefined') return false
+    const saved = localStorage.getItem(FEELS_LIKE_KEY)
+    return saved === 'true'
+  })
   const longPressTimer = useRef<NodeJS.Timeout | null>(null)
   const [longPressTriggered, setLongPressTriggered] = useState(false)
   const {
@@ -39,13 +45,18 @@ const Temperature = () => {
     setIsFeelsLikeTemperature((prev) => !prev)
   }
 
+  // Update localStorage when isFeelsLikeTemperature changes
+  useEffect(() => {
+    localStorage.setItem(FEELS_LIKE_KEY, String(isFeelsLikeTemperature))
+  }, [isFeelsLikeTemperature])
+
   // Start long press detection
   const handleMouseDown = () => {
     setLongPressTriggered(false)
     longPressTimer.current = setTimeout(() => {
       setLongPressTriggered(true)
       setIsUnitMetric((prev) => !prev)
-    }, 700)
+    }, 500)
   }
 
   // Clear the timer on mouse up
